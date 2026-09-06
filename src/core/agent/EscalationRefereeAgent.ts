@@ -156,13 +156,26 @@ export class EscalationRefereeAgent {
       fullText.includes("không rõ ngày") ||
       fullText.includes("không đọc được ngày") ||
       fullText.includes("mất góc") ||
-      fullText.includes("mất ngày");
+      fullText.includes("mất ngày") ||
+      fullText.includes("thiếu mộc") ||
+      fullText.includes("c65-hd") ||
+      fullText.includes("chưa nộp giấy") ||
+      fullText.includes("chưa có mẫu") ||
+      (input.leaveType === "Nghỉ ốm/chế độ" && (fullText.includes("chưa nộp") || fullText.includes("chưa có")));
 
     if (hasUnclearKeywords) {
       isFactUncertain = true;
       if (input.domain === "enterprise") {
-        factReason = "Điều 14.2 Quy chế Nhân sự — Yêu cầu chứng từ y tế rõ ràng mốc thời gian điều trị để thanh toán chế độ.";
-        factQuestion = `Chứng từ y tế mờ ngày xuất viện: Nhân viên ${input.subjectName} xin nghỉ từ ngày nào đến ngày nào để phòng HR đối soát công và BHXH?`;
+        if (fullText.includes("c65-hd") || fullText.includes("mẫu c65") || (input.leaveType === "Nghỉ ốm/chế độ" && fullText.includes("chưa"))) {
+          factReason = "Điều 14.3 Quy chế Nhân sự — Hồ sơ hưởng trợ cấp ốm đau BHXH";
+          factQuestion = `Nghỉ ốm ${input.durationDaysOrSessions} ngày chưa có Giấy chứng nhận nghỉ việc hưởng BHXH mẫu C65-HD. Yêu cầu nộp bản gốc trong 3 ngày làm việc hay chuyển sang nghỉ không lương?`;
+        } else if (fullText.includes("thiếu mộc") || fullText.includes("con dấu") || fullText.includes("chữ ký")) {
+          factReason = "Điều 14.2 Quy chế Nhân sự — Yêu cầu chứng từ y tế có chữ ký và mộc đỏ hợp lệ";
+          factQuestion = `Giấy nghỉ ốm thiếu chữ ký bác sĩ hoặc con dấu cơ sở y tế. Yêu cầu ${input.subjectName} bổ sung giấy hợp lệ trong 24h hay từ chối thanh toán chế độ?`;
+        } else {
+          factReason = "Điều 14.2 Quy chế Nhân sự — Yêu cầu chứng từ y tế rõ ràng mốc thời gian điều trị để thanh toán chế độ.";
+          factQuestion = `Chứng từ y tế của ${input.subjectName} bị mờ, không đọc rõ mốc thời gian điều trị. Yêu cầu nhân viên bổ sung chứng từ rõ nét trong 24h?`;
+        }
       } else {
         factReason = "Điều 2.2 Quy chế Đào tạo — Yêu cầu chứng từ y tế rõ ràng mốc ngày khám/nghỉ để đối soát điểm danh.";
         factQuestion = `Giấy khám bệnh không đọc được ngày: Sinh viên ${input.subjectName} xin nghỉ từ ngày nào?`;

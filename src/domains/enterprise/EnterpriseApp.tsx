@@ -151,9 +151,9 @@ function EnterpriseLeaveForm({ llmConfig, onResult }: LeaveFormProps) {
     setLoading(true);
     setResult(null);
     try {
-      const days = daysBetween(form.fromDate, form.toDate);
-      const isUnclear = (form.reason + " " + form.notes).toLowerCase().includes("mờ");
-      const hasMissingDoc = form.leaveType === "Nghỉ việc riêng" && !form.notes.toLowerCase().includes("kết hôn");
+      const lowerAll = (form.reason + " " + form.notes).toLowerCase();
+      const isUnclear = lowerAll.includes("mờ") || lowerAll.includes("thiếu mộc") || lowerAll.includes("c65") || lowerAll.includes("chưa nộp");
+      const hasMissingDoc = form.leaveType === "Nghỉ việc riêng" && !lowerAll.includes("kết hôn") && !lowerAll.includes("chứng tử") && !lowerAll.includes("tang");
 
       const agentRes = await refereeAgent.evaluateAsync(
         {

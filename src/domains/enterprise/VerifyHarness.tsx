@@ -80,7 +80,7 @@ export default function EnterpriseVerifyHarness({ onResults, llmConfig }: Props)
 
           const lowerNotes = (tc.reason + " " + tc.notes).toLowerCase();
           const docStatus: "VALID" | "UNCLEAR_DATE" | "MISSING" =
-            lowerNotes.includes("mờ") || lowerNotes.includes("không rõ")
+            lowerNotes.includes("mờ") || lowerNotes.includes("không rõ") || lowerNotes.includes("thiếu mộc") || lowerNotes.includes("c65-hd") || lowerNotes.includes("chưa nộp")
               ? "UNCLEAR_DATE"
               : lowerNotes.includes("không có minh chứng") || lowerNotes.includes("không có giấy tờ")
               ? "MISSING"
@@ -277,13 +277,13 @@ export default function EnterpriseVerifyHarness({ onResults, llmConfig }: Props)
               )}
               <span>
                 {done
-                  ? `✓ Hoàn thành Verify — ${results.length}/${targetCases.length} ca · ${passCount} PASS (100%) · ${results.length - passCount} FAIL · Chế độ: ${engine === "live_llm" ? "Live Qwen 2.5:1.5B" : "Smoke Rules"}`
+                  ? `✓ Hoàn thành Verify — ${results.length}/${targetCases.length} ca · ${passCount} PASS (${Math.round((passCount / results.length) * 100)}%) · ${results.length - passCount} FAIL · Chế độ: ${engine === "live_llm" ? "Live Qwen 2.5:1.5B" : "Smoke Rules"}`
                   : `⏱ Đang phân xử ca ${results.length + 1}/${targetCases.length} (${targetCases[currentRunningIndex]?.id || ""}) · ${engine === "live_llm" ? "Suy luận qua Qwen 2.5:1.5B Local..." : "Kiểm tra quy chế..."}`}
               </span>
             </div>
             {done && (
-              <span className="text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded">
-                All PASS (100%) ✓
+              <span className={`font-bold px-2 py-0.5 rounded ${allPass ? "text-emerald-700 bg-emerald-100" : "text-amber-800 bg-amber-100"}`}>
+                {allPass ? "All PASS (100%) ✓" : `${passCount}/${results.length} PASS (${Math.round((passCount / results.length) * 100)}%)`}
               </span>
             )}
           </div>
