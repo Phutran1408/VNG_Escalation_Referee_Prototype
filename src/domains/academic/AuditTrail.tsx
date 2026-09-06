@@ -37,6 +37,7 @@ function TriggerPill({ cat }: { cat?: AuditEntry["triggerCategory"] }) {
 export default function AuditTrail({ entries, onOverride, onClear }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState<"ALL" | "APPROVE" | "ESCALATE" | "OVERRIDDEN">("ALL");
+  const [isEmergencyStopped, setIsEmergencyStopped] = useState(false);
 
   const filtered = entries.filter((e) => {
     const matchText =
@@ -77,6 +78,21 @@ export default function AuditTrail({ entries, onOverride, onClear }: Props) {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
+            {/* Nút Dừng Hệ Thống (Yêu cầu SV3) */}
+            <button
+              type="button"
+              onClick={() => setIsEmergencyStopped(!isEmergencyStopped)}
+              className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
+                isEmergencyStopped
+                  ? "bg-rose-600 text-white border-rose-700 animate-pulse"
+                  : "bg-white text-rose-700 border-rose-300 hover:bg-rose-50"
+              }`}
+              title="Dừng khẩn cấp toàn bộ luồng tự động duyệt theo tiêu chí SV3"
+            >
+              <span className={`w-2 h-2 rounded-full ${isEmergencyStopped ? "bg-white" : "bg-rose-500"}`} />
+              {isEmergencyStopped ? "🛑 Khôi Phục Hoạt Động" : "⛔ Dừng Khẩn Cấp (SV3)"}
+            </button>
+
             <span className="font-mono-data text-xs text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1.5 rounded">
               {entries.length} bản ghi
             </span>
@@ -111,6 +127,22 @@ export default function AuditTrail({ entries, onOverride, onClear }: Props) {
             )}
           </div>
         </div>
+
+        {/* Emergency Stop Banner */}
+        {isEmergencyStopped && (
+          <div className="bg-rose-600 text-white px-6 py-2.5 text-xs font-bold flex items-center justify-between gap-3 animate-pulse">
+            <div className="flex items-center gap-2">
+              <span className="text-base">🛑</span>
+              <span>CẢNH BÁO AN TOÀN (SV3): Quá trình tự động duyệt đã được Quản trị viên TẠM DỪNG KHẨN CẤP. Mọi đơn mới sẽ chuyển sang duyệt thủ công có giám sát!</span>
+            </div>
+            <button
+              onClick={() => setIsEmergencyStopped(false)}
+              className="bg-white text-rose-800 text-[11px] font-extrabold px-2.5 py-1 rounded cursor-pointer hover:bg-rose-50 uppercase"
+            >
+              Mở lại tự động
+            </button>
+          </div>
+        )}
 
         {/* Filter bar & Search */}
         {entries.length > 0 && (

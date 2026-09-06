@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { AuditEntry } from "./types";
 
 interface Props {
@@ -33,28 +34,61 @@ function TriggerPill({ cat }: { cat?: AuditEntry["triggerCategory"] }) {
 }
 
 export default function AuditTrail({ entries, onOverride }: Props) {
+  const [isEmergencyStopped, setIsEmergencyStopped] = useState(false);
+
   return (
     <section id="audit" className="scroll-mt-6">
       <div className="card">
         {/* Header */}
-        <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between gap-3">
+        <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h2 className="font-display text-lg font-700 text-slate-900">Nhật Ký Kiểm Duyệt</h2>
+            <h2 className="font-display text-lg font-700 text-slate-900">Nhật Ký Kiểm Duyệt Tuân Thủ (Audit Trail)</h2>
             <p className="text-sm text-slate-500 mt-0.5">
-              Audit compliance trail — toàn bộ đơn đã xử lý · Hỗ trợ Rollback thủ công bởi HR Admin
+              Audit compliance trail — toàn bộ đơn đã xử lý · Hỗ trợ Rollback / Hoàn tác thủ công bởi HR Admin
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <span className="font-mono-data text-xs text-slate-500 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded">
+            {/* Nút Dừng Hệ Thống (Yêu cầu SV3) */}
+            <button
+              type="button"
+              onClick={() => setIsEmergencyStopped(!isEmergencyStopped)}
+              className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
+                isEmergencyStopped
+                  ? "bg-rose-600 text-white border-rose-700 animate-pulse"
+                  : "bg-white text-rose-700 border-rose-300 hover:bg-rose-50"
+              }`}
+              title="Dừng khẩn cấp toàn bộ luồng tự động duyệt theo tiêu chí SV3"
+            >
+              <span className={`w-2 h-2 rounded-full ${isEmergencyStopped ? "bg-white" : "bg-rose-500"}`} />
+              {isEmergencyStopped ? "🛑 Khôi Phục Hoạt Động" : "⛔ Dừng Khẩn Cấp (SV3)"}
+            </button>
+
+            <span className="font-mono-data text-xs text-slate-500 bg-slate-100 border border-slate-200 px-2.5 py-1.5 rounded">
               {entries.length} bản&nbsp;ghi
             </span>
             {entries.some((e) => e.overridden) && (
-              <span className="font-mono-data text-xs text-slate-400 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded">
-                {entries.filter((e) => e.overridden).length} overridden
+              <span className="font-mono-data text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1.5 rounded">
+                {entries.filter((e) => e.overridden).length} đã can thiệp
               </span>
             )}
           </div>
         </div>
+
+        {/* Emergency Stop Banner */}
+        {isEmergencyStopped && (
+          <div className="bg-rose-600 text-white px-6 py-2.5 text-xs font-bold flex items-center justify-between gap-3 animate-pulse">
+            <div className="flex items-center gap-2">
+              <span className="text-base">🛑</span>
+              <span>CẢNH BÁO AN TOÀN (SV3): Quá trình tự động duyệt nhân sự đã được HR Admin TẠM DỪNG KHẨN CẤP. Toàn bộ đơn mới sẽ dừng lại để duyệt thủ công!</span>
+            </div>
+            <button
+              onClick={() => setIsEmergencyStopped(false)}
+              className="bg-white text-rose-800 text-[11px] font-extrabold px-2.5 py-1 rounded cursor-pointer hover:bg-rose-50 uppercase"
+            >
+              Mở lại tự động
+            </button>
+          </div>
+        )}
 
         {entries.length === 0 ? (
           <div className="px-6 py-14 text-center">

@@ -21,8 +21,8 @@ export default function Header({ currentDomain, onDomainChange }: HeaderProps) {
             <span className="font-display text-xs font-bold text-slate-200 tracking-wider uppercase">
               AI Escalation Referee · Spec A
             </span>
-            <span className="font-mono-data text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded">
-              SV2 Core Agent
+            <span className="font-mono-data text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
+              SV2 Lõi Agent &amp; Decision Log
             </span>
           </div>
 
@@ -64,21 +64,21 @@ export default function Header({ currentDomain, onDomainChange }: HeaderProps) {
         </div>
       </div>
 
+      {/* ── TIÊU CHÍ SV3: LANDING PAGE GHI ĐÚNG MỘT DÒNG CHỈ VIỆC CẦN THỬ ĐẦU TIÊN ── */}
+      <div className="bg-amber-400 text-slate-950 font-bold px-4 py-2.5 text-center text-xs sm:text-sm shadow-inner flex items-center justify-center gap-2">
+        <span className="bg-slate-950 text-amber-300 text-[10px] uppercase font-mono-data px-2 py-0.5 rounded tracking-wider">
+          Việc cần thử đầu tiên
+        </span>
+        <span>
+          👉 Bấm nút <u>"Chạy Verify (5 Ca)"</u> bên dưới để kiểm tra tự động xem Lõi Agent có tự duyệt ca thường quy và dừng lại đúng lúc ở 3 loại bất định không.
+        </span>
+      </div>
+
       {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
           {/* Left Title & Callout */}
           <div className="max-w-2xl">
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
-                isEnterprise
-                  ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
-                  : "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
-              }`}>
-                {isEnterprise ? "Context 1 · Doanh Nghiệp" : "Context 2 · Trường Học"}
-              </span>
-            </div>
-
             <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white leading-tight">
               AI Escalation Referee
               <span className={`block text-base sm:text-lg font-medium mt-0.5 ${isEnterprise ? "text-blue-400" : "text-indigo-400"}`}>
@@ -88,22 +88,21 @@ export default function Header({ currentDomain, onDomainChange }: HeaderProps) {
               </span>
             </h1>
 
-            {/* Instruction callout */}
-            <div className={`mt-3.5 p-3.5 rounded-xl border leading-relaxed text-xs sm:text-sm ${
+            <div className={`mt-3 p-3 rounded-xl border leading-relaxed text-xs ${
               isEnterprise
                 ? "bg-blue-950/40 border-blue-900/60 text-blue-100"
                 : "bg-indigo-950/40 border-indigo-900/60 text-indigo-100"
             }`}>
               {isEnterprise ? (
                 <p>
-                  <strong className="text-white">Quy chế Nhân sự Doanh nghiệp:</strong> Tự động duyệt đơn thường quy & kích hoạt dừng ở 3 loại:
+                  <strong className="text-white">Quy chế Nhân sự Doanh nghiệp:</strong> Tự động duyệt đơn thường quy &amp; kích hoạt dừng ở 3 loại:
                   <span className="underline decoration-blue-400 mx-1">Chứng từ y tế mờ ngày</span> (Dữ kiện),
                   <span className="underline decoration-blue-400 mx-1">Ngoài chính sách</span>, và
                   <span className="underline decoration-blue-400 mx-1">Nghỉ không lương &gt; 5 ngày</span> (Vượt thẩm quyền Quản lý trực tiếp).
                 </p>
               ) : (
                 <p>
-                  <strong className="text-white">Quy chế Đào tạo Học đường:</strong> Tự động duyệt đơn thường quy & kích hoạt dừng ở 3 loại:
+                  <strong className="text-white">Quy chế Đào tạo Học đường:</strong> Tự động duyệt đơn thường quy &amp; kích hoạt dừng ở 3 loại:
                   <span className="underline decoration-indigo-400 mx-1">Giấy khám mờ ngày ("nghỉ từ ngày nào?")</span>,
                   <span className="underline decoration-indigo-400 mx-1">Vắng quá 20% buổi ("có xét đặc biệt?")</span>, và
                   <span className="underline decoration-indigo-400 mx-1">Bảo lưu cả kỳ ("thẩm quyền Trưởng khoa")</span>.
