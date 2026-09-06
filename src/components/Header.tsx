@@ -1,92 +1,133 @@
-export default function Header() {
+export type DomainMode = "enterprise" | "academic";
+
+interface HeaderProps {
+  currentDomain: DomainMode;
+  onDomainChange: (domain: DomainMode) => void;
+}
+
+export default function Header({ currentDomain, onDomainChange }: HeaderProps) {
+  const isEnterprise = currentDomain === "enterprise";
+
   return (
-    <header className="bg-indigo-950 text-white">
-      {/* Top utility bar */}
-      <div className="border-b border-indigo-900/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-10">
+    <header className="bg-slate-950 text-white border-b border-slate-800">
+      {/* Top Utility Bar with Domain Switcher */}
+      <div className="border-b border-slate-800/80 bg-slate-900/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between py-2 sm:h-12 gap-2">
+          {/* Brand & Badge */}
           <div className="flex items-center gap-2.5">
-            {/* HR shield icon */}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-indigo-400">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={isEnterprise ? "text-blue-400" : "text-indigo-400"}>
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            <span className="font-display text-xs font-600 text-indigo-300 tracking-widest uppercase">
-              Enterprise HR · AI Referee
+            <span className="font-display text-xs font-bold text-slate-200 tracking-wider uppercase">
+              AI Escalation Referee · Spec A
+            </span>
+            <span className="font-mono-data text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded">
+              SV2 Core Agent
             </span>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="font-mono-data text-[10px] text-indigo-400">Spec&nbsp;A · v2.0.0</span>
-            <span className="flex items-center gap-1.5 text-[10px] text-emerald-400">
+
+          {/* Context / Domain Mode Switcher */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-400 font-medium hidden md:inline">Chọn Ngữ Cảnh:</span>
+            <div className="inline-flex bg-slate-800/90 p-1 rounded-lg border border-slate-700">
+              <button
+                type="button"
+                onClick={() => onDomainChange("enterprise")}
+                className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  isEnterprise
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-slate-300 hover:text-white"
+                }`}
+              >
+                <span>🏢</span>
+                <span>Doanh Nghiệp (HR Leave)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onDomainChange("academic")}
+                className={`px-3 py-1 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  !isEnterprise
+                    ? "bg-indigo-600 text-white shadow-sm"
+                    : "text-slate-300 hover:text-white"
+                }`}
+              >
+                <span>🎓</span>
+                <span>Trường Học (Student Leave)</span>
+              </button>
+            </div>
+
+            <div className="flex items-center gap-1 text-[10px] text-emerald-400 ml-2 hidden sm:flex">
               <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-              Hệ thống hoạt động
-            </span>
+              Live
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Hero band */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      {/* Hero Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-5">
-          {/* Left: title */}
+          {/* Left Title & Callout */}
           <div className="max-w-2xl">
-            <h1 className="font-display text-2xl sm:text-3xl font-800 text-white leading-tight tracking-tight">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
+                isEnterprise
+                  ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                  : "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+              }`}>
+                {isEnterprise ? "Context 1 · Doanh Nghiệp" : "Context 2 · Trường Học"}
+              </span>
+            </div>
+
+            <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white leading-tight">
               AI Escalation Referee
-              <span className="block text-indigo-400 text-base sm:text-lg font-500 mt-0.5 tracking-normal">
-                Phân xử Duyệt Đơn Nghỉ Phép Nội bộ
+              <span className={`block text-base sm:text-lg font-medium mt-0.5 ${isEnterprise ? "text-blue-400" : "text-indigo-400"}`}>
+                {isEnterprise
+                  ? "Phân xử Duyệt Đơn Nghỉ Phép Nội Bộ (Enterprise HR Management)"
+                  : "Phân xử Duyệt Đơn Xin Nghỉ Học Sinh Viên (Academic Student Leave)"}
               </span>
             </h1>
 
             {/* Instruction callout */}
-            <div className="mt-4 bg-indigo-900/50 border border-indigo-800 rounded-lg px-4 py-3 max-w-xl">
-              <p className="text-sm text-indigo-100 leading-relaxed">
-                <span className="font-semibold text-white">Hệ thống phân xử duyệt đơn xin nghỉ phép nội bộ</span>{" "}
-                <span className="font-mono-data text-[11px] text-indigo-400">(Spec A — The Escalation Referee)</span>.{" "}
-                Bấm{" "}
-                <kbd className="inline-flex items-center gap-1 bg-indigo-700 hover:bg-indigo-600 text-white text-[11px] font-semibold px-2 py-0.5 rounded border border-indigo-500 transition-colors cursor-default">
-                  Chạy Verify (90s)
-                </kbd>{" "}
-                để kiểm tra tự động 5 ca thử nghiệm, hoặc nộp đơn mới bên dưới.
-              </p>
+            <div className={`mt-3.5 p-3.5 rounded-xl border leading-relaxed text-xs sm:text-sm ${
+              isEnterprise
+                ? "bg-blue-950/40 border-blue-900/60 text-blue-100"
+                : "bg-indigo-950/40 border-indigo-900/60 text-indigo-100"
+            }`}>
+              {isEnterprise ? (
+                <p>
+                  <strong className="text-white">Quy chế Nhân sự Doanh nghiệp:</strong> Tự động duyệt đơn thường quy & kích hoạt dừng ở 3 loại:
+                  <span className="underline decoration-blue-400 mx-1">Chứng từ y tế mờ ngày</span> (Dữ kiện),
+                  <span className="underline decoration-blue-400 mx-1">Ngoài chính sách</span>, và
+                  <span className="underline decoration-blue-400 mx-1">Nghỉ không lương &gt; 5 ngày</span> (Vượt thẩm quyền Quản lý trực tiếp).
+                </p>
+              ) : (
+                <p>
+                  <strong className="text-white">Quy chế Đào tạo Học đường:</strong> Tự động duyệt đơn thường quy & kích hoạt dừng ở 3 loại:
+                  <span className="underline decoration-indigo-400 mx-1">Giấy khám mờ ngày ("nghỉ từ ngày nào?")</span>,
+                  <span className="underline decoration-indigo-400 mx-1">Vắng quá 20% buổi ("có xét đặc biệt?")</span>, và
+                  <span className="underline decoration-indigo-400 mx-1">Bảo lưu cả kỳ ("thẩm quyền Trưởng khoa")</span>.
+                </p>
+              )}
             </div>
           </div>
 
-          {/* Right: stat chips */}
-          <div className="flex flex-wrap lg:flex-col gap-2 lg:items-end shrink-0">
-            {[
-              { label: "Ca thử nghiệm", value: "5", sub: "3 duyệt · 2 escalate" },
-              { label: "Nhóm trigger", value: "3", sub: "Fact · Policy · Auth" },
-            ].map((s) => (
-              <div key={s.label} className="bg-indigo-900/40 border border-indigo-800 rounded-lg px-4 py-2.5 min-w-[140px]">
-                <div className="font-display text-2xl font-700 text-white leading-none">{s.value}</div>
-                <div className="text-[11px] text-indigo-400 mt-0.5 font-medium">{s.label}</div>
-                <div className="font-mono-data text-[10px] text-indigo-500 mt-0.5">{s.sub}</div>
+          {/* Right Stat Chips */}
+          <div className="flex flex-wrap lg:flex-col gap-2 shrink-0">
+            <div className="bg-slate-900/80 border border-slate-800 rounded-lg px-4 py-2 min-w-[150px]">
+              <div className="text-lg font-bold text-white leading-none">
+                {isEnterprise ? "5 Ca Chuẩn" : "5 Ca / 15 Ca"}
               </div>
-            ))}
+              <div className="text-[11px] text-slate-400 mt-1">Kiểm thử Verify Harness</div>
+            </div>
+
+            <div className="bg-slate-900/80 border border-slate-800 rounded-lg px-4 py-2 min-w-[150px]">
+              <div className="text-lg font-bold text-emerald-400 leading-none">3 Loại Dừng</div>
+              <div className="text-[11px] text-slate-400 mt-1">Dữ kiện · Chính sách · Thẩm quyền</div>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Navigation strip */}
-      <nav className="border-t border-indigo-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex overflow-x-auto">
-          {[
-            { label: "▶ Verify Harness", anchor: "#verify", accent: true },
-            { label: "Nộp Đơn Nghỉ Phép", anchor: "#leave-form", accent: false },
-            { label: "Nhật Ký Kiểm Duyệt", anchor: "#audit", accent: false },
-          ].map((item) => (
-            <a
-              key={item.anchor}
-              href={item.anchor}
-              className={`flex-none px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 ${
-                item.accent
-                  ? "text-indigo-300 border-indigo-400 hover:text-white"
-                  : "text-indigo-400 border-transparent hover:text-indigo-200 hover:border-indigo-700"
-              }`}
-            >
-              {item.label}
-            </a>
-          ))}
-        </div>
-      </nav>
     </header>
   );
 }
