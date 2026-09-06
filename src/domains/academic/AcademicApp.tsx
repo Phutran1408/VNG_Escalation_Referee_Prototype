@@ -654,7 +654,7 @@ export default function AcademicApp({ llmConfig }: AcademicAppProps) {
 
   return (
     <div className="space-y-8">
-      <VerifyHarness onResults={handleVerifyResults} />
+      <VerifyHarness onResults={handleVerifyResults} llmConfig={llmConfig} />
       <StudentLeaveForm llmConfig={llmConfig} onResult={handleFormResult} />
       <AuditTrail
         entries={auditEntries}

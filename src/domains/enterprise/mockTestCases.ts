@@ -66,7 +66,140 @@ export const TEST_CASES: TestCase[] = [
     notes: "Thời gian nghỉ 20 ngày làm việc liên tục. Vượt thẩm quyền phê duyệt của Quản lý trực tiếp.",
     expected: "ESCALATE",
   },
+  {
+    id: "TC06",
+    employeeId: "NV-2023-0199",
+    employeeName: "Lê Văn Hùng",
+    department: "Phòng IT",
+    leaveType: "Nghỉ việc riêng",
+    days: 3,
+    fromDate: "2025-11-15",
+    toDate: "2025-11-17",
+    reason: "Xin nghỉ việc riêng giải quyết công việc cá nhân gia đình nhưng không có giấy tờ minh chứng.",
+    notes: "Không có giấy tờ chứng minh quan hệ gia đình hoặc sự việc theo quy định nghỉ hưởng lương.",
+    expected: "ESCALATE",
+  },
+  {
+    id: "TC07",
+    employeeId: "NV-2022-0442",
+    employeeName: "Vũ Thị Mai",
+    department: "Phòng Nhân sự",
+    leaveType: "Nghỉ phép năm",
+    days: 8,
+    fromDate: "2025-12-01",
+    toDate: "2025-12-10",
+    reason: "Nghỉ phép năm đi du lịch cùng gia đình 8 ngày làm việc liên tục.",
+    notes: "Nghỉ phép năm liên tục > 5 ngày vượt thẩm quyền Quản lý trực tiếp, cần Trưởng phòng duyệt.",
+    expected: "ESCALATE",
+  },
+  {
+    id: "TC08",
+    employeeId: "NV-2024-0511",
+    employeeName: "Đỗ Quốc Bảo",
+    department: "Phòng Kế toán",
+    leaveType: "Nghỉ ốm/chế độ",
+    days: 3,
+    fromDate: "2025-11-20",
+    toDate: "2025-11-22",
+    reason: "Nghỉ ốm điều trị ngoại trú.",
+    notes: "Giấy nghỉ ốm scan mờ, thiếu chữ ký bác sĩ và con dấu cơ sở y tế.",
+    expected: "ESCALATE",
+  },
+  {
+    id: "TC09",
+    employeeId: "NV-2023-0301",
+    employeeName: "Ngô Thanh Tùng",
+    department: "Phòng Kỹ thuật",
+    leaveType: "Nghỉ phép năm",
+    days: 2,
+    fromDate: "2025-10-25",
+    toDate: "2025-10-26",
+    reason: "Nghỉ phép năm giải quyết việc riêng, nộp trước 5 ngày.",
+    notes: "Số dư phép năm còn 7 ngày, bàn giao công việc đầy đủ cho đồng nghiệp.",
+    expected: "AUTO_APPROVE",
+  },
+  {
+    id: "TC10",
+    employeeId: "NV-2021-0812",
+    employeeName: "Bùi Thị Lan",
+    department: "Phòng Chăm sóc Khách hàng",
+    leaveType: "Nghỉ việc riêng",
+    days: 3,
+    fromDate: "2025-11-05",
+    toDate: "2025-11-07",
+    reason: "Nghỉ việc riêng hưởng nguyên lương do bố đẻ qua đời.",
+    notes: "Đính kèm bản sao Giấy chứng tử hợp lệ từ UBND phường.",
+    expected: "AUTO_APPROVE",
+  },
+  {
+    id: "TC11",
+    employeeId: "NV-2024-0120",
+    employeeName: "Phan Văn Khải",
+    department: "Phòng Vận hành",
+    leaveType: "Nghỉ không lương",
+    days: 2,
+    fromDate: "2025-10-30",
+    toDate: "2025-10-31",
+    reason: "Nghỉ không lương 2 ngày để về quê sửa nhà.",
+    notes: "Trong hạn mức 5 ngày Quản lý trực tiếp có thẩm quyền phê duyệt, không ảnh hưởng ca trực.",
+    expected: "AUTO_APPROVE",
+  },
+  {
+    id: "TC12",
+    employeeId: "NV-2020-0019",
+    employeeName: "Trương Minh Trí",
+    department: "Phòng Kinh doanh",
+    leaveType: "Nghỉ ốm/chế độ",
+    days: 6,
+    fromDate: "2025-11-01",
+    toDate: "2025-11-07",
+    reason: "Nghỉ ốm mổ ruột thừa.",
+    notes: "Chưa nộp Giấy chứng nhận nghỉ việc hưởng BHXH (mẫu C65-HD).",
+    expected: "ESCALATE",
+  },
+  {
+    id: "TC13",
+    employeeId: "NV-2025-0012",
+    employeeName: "Dương Hải Yến",
+    department: "Phòng Marketing",
+    leaveType: "Nghỉ phép năm",
+    days: 3,
+    fromDate: "2025-10-20",
+    toDate: "2025-10-22",
+    reason: "Nhân viên đang trong 2 tháng thử việc xin nghỉ phép năm.",
+    notes: "Hợp đồng thử việc chưa phát sinh ngày phép năm theo Quy chế Nhân sự.",
+    expected: "ESCALATE",
+  },
+  {
+    id: "TC14",
+    employeeId: "NV-2022-0991",
+    employeeName: "Nguyễn Hoàng Long",
+    department: "Phòng Vận hành",
+    leaveType: "Nghỉ không lương",
+    days: 30,
+    fromDate: "2025-12-01",
+    toDate: "2025-12-31",
+    reason: "Xin nghỉ không lương 1 tháng để học khóa đào tạo chuyên môn bên ngoài.",
+    notes: "Thời gian nghỉ 30 ngày vượt thẩm quyền Quản lý trực tiếp và Trưởng phòng, cần Tổng Giám Đốc phê duyệt.",
+    expected: "ESCALATE",
+  },
+  {
+    id: "TC15",
+    employeeId: "NV-2023-0455",
+    employeeName: "Hoàng Thị Cúc",
+    department: "Phòng Tài chính",
+    leaveType: "Nghỉ ốm/chế độ",
+    days: 1,
+    fromDate: "2025-10-18",
+    toDate: "2025-10-18",
+    reason: "Nghỉ ốm 1 ngày do sốt nhẹ theo dõi sức khỏe tại nhà.",
+    notes: "Đơn nộp đúng quy trình thông báo nội bộ trong vòng 2 giờ đầu giờ làm việc.",
+    expected: "AUTO_APPROVE",
+  },
 ];
+
+export const CANONICAL_5_TEST_CASES = TEST_CASES.slice(0, 5);
+export const FULL_15_TEST_CASES = TEST_CASES;
 
 interface EscalationData {
   triggerCategory: VerifyResult["triggerCategory"];
@@ -87,17 +220,57 @@ const ESCALATION_MAP: Record<string, EscalationData> = {
       "Đơn nghỉ không lương 20 ngày vượt thẩm quyền Quản lý trực tiếp (tối đa 5 ngày). Cần chuyển Giám đốc Khối / HRD phê duyệt theo Điều 18.1 Quy chế Nhân sự.",
     policyBasis: "Điều 18.1 Quy chế Nhân sự — Phân cấp thẩm quyền phê duyệt nghỉ không lương",
   },
+  TC06: {
+    triggerCategory: "Ngoài chính sách",
+    escalationQuestion:
+      "Đơn nghỉ việc riêng không kèm minh chứng hợp lệ để hưởng lương theo Điều 15. Quản lý trực tiếp chấp thuận tính vào nghỉ phép năm/không lương hay yêu cầu bổ sung giấy tờ?",
+    policyBasis: "Điều 15 Quy chế Nhân sự — Nghỉ việc riêng hưởng lương phải có minh chứng hợp lệ",
+  },
+  TC07: {
+    triggerCategory: "Vượt thẩm quyền",
+    escalationQuestion:
+      "Nghỉ phép năm 8 ngày liên tục vượt hạn mức 5 ngày tự phê duyệt của Quản lý trực tiếp. Chuyển Trưởng phòng phê duyệt theo Điều 10.3?",
+    policyBasis: "Điều 10.3 Quy chế Nhân sự — Nghỉ phép năm liên tục > 5 ngày cần Trưởng phòng phê duyệt",
+  },
+  TC08: {
+    triggerCategory: "Không chắc dữ kiện",
+    escalationQuestion:
+      "Giấy nghỉ ốm thiếu chữ ký bác sĩ và con dấu cơ sở y tế. Yêu cầu Đỗ Quốc Bảo bổ sung giấy hợp lệ trong 24h hay từ chối thanh toán chế độ?",
+    policyBasis: "Điều 14.2 Quy chế Nhân sự — Yêu cầu chứng từ y tế có chữ ký và mộc đỏ hợp lệ",
+  },
+  TC12: {
+    triggerCategory: "Không chắc dữ kiện",
+    escalationQuestion:
+      "Nghỉ ốm 6 ngày chưa có Giấy chứng nhận nghỉ việc hưởng BHXH mẫu C65-HD. Yêu cầu nộp bản gốc trong 3 ngày làm việc hay chuyển sang nghỉ không lương?",
+    policyBasis: "Điều 14.3 Quy chế Nhân sự — Hồ sơ hưởng trợ cấp ốm đau BHXH",
+  },
+  TC13: {
+    triggerCategory: "Ngoài chính sách",
+    escalationQuestion:
+      "Nhân viên đang trong thời gian thử việc chưa có quỹ ngày phép năm hưởng lương. Chấp thuận cho nghỉ trừ vào lương tháng hay yêu cầu đổi lịch nghỉ?",
+    policyBasis: "Điều 8.2 Quy chế Nhân sự — Chế độ nghỉ trong thời gian thử việc",
+  },
+  TC14: {
+    triggerCategory: "Vượt thẩm quyền",
+    escalationQuestion:
+      "Nghỉ không lương 30 ngày vượt thẩm quyền cấp Phòng ban. Kính trình Tổng Giám Đốc xem xét chấp thuận theo Điều 18.3?",
+    policyBasis: "Điều 18.3 Quy chế Nhân sự — Thẩm quyền phê duyệt nghỉ không lương dài hạn",
+  },
 };
 
 const APPROVE_POLICY: Record<string, string> = {
   TC01: "Điều 10.1 Quy chế Nhân sự — Nghỉ phép năm: Nộp đúng hạn, còn đủ số ngày phép",
   TC02: "Điều 14.1 Quy chế Nhân sự — Nghỉ ốm/chế độ: Chứng từ y tế hợp lệ, trong định mức",
   TC03: "Điều 15.3 Quy chế Nhân sự — Nghỉ việc riêng hưởng lương: Kết hôn lần đầu tối đa 3 ngày có minh chứng",
+  TC09: "Điều 10.1 Quy chế Nhân sự — Nghỉ phép năm đủ điều kiện nộp trước hạn mức",
+  TC10: "Điều 15.1 Quy chế Nhân sự — Nghỉ việc riêng tứ thân phụ mẫu qua đời có giấy chứng tử hợp lệ",
+  TC11: "Điều 18.1 Quy chế Nhân sự — Nghỉ không lương trong hạn mức thẩm quyền Quản lý trực tiếp (≤ 5 ngày)",
+  TC15: "Điều 14.1 Quy chế Nhân sự — Nghỉ ốm 1 ngày thông báo đúng thời gian quy định",
 };
 
-export function runMockVerify(): VerifyResult[] {
+export function runMockVerify(cases: TestCase[] = CANONICAL_5_TEST_CASES): VerifyResult[] {
   const now = new Date().toISOString();
-  return TEST_CASES.map((tc) => {
+  return cases.map((tc) => {
     const esc = ESCALATION_MAP[tc.id];
     return {
       caseId: tc.id,
@@ -107,7 +280,7 @@ export function runMockVerify(): VerifyResult[] {
       pass: true,
       triggerCategory: esc?.triggerCategory,
       escalationQuestion: esc?.escalationQuestion,
-      policyBasis: esc?.policyBasis ?? APPROVE_POLICY[tc.id],
+      policyBasis: esc?.policyBasis ?? APPROVE_POLICY[tc.id] ?? "Quy chế Nhân sự nội bộ — Đủ điều kiện tự động phê duyệt",
       timestamp: now,
     } as VerifyResult & { policyBasis: string };
   });

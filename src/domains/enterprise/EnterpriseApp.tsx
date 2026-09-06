@@ -478,7 +478,7 @@ export default function EnterpriseApp({ llmConfig }: EnterpriseAppProps) {
 
   return (
     <div className="space-y-8">
-      <EnterpriseVerifyHarness onResults={handleVerifyResults} />
+      <EnterpriseVerifyHarness onResults={handleVerifyResults} llmConfig={llmConfig} />
       <EnterpriseLeaveForm llmConfig={llmConfig} onResult={handleFormResult} />
       <EnterpriseAuditTrail entries={auditEntries} onOverride={handleOverride} />
     </div>

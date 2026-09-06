@@ -1,9 +1,13 @@
 import { useState } from "react";
 import type { VerifyResult } from "./types";
 import { getCaseLabel, runMockVerify, CANONICAL_5_TEST_CASES, FULL_15_TEST_CASES } from "./mockTestCases";
+import { refereeAgent } from "../../core/agent";
+import type { LocalLlmConfig } from "../../core/agent/localLlmClient";
+import type { AgentEvaluationInput } from "../../core/agent/types";
 
 interface Props {
   onResults: (results: VerifyResult[]) => void;
+  llmConfig?: Partial<LocalLlmConfig>;
 }
 
 function TriggerPill({ cat }: { cat?: VerifyResult["triggerCategory"] }) {
@@ -25,37 +29,101 @@ function ExpectedBadge({ d }: { d: string }) {
   );
 }
 
-export default function VerifyHarness({ onResults }: Props) {
+export default function VerifyHarness({ onResults, llmConfig }: Props) {
   const [mode, setMode] = useState<"5_cases" | "15_cases">("5_cases");
+  const [engine, setEngine] = useState<"mock_fast" | "live_llm">("mock_fast");
   const [filter, setFilter] = useState<"ALL" | "ESCALATE" | "APPROVE">("ALL");
   const [running, setRunning] = useState(false);
-  const [results, setResults] = useState<(VerifyResult & { policyBasis?: string })[]>([]);
+  const [currentRunningIndex, setCurrentRunningIndex] = useState<number>(-1);
+  const [results, setResults] = useState<(VerifyResult & { policyBasis?: string; latencyMs?: number; modelUsed?: string })[]>([]);
   const [elapsed, setElapsed] = useState(0);
   const [done, setDone] = useState(false);
 
   const totalExpected = mode === "15_cases" ? 15 : 5;
 
-  async function handleRun(targetMode: "5_cases" | "15_cases" = mode) {
+  async function handleRun(targetMode: "5_cases" | "15_cases" = mode, targetEngine: "mock_fast" | "live_llm" = engine) {
     setRunning(true);
     setDone(false);
     setResults([]);
     setElapsed(0);
+    setCurrentRunningIndex(0);
 
     const start = Date.now();
-    const ticker = setInterval(() => setElapsed(Math.floor((Date.now() - start) / 1000)), 300);
+    const ticker = setInterval(() => setElapsed(Math.floor((Date.now() - start) / 1000)), 200);
 
     try {
       const targetCases = targetMode === "15_cases" ? FULL_15_TEST_CASES : CANONICAL_5_TEST_CASES;
-      const data = runMockVerify(targetCases);
-      for (let i = 0; i < data.length; i++) {
-        await new Promise((r) => setTimeout(r, targetMode === "15_cases" ? 120 : 250));
-        setResults((prev) => [...prev, data[i]]);
+      const accumulated: (VerifyResult & { policyBasis?: string; latencyMs?: number; modelUsed?: string })[] = [];
+
+      if (targetEngine === "live_llm") {
+        for (let i = 0; i < targetCases.length; i++) {
+          setCurrentRunningIndex(i);
+          const tc = targetCases[i];
+          const itemStart = Date.now();
+
+          const agentInput: AgentEvaluationInput = {
+            domain: "academic",
+            subjectId: tc.studentId,
+            subjectName: tc.studentName,
+            organizationUnit: tc.faculty,
+            leaveType: tc.leaveType,
+            fromDate: tc.fromDate,
+            toDate: tc.toDate,
+            durationDaysOrSessions: tc.sessionsRequested,
+            pastAbsencesCount: tc.pastAbsences,
+            totalLimitOrCapacity: tc.totalSessions,
+            docStatus: tc.docEvidenceStatus,
+            isSpecialRequest: tc.isSpecialRequest,
+            reasonText: tc.reason,
+            notesText: tc.notes,
+          };
+
+          const evalRes = await refereeAgent.evaluateAsync(agentInput, {
+            ...llmConfig,
+            enabled: true,
+          });
+
+          const actual = evalRes.outcome;
+          const pass = actual === tc.expected;
+
+          const resItem = {
+            caseId: tc.id,
+            summary: `${tc.studentId} · ${tc.studentName} · ${tc.faculty} · ${tc.courseName} · Nghỉ ${tc.sessionsRequested} buổi`,
+            expected: tc.expected,
+            actual,
+            pass,
+            triggerCategory: evalRes.uncertaintyCategory,
+            escalationQuestion: evalRes.escalationQuestion,
+            policyBasis: evalRes.policyBasis,
+            timestamp: evalRes.timestamp,
+            latencyMs: evalRes.latencyMs || (Date.now() - itemStart),
+            modelUsed: evalRes.modelUsed || "qwen2.5:1.5b",
+          };
+
+          accumulated.push(resItem);
+          setResults([...accumulated]);
+        }
+      } else {
+        const data = runMockVerify(targetCases);
+        for (let i = 0; i < data.length; i++) {
+          setCurrentRunningIndex(i);
+          await new Promise((r) => setTimeout(r, targetMode === "15_cases" ? 120 : 200));
+          const item = {
+            ...data[i],
+            latencyMs: 12,
+            modelUsed: "Deterministic Rules Engine",
+          };
+          accumulated.push(item);
+          setResults([...accumulated]);
+        }
       }
-      onResults(data);
+
+      onResults(accumulated);
       setDone(true);
     } finally {
       clearInterval(ticker);
       setRunning(false);
+      setCurrentRunningIndex(-1);
     }
   }
 
@@ -75,24 +143,24 @@ export default function VerifyHarness({ onResults }: Props) {
         <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2.5">
-              <h2 className="font-display text-lg font-700 text-slate-900">Verify Test Harness (SV4 & SV1)</h2>
+              <h2 className="font-display text-lg font-700 text-slate-900">Verify Test Harness — Trường Học (Student Leave)</h2>
               <span className="text-[11px] font-mono-data bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-semibold">
                 {mode === "5_cases" ? "5 Ca Chuẩn (SV4)" : "15 Ca Toàn Diện (SV1)"}
               </span>
             </div>
             <p className="text-sm text-slate-500 mt-0.5">
-              Kiểm chứng tự động Lõi Agent SV2: Tự duyệt ca thường quy & Phân loại chính xác 3 loại dừng bất định
+              Kiểm chứng tự động Lõi Agent SV2: Tự duyệt ca thường quy &amp; Phân loại chuẩn xác 3 loại dừng bất định
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2.5">
             {/* Mode toggle */}
             <div className="inline-flex bg-slate-200/80 p-0.5 rounded-lg text-xs font-semibold">
               <button
                 type="button"
                 onClick={() => {
                   setMode("5_cases");
-                  if (results.length > 0) handleRun("5_cases");
+                  if (results.length > 0) handleRun("5_cases", engine);
                 }}
                 disabled={running}
                 className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
@@ -107,7 +175,7 @@ export default function VerifyHarness({ onResults }: Props) {
                 type="button"
                 onClick={() => {
                   setMode("15_cases");
-                  if (results.length > 0) handleRun("15_cases");
+                  if (results.length > 0) handleRun("15_cases", engine);
                 }}
                 disabled={running}
                 className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
@@ -120,11 +188,41 @@ export default function VerifyHarness({ onResults }: Props) {
               </button>
             </div>
 
+            {/* Engine toggle */}
+            <div className="inline-flex bg-slate-200/80 p-0.5 rounded-lg text-xs font-semibold">
+              <button
+                type="button"
+                onClick={() => setEngine("mock_fast")}
+                disabled={running}
+                className={`px-3 py-1.5 rounded-md transition-all cursor-pointer flex items-center gap-1 ${
+                  engine === "mock_fast"
+                    ? "bg-white text-slate-900 shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+                title="Chạy qua bộ rule nội bộ (200ms/ca) để kiểm tra nhanh"
+              >
+                <span>⚡ Smoke Test</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setEngine("live_llm")}
+                disabled={running}
+                className={`px-3 py-1.5 rounded-md transition-all cursor-pointer flex items-center gap-1 ${
+                  engine === "live_llm"
+                    ? "bg-indigo-600 text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+                title="Chạy qua model Qwen 2.5:1.5B qua Ollama thật"
+              >
+                <span>🤖 Live LLM (Qwen 1.5B)</span>
+              </button>
+            </div>
+
             {/* Run Button */}
             <button
-              onClick={() => handleRun(mode)}
+              onClick={() => handleRun(mode, engine)}
               disabled={running}
-              className="inline-flex items-center gap-2 bg-indigo-700 hover:bg-indigo-800 disabled:bg-indigo-400 text-white font-semibold text-sm px-5 py-2.5 rounded-lg transition-colors shadow-sm shrink-0 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 cursor-pointer"
+              className="inline-flex items-center gap-2 bg-indigo-700 hover:bg-indigo-800 disabled:bg-indigo-400 text-white font-semibold text-sm px-4 py-2 rounded-lg transition-colors shadow-sm shrink-0 cursor-pointer"
             >
               {running ? (
                 <>
@@ -137,7 +235,7 @@ export default function VerifyHarness({ onResults }: Props) {
               ) : (
                 <>
                   <span aria-hidden>▶</span>
-                  Chạy Verify {mode === "5_cases" ? "(5 Ca)" : "(15 Ca)"}
+                  {engine === "live_llm" ? "Verify Live Agent (Qwen 1.5B)" : "Verify Nhanh (Smoke Test)"}
                 </>
               )}
             </button>
@@ -232,6 +330,11 @@ export default function VerifyHarness({ onResults }: Props) {
                         <span className="text-[11px] text-slate-500 max-w-[170px] leading-tight">
                           {getCaseLabel(r.caseId)}
                         </span>
+                        {r.latencyMs !== undefined && (
+                          <span className="text-[10px] font-mono-data text-indigo-700 bg-indigo-50 border border-indigo-100 px-1.5 py-0.5 rounded w-fit">
+                            ⚡ {r.latencyMs}ms ({r.modelUsed})
+                          </span>
+                        )}
                       </div>
                     </td>
 

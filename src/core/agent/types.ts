@@ -33,6 +33,8 @@ export interface DecisionLog {
   isOverridden: boolean;
   overriddenBy?: string;
   overriddenAt?: string;
+  modelUsed?: string;
+  latencyMs?: number;
 }
 
 export interface AgentEvaluationInput {
@@ -61,4 +63,6 @@ export interface AgentEvaluationOutput {
   reasoningTrace: ReasoningStep[];
   timestamp: string;
   confidenceScore: number;
+  modelUsed?: string;
+  latencyMs?: number;
 }

@@ -32,11 +32,15 @@ export class EscalationRefereeAgent {
     input: AgentEvaluationInput,
     llmConfig?: Partial<LocalLlmConfig>
   ): Promise<AgentEvaluationOutput> {
+    const startTime = Date.now();
+    const cfg = { ...DEFAULT_LLM_CONFIG, ...llmConfig };
+
     // 1. Chạy qua Rules Guardrails trước để xác định độ bất định định lượng
     const baseOutput = this.evaluate(input);
+    baseOutput.modelUsed = cfg.enabled ? cfg.model : "Deterministic Rules Engine";
 
     // 2. Nếu ca là ESCALATE và Local LLM được bật, gọi mô hình local để làm giàu câu hỏi
-    if (baseOutput.outcome === "ESCALATE" && baseOutput.uncertaintyCategory) {
+    if (baseOutput.outcome === "ESCALATE" && baseOutput.uncertaintyCategory && cfg.enabled) {
       try {
         const llmQuestion = await generateEscalationQuestionWithLLM({
           domain: input.domain,
@@ -50,13 +54,13 @@ export class EscalationRefereeAgent {
         });
 
         if (llmQuestion && llmQuestion.length > 10) {
-          const cfg = { ...DEFAULT_LLM_CONFIG, ...llmConfig };
           baseOutput.escalationQuestion = llmQuestion;
+          baseOutput.modelUsed = cfg.model;
           baseOutput.reasoningTrace.push({
             checkName: `Local LLM Reasoning (${cfg.model})`,
             passed: true,
             observation: `Mô hình AI cục bộ (${cfg.model}) đã phân tích ngữ cảnh và tối ưu câu hỏi Escalate 1 lượt.`,
-            ruleCited: "Single-turn Actionability Standard",
+            ruleCited: "Single-turn Actionability Standard (SV2)",
           });
         }
       } catch {
@@ -64,6 +68,13 @@ export class EscalationRefereeAgent {
       }
     }
 
+    // 3. Nguyên Lý Bất Biến (INVARIANCE PRINCIPLE - SV2):
+    // Ca đã gắn cờ bất định thì TUYỆT ĐỐI KHÔNG xuất kết quả AUTO_APPROVE
+    if (baseOutput.uncertaintyCategory && baseOutput.outcome !== "ESCALATE") {
+      baseOutput.outcome = "ESCALATE";
+    }
+
+    baseOutput.latencyMs = Date.now() - startTime;
     return baseOutput;
   }
 
@@ -83,11 +94,20 @@ export class EscalationRefereeAgent {
     let authorityQuestion = "";
 
     if (input.domain === "enterprise") {
-      // Doanh nghiệp: Nghỉ không lương > 5 ngày vượt thẩm quyền Quản lý trực tiếp
-      if (input.leaveType === "Nghỉ không lương" && input.durationDaysOrSessions > 5) {
+      // Doanh nghiệp: Nghỉ không lương > 5 ngày hoặc phép năm liên tục > 5 ngày vượt thẩm quyền Quản lý trực tiếp
+      if (
+        (input.leaveType === "Nghỉ không lương" && input.durationDaysOrSessions > 5) ||
+        (input.leaveType === "Nghỉ phép năm" && input.durationDaysOrSessions > 5) ||
+        input.durationDaysOrSessions >= 20 ||
+        fullText.includes("vượt thẩm quyền")
+      ) {
         isAuthorityExceeded = true;
-        authorityReason = "Điều 18.1 Quy chế Nhân sự — Nghỉ không lương > 5 ngày vượt thẩm quyền Quản lý trực tiếp (tối đa 5 ngày làm việc).";
-        authorityQuestion = `Đơn nghỉ không lương ${input.durationDaysOrSessions} ngày vượt thẩm quyền Quản lý trực tiếp (tối đa 5 ngày). Cần chuyển Giám đốc Khối / HRD phê duyệt theo Điều 18.1 Quy chế?`;
+        authorityReason = input.durationDaysOrSessions >= 20
+          ? "Điều 18.3 Quy chế Nhân sự — Nghỉ dài hạn từ 20 ngày trở lên vượt thẩm quyền Quản lý trực tiếp, cần Giám đốc Khối / Tổng Giám Đốc phê duyệt."
+          : input.leaveType === "Nghỉ phép năm"
+          ? "Điều 10.3 Quy chế Nhân sự — Nghỉ phép năm liên tục > 5 ngày làm việc cần Trưởng phòng phê duyệt."
+          : "Điều 18.1 Quy chế Nhân sự — Nghỉ không lương > 5 ngày vượt thẩm quyền Quản lý trực tiếp (tối đa 5 ngày làm việc).";
+        authorityQuestion = `Đơn nghỉ ${input.durationDaysOrSessions} ngày vượt thẩm quyền Quản lý trực tiếp (tối đa 5 ngày). Chuyển cấp trên (Trưởng phòng / HRD) phê duyệt theo Quy chế?`;
       }
     } else {
       // Trường học: Xin bảo lưu cả học kỳ hoặc nghỉ dài hạn toàn khóa
@@ -175,11 +195,18 @@ export class EscalationRefereeAgent {
     let policyQuestion = "";
 
     if (input.domain === "enterprise") {
-      // Doanh nghiệp: Nghỉ việc riêng nhưng không có minh chứng
-      if (input.leaveType === "Nghỉ việc riêng" && input.docStatus === "MISSING") {
+      // Doanh nghiệp: Nghỉ việc riêng không có minh chứng hoặc nhân viên thử việc xin nghỉ phép năm
+      if (
+        (input.leaveType === "Nghỉ việc riêng" && (input.docStatus === "MISSING" || fullText.includes("không có giấy tờ") || fullText.includes("không có minh chứng"))) ||
+        fullText.includes("thử việc")
+      ) {
         isPolicyViolated = true;
-        policyReason = "Điều 15 Quy chế Nhân sự — Nghỉ việc riêng hưởng lương bắt buộc có minh chứng (kết hôn, tang chế).";
-        policyQuestion = `Đơn nghỉ việc riêng của ${input.subjectName} chưa có giấy tờ minh chứng theo Điều 15. Quản lý có duyệt ngoại lệ không hưởng lương không?`;
+        policyReason = fullText.includes("thử việc")
+          ? "Điều 8.2 Quy chế Nhân sự — Hợp đồng thử việc chưa phát sinh ngày phép năm hưởng lương theo quy định."
+          : "Điều 15 Quy chế Nhân sự — Nghỉ việc riêng hưởng lương bắt buộc có minh chứng (kết hôn, tang chế).";
+        policyQuestion = fullText.includes("thử việc")
+          ? `Nhân viên ${input.subjectName} đang trong thời gian thử việc chưa có quỹ phép năm. Cho phép nghỉ việc không hưởng lương hay từ chối đơn?`
+          : `Đơn nghỉ việc riêng của ${input.subjectName} chưa có giấy tờ minh chứng theo Điều 15. Cho phép bổ sung giấy tờ trong 24h hay chuyển sang nghỉ không lương?`;
       }
     } else {
       // Trường học: Vượt 20% tổng số buổi học phần (nguy cơ cấm thi)

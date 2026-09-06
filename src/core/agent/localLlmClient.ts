@@ -14,7 +14,7 @@ export const DEFAULT_LLM_CONFIG: LocalLlmConfig = {
   baseUrl: "http://localhost:11434",
   model: "qwen2.5:1.5b",
   enabled: true,
-  timeoutMs: 3500,
+  timeoutMs: 8000,
 };
 
 /**
@@ -54,7 +54,7 @@ export async function checkOllamaConnection(baseUrl: string = DEFAULT_LLM_CONFIG
 }
 
 /**
- * Gọi Local LLM để sinh câu hỏi Escalate sắc bén, ngắn gọn (1 lượt)
+ * Gọi Local LLM để sinh câu hỏi Escalate sắc bén, ngắn gọn (trả lời được trong đúng 1 lượt - SV2)
  */
 export async function generateEscalationQuestionWithLLM(params: {
   domain: "enterprise" | "academic";
@@ -71,25 +71,26 @@ export async function generateEscalationQuestionWithLLM(params: {
 
   const roleDesc =
     params.domain === "enterprise"
-      ? "Bạn là AI Escalation Referee trong hệ thống Nhân sự doanh nghiệp."
+      ? "Bạn là AI Escalation Referee trong hệ thống Nhân sự doanh nghiệp (HR)."
       : "Bạn là AI Escalation Referee trong hệ thống Quản lý Đào tạo Đại học.";
 
   const prompt = `${roleDesc}
-Nhiệm vụ: Hãy tạo đúng 1 CÂU HỎI ESCALATE cụ thể để gửi cho cấp quản lý phê duyệt.
-Yêu cầu bắt buộc:
-- Ngắn gọn, súc tích (1-2 câu).
-- Trả lời được trong đúng 1 lượt (Single-turn Actionable).
-- Bằng tiếng Việt chuẩn công vụ/học đường.
+Nhiệm vụ cốt lõi (SV2): Tạo đúng 1 CÂU HỎI ESCALATE để người có thẩm quyền phê duyệt đọc là quyết định được ngay trong ĐÚNG MỘT LƯỢT (Single-turn Actionable).
+Quy tắc câu hỏi:
+1. Đặt vấn đề cụ thể theo độ bất định (${params.uncertaintyCategory}) và căn cứ quy chế (${params.ruleCitation}).
+2. Đưa ra 2 lựa chọn xử lý dứt khoát (ví dụ: "Cho phép nghỉ hay yêu cầu bổ sung chứng từ trong 24h?", "Xác nhận chấp thuận ngoại lệ hay từ chối đơn?").
+3. Tuyệt đối KHÔNG hỏi vòng vo hay đòi hỏi thêm nhiều vòng trao đổi.
+4. Độ dài tối đa 2 câu tiếng Việt.
 
-Thông tin đơn:
+Thông tin hồ sơ:
 - Người làm đơn: ${params.subjectName}
 - Loại đơn: ${params.leaveType}
 - Lý do: ${params.reason}
 - Ghi chú: ${params.notes}
-- Nhóm độ bất định: ${params.uncertaintyCategory}
-- Căn cứ quy chế: ${params.ruleCitation}
+- Nhóm bất định: ${params.uncertaintyCategory}
+- Điều khoản áp dụng: ${params.ruleCitation}
 
-Chỉ xuất ra nội dung câu hỏi, không thêm lời chào hay giải thích rườm rà.`;
+Chỉ xuất ra đúng 1 câu hỏi dứt khoát, không chào hỏi, không giải thích ngoài.`;
 
   try {
     const controller = new AbortController();
@@ -104,7 +105,7 @@ Chỉ xuất ra nội dung câu hỏi, không thêm lời chào hay giải thíc
         prompt,
         stream: false,
         options: {
-          temperature: 0.2,
+          temperature: 0.1,
           num_predict: 120,
         },
       }),

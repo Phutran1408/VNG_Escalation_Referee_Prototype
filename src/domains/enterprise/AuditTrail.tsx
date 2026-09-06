@@ -34,7 +34,34 @@ function TriggerPill({ cat }: { cat?: AuditEntry["triggerCategory"] }) {
 }
 
 export default function AuditTrail({ entries, onOverride }: Props) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState<"ALL" | "APPROVE" | "ESCALATE" | "OVERRIDDEN">("ALL");
   const [isEmergencyStopped, setIsEmergencyStopped] = useState(false);
+
+  const filtered = entries.filter((e) => {
+    const matchText =
+      e.employeeInfo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      e.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      e.requestId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (e.leaveType && e.leaveType.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    if (!matchText) return false;
+
+    if (filter === "APPROVE") return e.decision === "AUTO_APPROVE" && !e.overridden;
+    if (filter === "ESCALATE") return e.decision === "ESCALATE" && !e.overridden;
+    if (filter === "OVERRIDDEN") return e.overridden;
+    return true;
+  });
+
+  function exportJSON() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(entries, null, 2));
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `hr_leave_audit_decision_log_${new Date().toISOString().slice(0, 10)}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  }
 
   return (
     <section id="audit" className="scroll-mt-6">
@@ -47,7 +74,20 @@ export default function AuditTrail({ entries, onOverride }: Props) {
               Audit compliance trail — toàn bộ đơn đã xử lý · Hỗ trợ Rollback / Hoàn tác thủ công bởi HR Admin
             </p>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            {/* Export JSON Button (SV2 Decision Log) */}
+            {entries.length > 0 && (
+              <button
+                type="button"
+                onClick={exportJSON}
+                className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+                title="Tải toàn bộ file Log quyết định kiểm thử JSON theo chuẩn SV2"
+              >
+                <span>📥</span>
+                <span>Xuất Log Quyết Định (JSON)</span>
+              </button>
+            )}
+
             {/* Nút Dừng Hệ Thống (Yêu cầu SV3) */}
             <button
               type="button"
@@ -90,6 +130,46 @@ export default function AuditTrail({ entries, onOverride }: Props) {
           </div>
         )}
 
+        {/* Filter & Search Bar */}
+        {entries.length > 0 && (
+          <div className="px-6 py-3 bg-white border-b border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="relative w-full sm:w-72">
+              <input
+                type="text"
+                placeholder="Tra cứu theo mã đơn, nhân viên, phòng ban..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-8 pr-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <span className="absolute left-2.5 top-2 text-slate-400">🔍</span>
+            </div>
+
+            <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto">
+              <span className="text-slate-500 text-[11px] mr-1">Lọc:</span>
+              {(["ALL", "APPROVE", "ESCALATE", "OVERRIDDEN"] as const).map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => setFilter(f)}
+                  className={`px-2.5 py-1 rounded-md text-xs font-semibold cursor-pointer transition-colors whitespace-nowrap ${
+                    filter === f
+                      ? "bg-blue-600 text-white shadow-xs"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  {f === "ALL"
+                    ? `Tất cả (${entries.length})`
+                    : f === "APPROVE"
+                    ? `Tự duyệt (${entries.filter((e) => e.decision === "AUTO_APPROVE" && !e.overridden).length})`
+                    : f === "ESCALATE"
+                    ? `Escalate (${entries.filter((e) => e.decision === "ESCALATE" && !e.overridden).length})`
+                    : `Đã can thiệp (${entries.filter((e) => e.overridden).length})`}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {entries.length === 0 ? (
           <div className="px-6 py-14 text-center">
             <div className="w-12 h-12 bg-slate-100 rounded-xl mx-auto mb-3 flex items-center justify-center">
@@ -116,7 +196,7 @@ export default function AuditTrail({ entries, onOverride }: Props) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {entries.map((entry) => (
+                {filtered.map((entry) => (
                   <tr
                     key={entry.requestId}
                     className={
