@@ -4,9 +4,15 @@ interface HeaderProps {
   currentDomain: DomainMode;
   onDomainChange: (domain: DomainMode) => void;
   onOpenPolicy: () => void;
+  onOpenStandardForm: () => void;
 }
 
-export default function Header({ currentDomain, onDomainChange, onOpenPolicy }: HeaderProps) {
+export default function Header({
+  currentDomain,
+  onDomainChange,
+  onOpenPolicy,
+  onOpenStandardForm,
+}: HeaderProps) {
   const isEnterprise = currentDomain === "enterprise";
 
   return (
@@ -40,8 +46,8 @@ export default function Header({ currentDomain, onDomainChange, onOpenPolicy }: 
             </div>
           </div>
 
-          {/* Right Actions: Domain Switcher & Policy Button */}
-          <div className="flex items-center gap-2.5">
+          {/* Right Actions: Domain Switcher, Standard Form, Policy */}
+          <div className="flex items-center gap-2">
             {/* Domain Switcher */}
             <div className="inline-flex bg-slate-800 p-1 rounded-xl border border-slate-700">
               <button
@@ -70,6 +76,17 @@ export default function Header({ currentDomain, onDomainChange, onOpenPolicy }: 
               </button>
             </div>
 
+            {/* Mẫu Đơn Chuẩn Button */}
+            <button
+              type="button"
+              onClick={onOpenStandardForm}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer transition-colors shadow-xs"
+              title="Xem và tải Biểu mẫu đơn chuẩn (BM-HR-01 / BM-DT-02)"
+            >
+              <span>📄</span>
+              <span className="hidden md:inline">Mẫu Đơn Chuẩn</span>
+            </button>
+
             {/* Xem Quy chế Button */}
             <button
               type="button"
@@ -78,7 +95,7 @@ export default function Header({ currentDomain, onDomainChange, onOpenPolicy }: 
               title="Mở bảng tra cứu điều khoản quy chế và nguyên tắc bất định"
             >
               <span>📖</span>
-              <span>Xem Quy chế</span>
+              <span>Quy chế</span>
             </button>
           </div>
         </div>

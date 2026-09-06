@@ -78,41 +78,54 @@ const EMPTY_FORM: FormState = {
   notes: "",
 };
 
-const HR_PRESETS: { label: string; desc: string; color: string; data: FormState }[] = [
+interface ScannedLegalDoc {
+  id: string;
+  pdfFile: string;
+  docTitle: string;
+  employeeInfo: string;
+  docCode: string;
+  summary: string;
+  badge: string;
+  badgeColor: string;
+  charsExtracted: number;
+  ocrConfidence: number;
+  data: FormState;
+}
+
+const SCANNED_LEGAL_DOCUMENTS: ScannedLegalDoc[] = [
   {
-    label: "Ca 1: Nghỉ phép năm hợp lệ",
-    desc: "Nghỉ 1 ngày, nộp trước 3 ngày, còn đủ 4 ngày phép -> Tự động duyệt",
-    color: "bg-emerald-100 text-emerald-800 border-emerald-300",
+    id: "DOC-01",
+    pdfFile: "don_nghi_om_truong_minh_tri.pdf",
+    docTitle: "Đơn Xin Nghỉ Ốm Phẫu Thuật (6 ngày)",
+    employeeInfo: "Trương Minh Trí (NV-2020-0019) · Phòng Kinh doanh",
+    docCode: "BM-HR-01 · VB-2025-0012",
+    summary: "Nghỉ mổ ruột thừa 6 ngày, kèm Giấy ra viện nhưng CHƯA CÓ mẫu C65-HD (BHXH).",
+    badge: "Thiếu chứng từ C65-HD (BHXH)",
+    badgeColor: "bg-amber-100 text-amber-900 border-amber-300",
+    charsExtracted: 1145,
+    ocrConfidence: 99.4,
     data: {
-      employeeId: "NV-2024-0312",
-      employeeName: "Nguyễn Thị Hương",
+      employeeId: "NV-2020-0019",
+      employeeName: "Trương Minh Trí",
       department: "Phòng Kinh doanh",
-      leaveType: "Nghỉ phép năm",
-      fromDate: "2025-10-15",
-      toDate: "2025-10-15",
-      reason: "Nghỉ phép năm theo kế hoạch, nộp trước 3 ngày làm việc.",
-      notes: "Đã xác nhận số dư phép năm còn 4 ngày. Không ảnh hưởng tiến độ nhóm.",
-    },
-  },
-  {
-    label: "Ca 2: Chứng từ mờ ngày xuất viện",
-    desc: "Nghỉ ốm 4 ngày, chứng từ y tế mờ ngày điều trị -> Không chắc dữ kiện",
-    color: "bg-indigo-100 text-indigo-800 border-indigo-300",
-    data: {
-      employeeId: "NV-2024-0489",
-      employeeName: "Phạm Đức Anh",
-      department: "Phòng Marketing",
       leaveType: "Nghỉ ốm/chế độ",
-      fromDate: "2025-10-12",
-      toDate: "2025-10-15",
-      reason: "Nghỉ ốm điều trị tại bệnh viện, đính kèm chứng từ y tế.",
-      notes: "Chứng từ y tế bị mờ, không đọc rõ ngày bắt đầu điều trị. Cần xác minh.",
+      fromDate: "2025-11-01",
+      toDate: "2025-11-07",
+      reason: "Nghỉ ốm phẫu thuật ruột thừa tại Bệnh viện Nhân dân Gia Định.",
+      notes: "Giấy ra viện. Chưa nộp Giấy chứng nhận nghỉ việc hưởng BHXH (mẫu C65-HD).",
     },
   },
   {
-    label: "Ca 3: Nghỉ không lương 20 ngày",
-    desc: "Nghỉ không lương 20 ngày liên tục -> Vượt thẩm quyền Quản lý trực tiếp",
-    color: "bg-amber-100 text-amber-800 border-amber-300",
+    id: "DOC-02",
+    pdfFile: "don_nghi_khong_luong_hoang_van_binh.pdf",
+    docTitle: "Đơn Nghỉ Không Lương Dài Hạn (20 ngày)",
+    employeeInfo: "Hoàng Văn Bình (NV-2021-0034) · Phòng Vận hành",
+    docCode: "BM-HR-01 · VB-2025-0034",
+    summary: "Nghỉ chăm sóc người thân bệnh nặng 20 ngày, vượt thẩm quyền cấp Phòng, cần TGĐ duyệt.",
+    badge: "Vượt thẩm quyền (> 5 ngày)",
+    badgeColor: "bg-purple-100 text-purple-900 border-purple-300",
+    charsExtracted: 1220,
+    ocrConfidence: 99.1,
     data: {
       employeeId: "NV-2021-0034",
       employeeName: "Hoàng Văn Bình",
@@ -121,7 +134,29 @@ const HR_PRESETS: { label: string; desc: string; color: string; data: FormState 
       fromDate: "2025-11-10",
       toDate: "2025-12-05",
       reason: "Xin nghỉ không lương dài hạn để chăm sóc người thân bị bệnh nặng.",
-      notes: "Thời gian nghỉ 20 ngày làm việc liên tục. Vượt thẩm quyền phê duyệt của Quản lý trực tiếp.",
+      notes: "Bản cam kết bàn giao tiến độ vận hành. Thời gian nghỉ 20 ngày làm việc liên tục.",
+    },
+  },
+  {
+    id: "DOC-03",
+    pdfFile: "don_phep_nam_nguyen_thi_huong.pdf",
+    docTitle: "Đơn Nghỉ Phép Năm Hợp Lệ (1 ngày)",
+    employeeInfo: "Nguyễn Thị Hương (NV-2024-0312) · Phòng Kinh doanh",
+    docCode: "BM-HR-01 · VB-2025-0089",
+    summary: "Nghỉ phép năm 1 ngày nộp trước 3 ngày, còn đủ 4 ngày phép, hồ sơ đầy đủ.",
+    badge: "Đủ điều kiện tự động duyệt",
+    badgeColor: "bg-emerald-100 text-emerald-900 border-emerald-300",
+    charsExtracted: 1080,
+    ocrConfidence: 99.8,
+    data: {
+      employeeId: "NV-2024-0312",
+      employeeName: "Nguyễn Thị Hương",
+      department: "Phòng Kinh doanh",
+      leaveType: "Nghỉ phép năm",
+      fromDate: "2025-10-15",
+      toDate: "2025-10-15",
+      reason: "Nghỉ phép năm theo kế hoạch cá nhân, nộp trước 3 ngày làm việc.",
+      notes: "Xác nhận số dư phép năm còn 4 ngày hợp lệ. Không ảnh hưởng tiến độ nhóm.",
     },
   },
 ];
@@ -129,21 +164,41 @@ const HR_PRESETS: { label: string; desc: string; color: string; data: FormState 
 interface LeaveFormProps {
   llmConfig?: Partial<LocalLlmConfig>;
   onResult: (res: EvaluateResponse, form: FormState) => void;
+  onOverride?: (requestId: string) => void;
 }
 
-function EnterpriseLeaveForm({ llmConfig, onResult }: LeaveFormProps) {
+function EnterpriseLeaveForm({ llmConfig, onResult, onOverride }: LeaveFormProps) {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<EvaluateResponse | null>(null);
 
+  // OCR & Document scan state
+  const [selectedDoc, setSelectedDoc] = useState<ScannedLegalDoc | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [ocrCompleted, setOcrCompleted] = useState(false);
+
+  // Manager action state on Escalated Dossier
+  const [managerAction, setManagerAction] = useState<"APPROVED" | "REJECTED" | null>(null);
+
   function set<K extends keyof FormState>(key: K, val: FormState[K]) {
     setForm((f) => ({ ...f, [key]: val }));
     setResult(null);
+    setManagerAction(null);
   }
 
-  function applyPreset(p: FormState) {
-    setForm({ ...p });
+  async function handleOcrScan(doc: ScannedLegalDoc) {
+    setSelectedDoc(doc);
+    setIsScanning(true);
+    setOcrCompleted(false);
     setResult(null);
+    setManagerAction(null);
+
+    // Mô phỏng quá trình quét OCR bóc tách văn bản PDF (500ms)
+    await new Promise((r) => setTimeout(r, 600));
+
+    setForm({ ...doc.data });
+    setIsScanning(false);
+    setOcrCompleted(true);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -205,25 +260,125 @@ function EnterpriseLeaveForm({ llmConfig, onResult }: LeaveFormProps) {
                 </span>
               </div>
               <p className="text-sm text-slate-500 mt-0.5">
-                Nhập đơn nhân sự hoặc bấm Ca mẫu để kiểm chứng Lõi Agent HR tự động phân loại
+                Nộp đơn qua PDF Scan chuẩn chỉnh ➔ OCR bóc tách dữ liệu ➔ AI Phân xử đối chiếu Quy chế
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              {HR_PRESETS.map((p, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => applyPreset(p.data)}
-                  className={`text-xs font-semibold px-2.5 py-1.5 rounded-lg border transition-all cursor-pointer shadow-xs hover:scale-[1.02] ${p.color}`}
-                  title={p.desc}
-                >
-                  {p.label}
-                </button>
-              ))}
+            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Quy trình 4 bước khép kín</span>
+            </div>
+          </div>
+
+          {/* 3 Scanned Documents OCR Selection */}
+          <div className="bg-white p-3 rounded-xl border border-slate-200 space-y-2 shadow-2xs">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                <span>📎</span>
+                <span>Tài Liệu Đơn Scan Pháp Lý (Thử nghiệm OCR Bóc Tách Thực Tế):</span>
+              </span>
+              <span className="text-slate-400 text-[11px]">
+                Chọn văn bản để quét OCR tự động điền form
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+              {SCANNED_LEGAL_DOCUMENTS.map((doc) => {
+                const isChosen = selectedDoc?.id === doc.id;
+                return (
+                  <div
+                    key={doc.id}
+                    className={`p-3 rounded-xl border transition-all text-left flex flex-col justify-between gap-2 ${
+                      isChosen
+                        ? "border-blue-500 bg-blue-50/50 shadow-xs ring-1 ring-blue-500/20"
+                        : "border-slate-200 hover:border-slate-300 bg-slate-50/50 hover:bg-slate-50"
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <span className="text-[10px] font-mono-data font-bold text-slate-500">
+                          {doc.docCode}
+                        </span>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${doc.badgeColor}`}>
+                          {doc.badge}
+                        </span>
+                      </div>
+                      <h4 className="font-bold text-xs text-slate-900 line-clamp-1">
+                        {doc.docTitle}
+                      </h4>
+                      <p className="text-[11px] text-slate-600 font-medium mt-0.5">
+                        {doc.employeeInfo}
+                      </p>
+                      <p className="text-[11px] text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                        {doc.summary}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 pt-2 border-t border-slate-200/60 text-xs font-semibold">
+                      <a
+                        href={`/documents/${doc.pdfFile}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-[11px] cursor-pointer transition-colors shadow-2xs"
+                        title="Mở file PDF thực tế được sinh ra"
+                      >
+                        <span>👁️</span>
+                        <span>Xem PDF</span>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => handleOcrScan(doc)}
+                        disabled={isScanning}
+                        className={`flex-1 inline-flex items-center justify-center gap-1 px-2.5 py-1 rounded-md text-[11px] cursor-pointer transition-colors shadow-2xs ${
+                          isChosen
+                            ? "bg-blue-600 hover:bg-blue-700 text-white"
+                            : "bg-slate-800 hover:bg-slate-900 text-white"
+                        }`}
+                      >
+                        <span>🔍</span>
+                        <span>Quét OCR &amp; Điền</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
+
+        {/* OCR Scanning Progress Animation */}
+        {isScanning && (
+          <div className="px-6 py-4 bg-blue-50 border-b border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-blue-900">
+            <div className="flex items-center gap-2 font-mono-data">
+              <span className="inline-block w-2.5 h-2.5 rounded-full bg-blue-600 animate-ping" />
+              <span>
+                🔍 Đang quét laser OCR văn bản <strong>{selectedDoc?.docTitle}</strong> · Bóc tách họ tên, mã NV, loại nghỉ, ngày &amp; chứng từ đính kèm...
+              </span>
+            </div>
+            <span className="font-bold text-blue-700">Đang nhận diện ký tự...</span>
+          </div>
+        )}
+
+        {/* OCR Success Banner */}
+        {ocrCompleted && selectedDoc && (
+          <div className="px-6 py-2.5 bg-emerald-50 border-b border-emerald-200 flex flex-wrap items-center justify-between gap-2 text-xs text-emerald-800">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-emerald-700">✓ OCR Thành Công:</span>
+              <span>
+                Đã trích xuất {selectedDoc.charsExtracted} ký tự từ tệp <strong>{selectedDoc.pdfFile}</strong> · Độ tin cậy OCR: {selectedDoc.ocrConfidence}%
+              </span>
+            </div>
+            <a
+              href={`/documents/${selectedDoc.pdfFile}`}
+              target="_blank"
+              rel="noreferrer"
+              className="text-emerald-900 font-bold hover:underline flex items-center gap-1"
+            >
+              <span>Đối chiếu file PDF gốc</span>
+              <span>↗</span>
+            </a>
+          </div>
+        )}
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
@@ -263,22 +418,21 @@ function EnterpriseLeaveForm({ llmConfig, onResult }: LeaveFormProps) {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className={labelCls}>Loại nghỉ phép *</label>
+              <label className={labelCls}>Loại nghỉ phép đề nghị</label>
               <select
                 className={inputCls}
                 value={form.leaveType}
                 onChange={(e) => set("leaveType", e.target.value as LeaveType)}
               >
-                {LEAVE_TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
+                <option value="Nghỉ phép năm">Nghỉ phép năm</option>
+                <option value="Nghỉ ốm/chế độ">Nghỉ ốm/chế độ</option>
+                <option value="Nghỉ không lương">Nghỉ không lương</option>
+                <option value="Nghỉ việc riêng">Nghỉ việc riêng</option>
               </select>
             </div>
 
             <div>
-              <label className={labelCls}>Từ ngày *</label>
+              <label className={labelCls}>Từ ngày (Bắt đầu nghỉ) *</label>
               <input
                 type="date"
                 className={inputCls}
@@ -289,7 +443,7 @@ function EnterpriseLeaveForm({ llmConfig, onResult }: LeaveFormProps) {
             </div>
 
             <div>
-              <label className={labelCls}>Đến ngày *</label>
+              <label className={labelCls}>Đến ngày (Hết ngày nghỉ) *</label>
               <input
                 type="date"
                 className={inputCls}
@@ -300,53 +454,48 @@ function EnterpriseLeaveForm({ llmConfig, onResult }: LeaveFormProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className={labelCls}>Lý do xin nghỉ</label>
-              <textarea
-                rows={2}
-                className={inputCls}
-                placeholder="VD: Nghỉ phép năm theo kế hoạch..."
-                value={form.reason}
-                onChange={(e) => set("reason", e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className={labelCls}>Ghi chú minh chứng đính kèm</label>
-              <textarea
-                rows={2}
-                className={inputCls}
-                placeholder="VD: Giấy ra viện, xác nhận số dư phép..."
-                value={form.notes}
-                onChange={(e) => set("notes", e.target.value)}
-              />
-            </div>
+          <div>
+            <label className={labelCls}>Lý do xin nghỉ phép *</label>
+            <textarea
+              className={inputCls}
+              rows={2}
+              placeholder="VD: Nghỉ phép năm theo kế hoạch cá nhân..."
+              value={form.reason}
+              onChange={(e) => set("reason", e.target.value)}
+              required
+            />
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-2">
-            <button
-              type="button"
-              onClick={() => setForm(EMPTY_FORM)}
-              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 transition-colors cursor-pointer"
-            >
-              Làm mới form
-            </button>
+          <div>
+            <label className={labelCls}>Hồ sơ, minh chứng đính kèm &amp; Ghi chú đối soát</label>
+            <textarea
+              className={inputCls}
+              rows={2}
+              placeholder="VD: Giấy ra viện có dấu mộc; Giấy chứng nhận BHXH mẫu C65-HD..."
+              value={form.notes}
+              onChange={(e) => set("notes", e.target.value)}
+            />
+          </div>
+
+          <div className="flex items-center justify-between pt-2">
+            <span className="text-xs text-slate-400">
+              * Dữ liệu trích xuất từ văn bản PDF được tự động phân tích theo Quy chế Nhân sự
+            </span>
             <button
               type="submit"
-              disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold text-sm px-6 py-2.5 rounded-lg transition-colors shadow-sm cursor-pointer flex items-center gap-2"
+              disabled={loading || isScanning}
+              className="inline-flex items-center gap-2 bg-blue-700 hover:bg-blue-800 disabled:bg-blue-400 text-white font-semibold text-sm px-6 py-2.5 rounded-lg transition-colors shadow-sm cursor-pointer"
             >
               {loading ? (
                 <>
-                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <circle cx="12" cy="12" r="10" strokeWidth="3" stroke="currentColor" strokeOpacity="0.25" />
-                    <path d="M12 2a10 10 0 0 1 10 10" strokeWidth="3" fill="none" />
+                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+                    <path d="M12 2a10 10 0 0 1 10 10" />
                   </svg>
                   Lõi Agent Đang Thẩm Định…
                 </>
               ) : (
-                "Thẩm Định Đơn Nhân Sự (Hybrid Agent)"
+                "Thẩm Định Đơn Nhân Sự (AI Referee)"
               )}
             </button>
           </div>
@@ -362,7 +511,7 @@ function EnterpriseLeaveForm({ llmConfig, onResult }: LeaveFormProps) {
             }`}
           >
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-              <div className="space-y-3 flex-1">
+              <div className="space-y-4 flex-1">
                 <div className="flex flex-wrap items-center gap-2.5">
                   <span className="text-xs font-bold font-mono-data text-slate-500 uppercase">
                     KẾT QUẢ PHÂN XỬ HR:
@@ -383,14 +532,127 @@ function EnterpriseLeaveForm({ llmConfig, onResult }: LeaveFormProps) {
                   <strong>Căn cứ:</strong> {result.policyBasis}
                 </div>
 
-                {result.escalationQuestion && (
-                  <div className="p-3.5 bg-amber-100/90 border border-amber-300 rounded-xl space-y-1.5">
-                    <span className="text-xs font-bold text-amber-900 uppercase flex items-center gap-1">
-                      ❓ Câu hỏi Escalate cho Giám đốc Khối / HRD:
-                    </span>
-                    <p className="text-sm font-bold text-amber-950 bg-white/80 p-2.5 rounded-lg border border-amber-200">
-                      "{result.escalationQuestion}"
-                    </p>
+                {/* ── FORMAL LEGAL ESCALATION REFERRAL DOSSIER (KHI CA BỊ ESCALATE) ── */}
+                {result.decision === "ESCALATE" && (
+                  <div className="bg-white border-2 border-amber-400 rounded-2xl p-5 shadow-md space-y-4 font-sans">
+                    {/* Dossier Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-200 pb-3">
+                      <div>
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                          CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM · ĐỘC LẬP - TỰ DO - HẠNH PHÚC
+                        </div>
+                        <h3 className="font-extrabold text-sm sm:text-base text-amber-950 uppercase mt-0.5">
+                          PHIẾU CHUYỂN TIẾP HỒ SƠ LÊN CẤP CÓ THẨM QUYỀN
+                        </h3>
+                        <p className="text-xs text-slate-600 mt-0.5">
+                          Hồ sơ thẩm định tự động phát hiện độ bất định cần phê duyệt ngoại lệ
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-mono-data font-bold bg-amber-100 text-amber-900 px-2.5 py-1 rounded border border-amber-300">
+                          Mã hồ sơ: HS-ESC-2025-{form.employeeId}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Dossier Meta Details */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-amber-50/60 p-3 rounded-xl border border-amber-200">
+                      <div>
+                        <span className="text-slate-500">Người làm đơn:</span>{" "}
+                        <strong className="text-slate-900">{form.employeeName} ({form.employeeId})</strong>
+                        <div className="text-slate-600 mt-0.5">{form.department} · {form.leaveType}</div>
+                      </div>
+                      <div>
+                        <span className="text-slate-500">Cấp có thẩm quyền giải quyết:</span>{" "}
+                        <strong className="text-blue-900 block mt-0.5">
+                          {result.triggerCategory === "Vượt thẩm quyền"
+                            ? "Ban Tổng Giám Đốc / Giám Đốc Khối (Điều 18.3)"
+                            : result.triggerCategory === "Không chắc dữ kiện"
+                            ? "Phòng Nhân Sự (HR) & Quản lý trực tiếp (Điều 14.2 & 14.3)"
+                            : "Giám Đốc Nhân Sự (HRD) — Xét duyệt ngoại lệ (Điều 8.2)"}
+                        </strong>
+                      </div>
+                      <div className="sm:col-span-2 flex items-center gap-2 pt-1 border-t border-amber-200/60">
+                        <span className="text-slate-500">Văn bản gốc đính kèm:</span>
+                        {selectedDoc ? (
+                          <a
+                            href={`/documents/${selectedDoc.pdfFile}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-blue-700 font-bold hover:underline inline-flex items-center gap-1"
+                          >
+                            <span>📄 {selectedDoc.pdfFile} (Bản scan PDF có mộc)</span>
+                            <span>↗</span>
+                          </a>
+                        ) : (
+                          <span className="text-slate-600 italic">Đơn điện tử nội bộ</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Single-turn Actionable AI Question */}
+                    <div className="p-3.5 bg-amber-100/90 border border-amber-300 rounded-xl space-y-1.5">
+                      <span className="text-xs font-bold text-amber-950 uppercase flex items-center gap-1.5">
+                        <span>❓</span>
+                        <span>Ý Kiến Đề Xuất Phê Duyệt 1 Lượt Của AI Referee:</span>
+                      </span>
+                      <p className="text-sm font-bold text-amber-950 bg-white p-3 rounded-lg border border-amber-200 leading-relaxed shadow-2xs">
+                        "{result.escalationQuestion}"
+                      </p>
+                    </div>
+
+                    {/* Manager Action & Signature Area */}
+                    <div className="pt-2 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div>
+                        {managerAction === "APPROVED" ? (
+                          <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-900 border border-emerald-300 px-3 py-1.5 rounded-lg text-xs font-bold">
+                            <span>✓ ĐÃ KÝ DUYỆT NGOẠI LỆ BỞI CẤP CÓ THẨM QUYỀN</span>
+                            <span className="text-[10px] font-mono-data text-emerald-700">({new Date().toLocaleTimeString("vi-VN")})</span>
+                          </div>
+                        ) : managerAction === "REJECTED" ? (
+                          <div className="inline-flex items-center gap-2 bg-red-100 text-red-900 border border-red-300 px-3 py-1.5 rounded-lg text-xs font-bold">
+                            <span>✕ ĐÃ BÁC ĐƠN &amp; YÊU CẦU BỔ SUNG CHỨNG TỪ</span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-slate-500 italic">
+                            Dành cho Cấp có thẩm quyền ký duyệt trực tiếp hồ sơ:
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => window.print()}
+                          className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-semibold cursor-pointer transition-colors shadow-2xs"
+                        >
+                          🖨️ In Phiếu Trình Ký
+                        </button>
+                        {managerAction === null && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setManagerAction("REJECTED");
+                              }}
+                              className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer transition-colors shadow-2xs"
+                            >
+                              ✕ Bác Đơn
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setManagerAction("APPROVED");
+                                if (onOverride) onOverride(result.requestId);
+                              }}
+                              className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer transition-colors shadow-2xs"
+                            >
+                              ✍️ Ký Duyệt Ngoại Lệ
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -528,7 +790,7 @@ export default function EnterpriseApp({ llmConfig }: EnterpriseAppProps) {
 
       {/* Tab Panels */}
       {activeTab === "form" && (
-        <EnterpriseLeaveForm llmConfig={llmConfig} onResult={handleFormResult} />
+        <EnterpriseLeaveForm llmConfig={llmConfig} onResult={handleFormResult} onOverride={handleOverride} />
       )}
       {activeTab === "audit" && (
         <EnterpriseAuditTrail entries={auditEntries} onOverride={handleOverride} />

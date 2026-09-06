@@ -2,6 +2,7 @@ import { useState } from "react";
 import Header, { type DomainMode } from "./components/Header";
 import LocalAgentBar from "./components/LocalAgentBar";
 import PolicyModal from "./components/PolicyModal";
+import StandardFormModal from "./components/StandardFormModal";
 import EnterpriseApp from "./domains/enterprise/EnterpriseApp";
 import AcademicApp from "./domains/academic/AcademicApp";
 import { DEFAULT_LLM_CONFIG, type LocalLlmConfig } from "./core/agent/localLlmClient";
@@ -10,6 +11,7 @@ export default function App() {
   const [domain, setDomain] = useState<DomainMode>("enterprise");
   const [llmConfig, setLlmConfig] = useState<LocalLlmConfig>(DEFAULT_LLM_CONFIG);
   const [isPolicyOpen, setIsPolicyOpen] = useState(false);
+  const [isStandardFormOpen, setIsStandardFormOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 antialiased font-sans flex flex-col">
@@ -18,6 +20,7 @@ export default function App() {
         currentDomain={domain}
         onDomainChange={setDomain}
         onOpenPolicy={() => setIsPolicyOpen(true)}
+        onOpenStandardForm={() => setIsStandardFormOpen(true)}
       />
 
       {/* Discreet AI Engine Bar */}
@@ -36,6 +39,13 @@ export default function App() {
       <PolicyModal
         isOpen={isPolicyOpen}
         onClose={() => setIsPolicyOpen(false)}
+        domain={domain}
+      />
+
+      {/* Standard Form Modal */}
+      <StandardFormModal
+        isOpen={isStandardFormOpen}
+        onClose={() => setIsStandardFormOpen(false)}
         domain={domain}
       />
 
