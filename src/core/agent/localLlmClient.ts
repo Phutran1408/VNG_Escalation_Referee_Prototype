@@ -12,9 +12,9 @@ export interface LocalLlmConfig {
 
 export const DEFAULT_LLM_CONFIG: LocalLlmConfig = {
   baseUrl: "http://localhost:11434",
-  model: "qwen2.5:7b",
+  model: "qwen2.5:1.5b",
   enabled: true,
-  timeoutMs: 4500,
+  timeoutMs: 3500,
 };
 
 /**
@@ -38,7 +38,9 @@ export async function checkOllamaConnection(baseUrl: string = DEFAULT_LLM_CONFIG
     return {
       online: true,
       models: modelNames,
-      currentModel: modelNames.includes("qwen2.5:7b")
+      currentModel: modelNames.includes("qwen2.5:1.5b")
+        ? "qwen2.5:1.5b"
+        : modelNames.includes("qwen2.5:7b")
         ? "qwen2.5:7b"
         : modelNames[0] || "qwen2.5:1.5b",
     };
@@ -46,7 +48,7 @@ export async function checkOllamaConnection(baseUrl: string = DEFAULT_LLM_CONFIG
     return {
       online: false,
       models: [],
-      currentModel: "qwen2.5:7b",
+      currentModel: "qwen2.5:1.5b",
     };
   }
 }
