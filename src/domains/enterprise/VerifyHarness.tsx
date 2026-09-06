@@ -161,13 +161,13 @@ export default function EnterpriseVerifyHarness({ onResults, llmConfig }: Props)
         <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="font-display text-lg font-700 text-slate-900">Verify Test Harness — Doanh Nghiệp (Enterprise HR)</h2>
+              <h2 className="font-display text-lg font-700 text-slate-900">Kiểm Chứng Tự Động — Doanh Nghiệp (HR)</h2>
               <span className="text-[11px] font-mono-data bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-semibold">
-                {mode === "5_cases" ? "5 Ca Chuẩn (SV4)" : "15 Ca Mở Rộng (SV1)"}
+                {mode === "5_cases" ? "5 ca tiêu biểu" : "15 ca mở rộng"}
               </span>
             </div>
             <p className="text-sm text-slate-500 mt-0.5">
-              Kiểm chứng tự động Lõi Agent SV2: Tự duyệt ca thường quy &amp; Phân loại chuẩn xác 3 loại dừng bất định
+              Kiểm tra tự động khả năng tự phê duyệt ca thường quy và phát hiện 3 nhóm bất định
             </p>
           </div>
 
@@ -187,7 +187,7 @@ export default function EnterpriseVerifyHarness({ onResults, llmConfig }: Props)
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                5 Ca Chuẩn
+                5 Ca Tiêu Biểu
               </button>
               <button
                 type="button"
@@ -202,7 +202,7 @@ export default function EnterpriseVerifyHarness({ onResults, llmConfig }: Props)
                     : "text-slate-600 hover:text-slate-900"
                 }`}
               >
-                15 Ca Mở Rộng
+                Tất Cả 15 Ca
               </button>
             </div>
 

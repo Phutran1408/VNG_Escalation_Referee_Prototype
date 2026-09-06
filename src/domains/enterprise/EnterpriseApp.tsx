@@ -398,7 +398,7 @@ function EnterpriseLeaveForm({ llmConfig, onResult }: LeaveFormProps) {
                 {result.reasoningTrace && result.reasoningTrace.length > 0 && (
                   <div className="bg-white/70 border border-slate-200 rounded-xl p-3 space-y-1.5">
                     <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wide block">
-                      🔍 Chuỗi Suy Luận Quyết Định (Reasoning Trace — SV2):
+                      🔍 Các Bước Phân Tích &amp; Đối Chiếu Quy Chế:
                     </span>
                     <div className="space-y-1">
                       {result.reasoningTrace.map((step, idx) => (
@@ -439,6 +439,7 @@ interface EnterpriseAppProps {
 }
 
 export default function EnterpriseApp({ llmConfig }: EnterpriseAppProps) {
+  const [activeTab, setActiveTab] = useState<"form" | "audit" | "verify">("form");
   const [auditEntries, setAuditEntries] = useState<AuditEntry[]>([]);
 
   const handleVerifyResults = useCallback((results: VerifyResult[]) => {
@@ -477,10 +478,64 @@ export default function EnterpriseApp({ llmConfig }: EnterpriseAppProps) {
   }, []);
 
   return (
-    <div className="space-y-8">
-      <EnterpriseVerifyHarness onResults={handleVerifyResults} llmConfig={llmConfig} />
-      <EnterpriseLeaveForm llmConfig={llmConfig} onResult={handleFormResult} />
-      <EnterpriseAuditTrail entries={auditEntries} onOverride={handleOverride} />
+    <div className="space-y-6">
+      {/* Clean Navigation Tabs */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
+        <div className="inline-flex bg-slate-200/80 p-1 rounded-xl text-xs font-semibold">
+          <button
+            type="button"
+            onClick={() => setActiveTab("form")}
+            className={`px-4 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-2 ${
+              activeTab === "form"
+                ? "bg-white text-blue-900 shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <span>📝</span>
+            <span>Thẩm Định Đơn</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("audit")}
+            className={`px-4 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-2 ${
+              activeTab === "audit"
+                ? "bg-white text-blue-900 shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <span>📋</span>
+            <span>Nhật Ký Xét Duyệt</span>
+            {auditEntries.length > 0 && (
+              <span className="bg-blue-100 text-blue-800 px-1.5 py-0.2 rounded-full text-[10px] font-mono-data">
+                {auditEntries.length}
+              </span>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("verify")}
+            className={`px-4 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-2 ${
+              activeTab === "verify"
+                ? "bg-white text-blue-900 shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <span>🧪</span>
+            <span>Kiểm Chứng Tự Động (15 ca)</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Tab Panels */}
+      {activeTab === "form" && (
+        <EnterpriseLeaveForm llmConfig={llmConfig} onResult={handleFormResult} />
+      )}
+      {activeTab === "audit" && (
+        <EnterpriseAuditTrail entries={auditEntries} onOverride={handleOverride} />
+      )}
+      {activeTab === "verify" && (
+        <EnterpriseVerifyHarness onResults={handleVerifyResults} llmConfig={llmConfig} />
+      )}
     </div>
   );
 }

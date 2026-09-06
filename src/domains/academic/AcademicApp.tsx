@@ -259,14 +259,14 @@ function StudentLeaveForm({ llmConfig, onResult }: LeaveFormProps) {
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="font-display text-lg font-700 text-slate-900">
-                  Thẩm Định Đơn Xin Nghỉ Học (Lõi Agent SV2)
+                  Thẩm Định Đơn Xin Nghỉ Học
                 </h2>
                 <span className="text-[10px] font-mono-data bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-semibold">
-                  Rule Guardrails + Local LLM
+                  Tự Động &amp; Phân Xử
                 </span>
               </div>
               <p className="text-sm text-slate-500 mt-0.5">
-                Nhập thông tin tự do hoặc bấm các Ca mẫu để kiểm chứng Lõi Agent kích hoạt đúng 3 loại dừng
+                Nhập thông tin đơn hoặc chọn nhanh ca mẫu để xem AI phân tích và ra quyết định
               </p>
             </div>
 
@@ -565,11 +565,11 @@ function StudentLeaveForm({ llmConfig, onResult }: LeaveFormProps) {
                   </div>
                 )}
 
-                {/* Reasoning Trace Steps (Chuỗi suy luận logic SV2) */}
+                {/* Reasoning Trace Steps */}
                 {result.reasoningTrace && result.reasoningTrace.length > 0 && (
                   <div className="bg-white/70 border border-slate-200 rounded-xl p-3 space-y-1.5">
                     <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wide block">
-                      🔍 Chuỗi Suy Luận Quyết Định (Reasoning Trace — SV2):
+                      🔍 Các Bước Phân Tích & Đối Chiếu Quy Chế:
                     </span>
                     <div className="space-y-1">
                       {result.reasoningTrace.map((step, idx) => (
@@ -603,13 +603,14 @@ function StudentLeaveForm({ llmConfig, onResult }: LeaveFormProps) {
   );
 }
 
-// ── Academic View Component ────────────────────────────────────────────────
+// ── Academic View Component ──────────────────────────────────────────────
 
 interface AcademicAppProps {
   llmConfig?: Partial<LocalLlmConfig>;
 }
 
 export default function AcademicApp({ llmConfig }: AcademicAppProps) {
+  const [activeTab, setActiveTab] = useState<"form" | "audit" | "verify">("form");
   const [auditEntries, setAuditEntries] = useState<AuditEntry[]>([]);
 
   const handleVerifyResults = useCallback((results: VerifyResult[]) => {
@@ -653,14 +654,68 @@ export default function AcademicApp({ llmConfig }: AcademicAppProps) {
   }, []);
 
   return (
-    <div className="space-y-8">
-      <VerifyHarness onResults={handleVerifyResults} llmConfig={llmConfig} />
-      <StudentLeaveForm llmConfig={llmConfig} onResult={handleFormResult} />
-      <AuditTrail
-        entries={auditEntries}
-        onOverride={handleOverride}
-        onClear={handleClearAudit}
-      />
+    <div className="space-y-6">
+      {/* Clean Navigation Tabs */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
+        <div className="inline-flex bg-slate-200/80 p-1 rounded-xl text-xs font-semibold">
+          <button
+            type="button"
+            onClick={() => setActiveTab("form")}
+            className={`px-4 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-2 ${
+              activeTab === "form"
+                ? "bg-white text-indigo-900 shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <span>📝</span>
+            <span>Thẩm Định Đơn</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("audit")}
+            className={`px-4 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-2 ${
+              activeTab === "audit"
+                ? "bg-white text-indigo-900 shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <span>📋</span>
+            <span>Nhật Ký Xét Duyệt</span>
+            {auditEntries.length > 0 && (
+              <span className="bg-indigo-100 text-indigo-800 px-1.5 py-0.2 rounded-full text-[10px] font-mono-data">
+                {auditEntries.length}
+              </span>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("verify")}
+            className={`px-4 py-2 rounded-lg transition-all cursor-pointer flex items-center gap-2 ${
+              activeTab === "verify"
+                ? "bg-white text-indigo-900 shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <span>🧪</span>
+            <span>Kiểm Chứng Tự Động (15 ca)</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Tab Panels */}
+      {activeTab === "form" && (
+        <StudentLeaveForm llmConfig={llmConfig} onResult={handleFormResult} />
+      )}
+      {activeTab === "audit" && (
+        <AuditTrail
+          entries={auditEntries}
+          onOverride={handleOverride}
+          onClear={handleClearAudit}
+        />
+      )}
+      {activeTab === "verify" && (
+        <VerifyHarness onResults={handleVerifyResults} llmConfig={llmConfig} />
+      )}
     </div>
   );
 }

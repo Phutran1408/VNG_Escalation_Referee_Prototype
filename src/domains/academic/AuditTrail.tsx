@@ -73,12 +73,12 @@ export default function AuditTrail({ entries, onOverride, onClear }: Props) {
               Nhật Ký Quyết Định & Kiểm Toán Tuân Thủ (Audit Trail)
             </h2>
             <p className="text-sm text-slate-500 mt-0.5">
-              Ghi vết minh bạch toàn bộ quyết định của Agent SV2 · Căn cứ quy chế đào tạo · Hỗ trợ Giảng viên can thiệp
+              Ghi vết minh bạch toàn bộ quyết định của hệ thống · Căn cứ quy chế đào tạo · Hỗ trợ Giảng viên can thiệp
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {/* Nút Dừng Hệ Thống (Yêu cầu SV3) */}
+            {/* Nút Dừng Hệ Thống */}
             <button
               type="button"
               onClick={() => setIsEmergencyStopped(!isEmergencyStopped)}
@@ -87,10 +87,10 @@ export default function AuditTrail({ entries, onOverride, onClear }: Props) {
                   ? "bg-rose-600 text-white border-rose-700 animate-pulse"
                   : "bg-white text-rose-700 border-rose-300 hover:bg-rose-50"
               }`}
-              title="Dừng khẩn cấp toàn bộ luồng tự động duyệt theo tiêu chí SV3"
+              title="Dừng khẩn cấp toàn bộ luồng tự động duyệt"
             >
               <span className={`w-2 h-2 rounded-full ${isEmergencyStopped ? "bg-white" : "bg-rose-500"}`} />
-              {isEmergencyStopped ? "🛑 Khôi Phục Hoạt Động" : "⛔ Dừng Khẩn Cấp (SV3)"}
+              {isEmergencyStopped ? "🛑 Khôi Phục Hoạt Động" : "⛔ Dừng Khẩn Cấp"}
             </button>
 
             <span className="font-mono-data text-xs text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1.5 rounded">
@@ -133,7 +133,7 @@ export default function AuditTrail({ entries, onOverride, onClear }: Props) {
           <div className="bg-rose-600 text-white px-6 py-2.5 text-xs font-bold flex items-center justify-between gap-3 animate-pulse">
             <div className="flex items-center gap-2">
               <span className="text-base">🛑</span>
-              <span>CẢNH BÁO AN TOÀN (SV3): Quá trình tự động duyệt đã được Quản trị viên TẠM DỪNG KHẨN CẤP. Mọi đơn mới sẽ chuyển sang duyệt thủ công có giám sát!</span>
+              <span>CẢNH BÁO AN TOÀN: Quá trình tự động duyệt đã được Quản trị viên TẠM DỪNG KHẨN CẤP. Mọi đơn mới sẽ chuyển sang duyệt thủ công có giám sát!</span>
             </div>
             <button
               onClick={() => setIsEmergencyStopped(false)}

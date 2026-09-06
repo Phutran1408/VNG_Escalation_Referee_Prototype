@@ -75,20 +75,20 @@ export default function AuditTrail({ entries, onOverride }: Props) {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2 shrink-0">
-            {/* Export JSON Button (SV2 Decision Log) */}
+            {/* Export JSON Button */}
             {entries.length > 0 && (
               <button
                 type="button"
                 onClick={exportJSON}
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
-                title="Tải toàn bộ file Log quyết định kiểm thử JSON theo chuẩn SV2"
+                title="Tải toàn bộ file Log quyết định kiểm thử định dạng JSON"
               >
                 <span>📥</span>
                 <span>Xuất Log Quyết Định (JSON)</span>
               </button>
             )}
 
-            {/* Nút Dừng Hệ Thống (Yêu cầu SV3) */}
+            {/* Nút Dừng Hệ Thống */}
             <button
               type="button"
               onClick={() => setIsEmergencyStopped(!isEmergencyStopped)}
@@ -97,10 +97,10 @@ export default function AuditTrail({ entries, onOverride }: Props) {
                   ? "bg-rose-600 text-white border-rose-700 animate-pulse"
                   : "bg-white text-rose-700 border-rose-300 hover:bg-rose-50"
               }`}
-              title="Dừng khẩn cấp toàn bộ luồng tự động duyệt theo tiêu chí SV3"
+              title="Dừng khẩn cấp toàn bộ luồng tự động duyệt"
             >
               <span className={`w-2 h-2 rounded-full ${isEmergencyStopped ? "bg-white" : "bg-rose-500"}`} />
-              {isEmergencyStopped ? "🛑 Khôi Phục Hoạt Động" : "⛔ Dừng Khẩn Cấp (SV3)"}
+              {isEmergencyStopped ? "🛑 Khôi Phục Hoạt Động" : "⛔ Dừng Khẩn Cấp"}
             </button>
 
             <span className="font-mono-data text-xs text-slate-500 bg-slate-100 border border-slate-200 px-2.5 py-1.5 rounded">
@@ -119,7 +119,7 @@ export default function AuditTrail({ entries, onOverride }: Props) {
           <div className="bg-rose-600 text-white px-6 py-2.5 text-xs font-bold flex items-center justify-between gap-3 animate-pulse">
             <div className="flex items-center gap-2">
               <span className="text-base">🛑</span>
-              <span>CẢNH BÁO AN TOÀN (SV3): Quá trình tự động duyệt nhân sự đã được HR Admin TẠM DỪNG KHẨN CẤP. Toàn bộ đơn mới sẽ dừng lại để duyệt thủ công!</span>
+              <span>CẢNH BÁO AN TOÀN: Quá trình tự động duyệt nhân sự đã được HR Admin TẠM DỪNG KHẨN CẤP. Toàn bộ đơn mới sẽ dừng lại để duyệt thủ công!</span>
             </div>
             <button
               onClick={() => setIsEmergencyStopped(false)}
