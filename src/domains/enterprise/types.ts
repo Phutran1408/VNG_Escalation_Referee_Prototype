@@ -54,6 +54,12 @@ export interface EvaluateResponse {
   escalationQuestion?: string;
   triggerCategory?: TriggerCategory;
   timestamp: string;
+  reasoningTrace?: {
+    checkName: string;
+    passed: boolean;
+    observation: string;
+    ruleCited: string;
+  }[];
 }
 
 export interface AuditEntry {

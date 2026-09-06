@@ -1,7 +1,8 @@
 import { useState, useCallback } from "react";
 import EnterpriseVerifyHarness from "./VerifyHarness";
 import EnterpriseAuditTrail from "./AuditTrail";
-import { runMockEvaluate } from "./mockTestCases";
+import { refereeAgent } from "../../core/agent/EscalationRefereeAgent";
+import type { LocalLlmConfig } from "../../core/agent/localLlmClient";
 import type { AuditEntry, EvaluateResponse, VerifyResult, LeaveType } from "./types";
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -24,6 +25,12 @@ function verifyToAudit(r: VerifyResult & { policyBasis?: string }, idx: number):
     triggerCategory: r.triggerCategory,
     escalationQuestion: r.escalationQuestion,
   };
+}
+
+function daysBetween(from: string, to: string): number {
+  if (!from || !to) return 1;
+  const diff = new Date(to).getTime() - new Date(from).getTime();
+  return Math.max(1, Math.floor(diff / 86400000) + 1);
 }
 
 const LEAVE_TYPES: LeaveType[] = [
@@ -120,10 +127,11 @@ const HR_PRESETS: { label: string; desc: string; color: string; data: FormState 
 ];
 
 interface LeaveFormProps {
+  llmConfig?: Partial<LocalLlmConfig>;
   onResult: (res: EvaluateResponse, form: FormState) => void;
 }
 
-function EnterpriseLeaveForm({ onResult }: LeaveFormProps) {
+function EnterpriseLeaveForm({ llmConfig, onResult }: LeaveFormProps) {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<EvaluateResponse | null>(null);
@@ -143,8 +151,37 @@ function EnterpriseLeaveForm({ onResult }: LeaveFormProps) {
     setLoading(true);
     setResult(null);
     try {
-      await new Promise((r) => setTimeout(r, 400));
-      const res = runMockEvaluate(form);
+      const days = daysBetween(form.fromDate, form.toDate);
+      const isUnclear = (form.reason + " " + form.notes).toLowerCase().includes("mờ");
+      const hasMissingDoc = form.leaveType === "Nghỉ việc riêng" && !form.notes.toLowerCase().includes("kết hôn");
+
+      const agentRes = await refereeAgent.evaluateAsync(
+        {
+          domain: "enterprise",
+          subjectId: form.employeeId,
+          subjectName: form.employeeName,
+          organizationUnit: form.department,
+          leaveType: form.leaveType,
+          fromDate: form.fromDate,
+          toDate: form.toDate,
+          durationDaysOrSessions: days,
+          docStatus: isUnclear ? "UNCLEAR_DATE" : hasMissingDoc ? "MISSING" : "VALID",
+          reasonText: form.reason,
+          notesText: form.notes,
+        },
+        llmConfig
+      );
+
+      const res: EvaluateResponse = {
+        requestId: agentRes.decisionId,
+        decision: agentRes.outcome,
+        policyBasis: agentRes.policyBasis,
+        escalationQuestion: agentRes.escalationQuestion,
+        triggerCategory: agentRes.uncertaintyCategory,
+        timestamp: agentRes.timestamp,
+        reasoningTrace: agentRes.reasoningTrace,
+      };
+
       setResult(res);
       onResult(res, form);
     } finally {
@@ -159,9 +196,14 @@ function EnterpriseLeaveForm({ onResult }: LeaveFormProps) {
         <div className="px-6 py-4 bg-slate-50 border-b border-slate-200">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
             <div>
-              <h2 className="font-display text-lg font-700 text-slate-900">
-                Thẩm Định Đơn Xin Nghỉ Phép Nội Bộ (Enterprise HR)
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="font-display text-lg font-700 text-slate-900">
+                  Thẩm Định Đơn Xin Nghỉ Phép Nội Bộ (Enterprise HR)
+                </h2>
+                <span className="text-[10px] font-mono-data bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-semibold">
+                  Rule Guardrails + Local LLM
+                </span>
+              </div>
               <p className="text-sm text-slate-500 mt-0.5">
                 Nhập đơn nhân sự hoặc bấm Ca mẫu để kiểm chứng Lõi Agent HR tự động phân loại
               </p>
@@ -295,7 +337,17 @@ function EnterpriseLeaveForm({ onResult }: LeaveFormProps) {
               disabled={loading}
               className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold text-sm px-6 py-2.5 rounded-lg transition-colors shadow-sm cursor-pointer flex items-center gap-2"
             >
-              {loading ? "Đang thẩm định…" : "Thẩm Định Đơn Nhân Sự"}
+              {loading ? (
+                <>
+                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10" strokeWidth="3" stroke="currentColor" strokeOpacity="0.25" />
+                    <path d="M12 2a10 10 0 0 1 10 10" strokeWidth="3" fill="none" />
+                  </svg>
+                  Lõi Agent Đang Thẩm Định…
+                </>
+              ) : (
+                "Thẩm Định Đơn Nhân Sự (Hybrid Agent)"
+              )}
             </button>
           </div>
         </form>
@@ -310,7 +362,7 @@ function EnterpriseLeaveForm({ onResult }: LeaveFormProps) {
             }`}
           >
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-              <div className="space-y-2 flex-1">
+              <div className="space-y-3 flex-1">
                 <div className="flex flex-wrap items-center gap-2.5">
                   <span className="text-xs font-bold font-mono-data text-slate-500 uppercase">
                     KẾT QUẢ PHÂN XỬ HR:
@@ -341,6 +393,32 @@ function EnterpriseLeaveForm({ onResult }: LeaveFormProps) {
                     </p>
                   </div>
                 )}
+
+                {/* Reasoning Trace Steps */}
+                {result.reasoningTrace && result.reasoningTrace.length > 0 && (
+                  <div className="bg-white/70 border border-slate-200 rounded-xl p-3 space-y-1.5">
+                    <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wide block">
+                      🔍 Chuỗi Suy Luận Quyết Định (Reasoning Trace — SV2):
+                    </span>
+                    <div className="space-y-1">
+                      {result.reasoningTrace.map((step, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-start gap-2 text-xs text-slate-700 bg-slate-50 p-2 rounded-lg border border-slate-150"
+                        >
+                          <span className={step.passed ? "text-emerald-600 font-bold" : "text-amber-600 font-bold"}>
+                            {step.passed ? "✓" : "⚠️"}
+                          </span>
+                          <div className="flex-1">
+                            <span className="font-semibold">{step.checkName}: </span>
+                            <span>{step.observation}</span>
+                            <span className="text-[10px] text-slate-400 font-mono-data ml-1.5">[{step.ruleCited}]</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <span className="text-xs font-mono-data text-slate-400 shrink-0">
@@ -356,7 +434,11 @@ function EnterpriseLeaveForm({ onResult }: LeaveFormProps) {
 
 // ── Enterprise View Component ──────────────────────────────────────────────
 
-export default function EnterpriseApp() {
+interface EnterpriseAppProps {
+  llmConfig?: Partial<LocalLlmConfig>;
+}
+
+export default function EnterpriseApp({ llmConfig }: EnterpriseAppProps) {
   const [auditEntries, setAuditEntries] = useState<AuditEntry[]>([]);
 
   const handleVerifyResults = useCallback((results: VerifyResult[]) => {
@@ -397,7 +479,7 @@ export default function EnterpriseApp() {
   return (
     <div className="space-y-8">
       <EnterpriseVerifyHarness onResults={handleVerifyResults} />
-      <EnterpriseLeaveForm onResult={handleFormResult} />
+      <EnterpriseLeaveForm llmConfig={llmConfig} onResult={handleFormResult} />
       <EnterpriseAuditTrail entries={auditEntries} onOverride={handleOverride} />
     </div>
   );

@@ -1,7 +1,8 @@
 import { useState, useCallback } from "react";
 import VerifyHarness from "./VerifyHarness";
 import AuditTrail from "./AuditTrail";
-import { runMockEvaluate } from "./mockTestCases";
+import { refereeAgent } from "../../core/agent/EscalationRefereeAgent";
+import type { LocalLlmConfig } from "../../core/agent/localLlmClient";
 import type {
   AuditEntry,
   EvaluateResponse,
@@ -174,10 +175,11 @@ const PRESETS: { label: string; tagColor: string; data: FormState }[] = [
 ];
 
 interface LeaveFormProps {
+  llmConfig?: Partial<LocalLlmConfig>;
   onResult: (res: EvaluateResponse, form: FormState) => void;
 }
 
-function StudentLeaveForm({ onResult }: LeaveFormProps) {
+function StudentLeaveForm({ llmConfig, onResult }: LeaveFormProps) {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<EvaluateResponse | null>(null);
@@ -197,8 +199,45 @@ function StudentLeaveForm({ onResult }: LeaveFormProps) {
     setLoading(true);
     setResult(null);
     try {
-      await new Promise((r) => setTimeout(r, 350));
-      const res = runMockEvaluate(form);
+      // Gọi Lõi Agent Hybrid: Rule Guardrails + Local LLM Ollama
+      const agentRes = await refereeAgent.evaluateAsync(
+        {
+          domain: "academic",
+          subjectId: form.studentId,
+          subjectName: form.studentName,
+          organizationUnit: form.faculty,
+          leaveType: form.leaveType,
+          fromDate: form.fromDate,
+          toDate: form.toDate,
+          durationDaysOrSessions: form.sessionsRequested,
+          pastAbsencesCount: form.pastAbsences,
+          totalLimitOrCapacity: form.totalSessions,
+          docStatus: form.docEvidenceStatus,
+          isSpecialRequest: form.isSemesterDeferral,
+          reasonText: form.reason,
+          notesText: form.notes,
+        },
+        llmConfig
+      );
+
+      const totalAbsences = (Number(form.pastAbsences) || 0) + (Number(form.sessionsRequested) || 1);
+      const ratio = totalAbsences / (Number(form.totalSessions) || 15);
+
+      const res: EvaluateResponse = {
+        requestId: agentRes.decisionId,
+        decision: agentRes.outcome,
+        policyBasis: agentRes.policyBasis,
+        escalationQuestion: agentRes.escalationQuestion,
+        triggerCategory: agentRes.uncertaintyCategory,
+        timestamp: agentRes.timestamp,
+        reasoningTrace: agentRes.reasoningTrace,
+        details: {
+          absenceRatio: ratio,
+          maxAllowedRatio: 0.2,
+          isExceeded20Percent: ratio > 0.2,
+        },
+      };
+
       setResult(res);
       onResult(res, form);
     } finally {
@@ -218,9 +257,14 @@ function StudentLeaveForm({ onResult }: LeaveFormProps) {
         <div className="px-6 py-4 bg-slate-50 border-b border-slate-200">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
             <div>
-              <h2 className="font-display text-lg font-700 text-slate-900">
-                Thẩm Định Đơn Xin Nghỉ Học Tức Thì (Academic Student)
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="font-display text-lg font-700 text-slate-900">
+                  Thẩm Định Đơn Xin Nghỉ Học (Lõi Agent SV2)
+                </h2>
+                <span className="text-[10px] font-mono-data bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-semibold">
+                  Rule Guardrails + Local LLM
+                </span>
+              </div>
               <p className="text-sm text-slate-500 mt-0.5">
                 Nhập thông tin tự do hoặc bấm các Ca mẫu để kiểm chứng Lõi Agent kích hoạt đúng 3 loại dừng
               </p>
@@ -463,12 +507,22 @@ function StudentLeaveForm({ onResult }: LeaveFormProps) {
               disabled={loading}
               className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-semibold text-sm px-6 py-2.5 rounded-lg transition-colors shadow-sm cursor-pointer flex items-center gap-2"
             >
-              {loading ? "Đang phân xử…" : "Thẩm Định Đơn Sinh Viên"}
+              {loading ? (
+                <>
+                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10" strokeWidth="3" stroke="currentColor" strokeOpacity="0.25" />
+                    <path d="M12 2a10 10 0 0 1 10 10" strokeWidth="3" fill="none" />
+                  </svg>
+                  Lõi Agent Đang Phân Xử…
+                </>
+              ) : (
+                "Thẩm Định Đơn Sinh Viên (Hybrid Agent)"
+              )}
             </button>
           </div>
         </form>
 
-        {/* Evaluation Result */}
+        {/* Evaluation Result Display */}
         {result && (
           <div
             className={`border-t p-6 ${
@@ -481,7 +535,7 @@ function StudentLeaveForm({ onResult }: LeaveFormProps) {
               <div className="space-y-3 flex-1">
                 <div className="flex flex-wrap items-center gap-2.5">
                   <span className="text-xs font-bold font-mono-data text-slate-500 uppercase">
-                    KẾT QUẢ PHÂN XỬ SINH VIÊN:
+                    KẾT QUẢ PHÂN XỬ LÕI AGENT:
                   </span>
                   {result.decision === "AUTO_APPROVE" ? (
                     <span className="badge badge-approve text-sm px-3.5 py-1 font-bold">
@@ -499,13 +553,40 @@ function StudentLeaveForm({ onResult }: LeaveFormProps) {
                   <strong>Căn cứ Quy chế:</strong> {result.policyBasis}
                 </div>
 
+                {/* Escalation Question Box */}
                 {result.escalationQuestion && (
                   <div className="p-4 bg-amber-100/90 border-2 border-amber-300 rounded-xl shadow-xs space-y-2">
                     <span className="text-xs font-bold text-amber-900 uppercase flex items-center gap-1.5">
                       ❓ Câu hỏi Escalate cho Giảng viên / Trưởng khoa:
                     </span>
-                    <div className="text-sm font-bold text-amber-950 bg-white/80 p-3 rounded-lg border border-amber-200">
+                    <div className="text-sm font-bold text-amber-950 bg-white/80 p-3 rounded-lg border border-amber-200 leading-snug">
                       "{result.escalationQuestion}"
+                    </div>
+                  </div>
+                )}
+
+                {/* Reasoning Trace Steps (Chuỗi suy luận logic SV2) */}
+                {result.reasoningTrace && result.reasoningTrace.length > 0 && (
+                  <div className="bg-white/70 border border-slate-200 rounded-xl p-3 space-y-1.5">
+                    <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wide block">
+                      🔍 Chuỗi Suy Luận Quyết Định (Reasoning Trace — SV2):
+                    </span>
+                    <div className="space-y-1">
+                      {result.reasoningTrace.map((step, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-start gap-2 text-xs text-slate-700 bg-slate-50 p-2 rounded-lg border border-slate-150"
+                        >
+                          <span className={step.passed ? "text-emerald-600 font-bold" : "text-amber-600 font-bold"}>
+                            {step.passed ? "✓" : "⚠️"}
+                          </span>
+                          <div className="flex-1">
+                            <span className="font-semibold">{step.checkName}: </span>
+                            <span>{step.observation}</span>
+                            <span className="text-[10px] text-slate-400 font-mono-data ml-1.5">[{step.ruleCited}]</span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -524,7 +605,11 @@ function StudentLeaveForm({ onResult }: LeaveFormProps) {
 
 // ── Academic View Component ────────────────────────────────────────────────
 
-export default function AcademicApp() {
+interface AcademicAppProps {
+  llmConfig?: Partial<LocalLlmConfig>;
+}
+
+export default function AcademicApp({ llmConfig }: AcademicAppProps) {
   const [auditEntries, setAuditEntries] = useState<AuditEntry[]>([]);
 
   const handleVerifyResults = useCallback((results: VerifyResult[]) => {
@@ -570,7 +655,7 @@ export default function AcademicApp() {
   return (
     <div className="space-y-8">
       <VerifyHarness onResults={handleVerifyResults} />
-      <StudentLeaveForm onResult={handleFormResult} />
+      <StudentLeaveForm llmConfig={llmConfig} onResult={handleFormResult} />
       <AuditTrail
         entries={auditEntries}
         onOverride={handleOverride}

@@ -5,9 +5,14 @@ import type {
   ReasoningStep,
   UncertaintyCategory,
 } from "./types";
+import {
+  generateEscalationQuestionWithLLM,
+  DEFAULT_LLM_CONFIG,
+  type LocalLlmConfig,
+} from "./localLlmClient";
 
 /**
- * SV2 — LÕI AGENT PHÂN XỬ QUYẾT ĐỊNH (THE ESCALATION REFEREE ENGINE)
+ * SV2 — LÕI AGENT PHÂN XỬ HYBRID (RULES ENGINE + LOCAL LLM COGNITIVE REASONING)
  *
  * Các nguyên tắc vàng:
  * 1. Tự động duyệt ca thường quy.
@@ -15,12 +20,55 @@ import type {
  * 3. Câu hỏi Escalate phải cụ thể, trả lời được trong 1 lượt.
  * 4. NGUYÊN TẮC BẤT BIẾN (INVARIANCE): Không bao giờ xuất kết quả chắc chắn trên ca đã gắn cờ.
  * 5. Bàn giao: Mã nguồn + Log quyết định (Reasoning Trace & Decision Log).
+ * 6. Kiến trúc Hybrid: Rule Guardrails định lượng + Local LLM sinh câu hỏi ngữ cảnh sắc bén.
  */
 export class EscalationRefereeAgent {
-  private systemName: string = "AI Escalation Referee Agent (SV2)";
+  public systemName: string = "AI Escalation Referee Agent (Hybrid SV2)";
 
   /**
-   * Đánh giá đơn xin nghỉ và phân loại độ bất định
+   * Đánh giá kết hợp Rules Engine và Local LLM
+   */
+  public async evaluateAsync(
+    input: AgentEvaluationInput,
+    llmConfig?: Partial<LocalLlmConfig>
+  ): Promise<AgentEvaluationOutput> {
+    // 1. Chạy qua Rules Guardrails trước để xác định độ bất định định lượng
+    const baseOutput = this.evaluate(input);
+
+    // 2. Nếu ca là ESCALATE và Local LLM được bật, gọi mô hình local để làm giàu câu hỏi
+    if (baseOutput.outcome === "ESCALATE" && baseOutput.uncertaintyCategory) {
+      try {
+        const llmQuestion = await generateEscalationQuestionWithLLM({
+          domain: input.domain,
+          subjectName: input.subjectName,
+          leaveType: input.leaveType,
+          reason: input.reasonText,
+          notes: input.notesText,
+          uncertaintyCategory: baseOutput.uncertaintyCategory,
+          ruleCitation: baseOutput.policyBasis,
+          config: llmConfig,
+        });
+
+        if (llmQuestion && llmQuestion.length > 10) {
+          const cfg = { ...DEFAULT_LLM_CONFIG, ...llmConfig };
+          baseOutput.escalationQuestion = llmQuestion;
+          baseOutput.reasoningTrace.push({
+            checkName: `Local LLM Reasoning (${cfg.model})`,
+            passed: true,
+            observation: `Mô hình AI cục bộ (${cfg.model}) đã phân tích ngữ cảnh và tối ưu câu hỏi Escalate 1 lượt.`,
+            ruleCited: "Single-turn Actionability Standard",
+          });
+        }
+      } catch {
+        // Fallback an toàn về câu hỏi Rule Engine
+      }
+    }
+
+    return baseOutput;
+  }
+
+  /**
+   * Đánh giá đồng bộ theo Deterministic Rules Guardrails
    */
   public evaluate(input: AgentEvaluationInput): AgentEvaluationOutput {
     const decisionId = `DEC-${input.domain === "enterprise" ? "HR" : "STU"}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -127,7 +175,7 @@ export class EscalationRefereeAgent {
     let policyQuestion = "";
 
     if (input.domain === "enterprise") {
-      // Doanh nghiệp: Nghỉ việc riêng nhưng không có bất kỳ giấy tờ/căn cứ hợp lệ
+      // Doanh nghiệp: Nghỉ việc riêng nhưng không có minh chứng
       if (input.leaveType === "Nghỉ việc riêng" && input.docStatus === "MISSING") {
         isPolicyViolated = true;
         policyReason = "Điều 15 Quy chế Nhân sự — Nghỉ việc riêng hưởng lương bắt buộc có minh chứng (kết hôn, tang chế).";
@@ -221,9 +269,6 @@ export class EscalationRefereeAgent {
     };
   }
 
-  /**
-   * Chuyển đổi Agent Output thành Decision Log đầy đủ cho SV2/SV3
-   */
   public toDecisionLog(
     input: AgentEvaluationInput,
     output: AgentEvaluationOutput
