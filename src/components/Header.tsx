@@ -1,8 +1,11 @@
 export type DomainMode = "enterprise" | "academic";
+export type UserRole = "applicant" | "reviewer";
 
 interface HeaderProps {
   currentDomain: DomainMode;
   onDomainChange: (domain: DomainMode) => void;
+  userRole: UserRole;
+  onRoleChange: (role: UserRole) => void;
   onOpenPolicy: () => void;
   onOpenStandardForm: () => void;
 }
@@ -10,10 +13,14 @@ interface HeaderProps {
 export default function Header({
   currentDomain,
   onDomainChange,
+  userRole,
+  onRoleChange,
   onOpenPolicy,
   onOpenStandardForm,
 }: HeaderProps) {
   const isEnterprise = currentDomain === "enterprise";
+  const applicantLabel = isEnterprise ? "Nhân Viên" : "Sinh Viên";
+  const reviewerLabel = isEnterprise ? "Cấp Trên (HR/QL)" : "Trưởng Khoa / GV";
 
   return (
     <header className="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40">
@@ -35,19 +42,49 @@ export default function Header({
                   Escalation Referee
                 </span>
                 <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-                  AI Phân Xử
+                  Agent Đánh Giá
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 hidden sm:block">
                 {isEnterprise
-                  ? "Hệ thống thẩm định & phân xử đơn nghỉ phép nhân sự"
+                  ? "Hệ thống thẩm định & duyệt đơn nghỉ phép nhân sự"
                   : "Hệ thống thẩm định & duyệt đơn xin nghỉ học sinh viên"}
               </p>
             </div>
           </div>
 
-          {/* Right Actions: Domain Switcher, Standard Form, Policy */}
+          {/* Right Actions: Role Selector, Domain Switcher, Standard Form, Policy */}
           <div className="flex items-center gap-2">
+            {/* Role Switcher (Nhân viên/Sinh viên vs Cấp Trên) */}
+            <div className="inline-flex bg-slate-800 p-1 rounded-xl border border-amber-400/40">
+              <button
+                type="button"
+                onClick={() => onRoleChange("applicant")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  userRole === "applicant"
+                    ? "bg-amber-400 text-slate-950 font-bold shadow-sm"
+                    : "text-slate-300 hover:text-white"
+                }`}
+                title="Giao diện dành cho người làm đơn (Nộp thư mục hồ sơ)"
+              >
+                <span>👤</span>
+                <span>{applicantLabel}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onRoleChange("reviewer")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  userRole === "reviewer"
+                    ? "bg-amber-400 text-slate-950 font-bold shadow-sm"
+                    : "text-slate-300 hover:text-white"
+                }`}
+                title="Giao diện dành cho cấp trên / trưởng khoa (Duyệt & Phân xử hồ sơ)"
+              >
+                <span>🛡️</span>
+                <span>{reviewerLabel}</span>
+              </button>
+            </div>
+
             {/* Domain Switcher */}
             <div className="inline-flex bg-slate-800 p-1 rounded-xl border border-slate-700">
               <button
@@ -99,16 +136,6 @@ export default function Header({
             </button>
           </div>
         </div>
-      </div>
-
-      {/* 1-Line Clean First Action Banner */}
-      <div className="bg-amber-400/95 text-slate-950 font-semibold px-4 py-2 text-center text-xs shadow-inner flex items-center justify-center gap-2">
-        <span className="bg-slate-950 text-amber-300 text-[10px] uppercase font-bold px-2 py-0.5 rounded tracking-wider">
-          Mẹo sử dụng
-        </span>
-        <span>
-          👉 Chọn một ca mẫu ở mục <strong>"Ca thử nghiệm nhanh"</strong> hoặc tự điền form, rồi bấm <strong>"Thẩm định tự động"</strong> để xem AI phân xử.
-        </span>
       </div>
     </header>
   );

@@ -1,15 +1,19 @@
 import { useState } from "react";
-import Header, { type DomainMode } from "./components/Header";
+import Header, { type DomainMode, type UserRole } from "./components/Header";
 import LocalAgentBar from "./components/LocalAgentBar";
 import PolicyModal from "./components/PolicyModal";
 import StandardFormModal from "./components/StandardFormModal";
-import EnterpriseApp from "./domains/enterprise/EnterpriseApp";
-import AcademicApp from "./domains/academic/AcademicApp";
+import ApplicantPortal from "./components/ApplicantPortal";
+import ReviewerPortal from "./components/ReviewerPortal";
 import { DEFAULT_LLM_CONFIG, type LocalLlmConfig } from "./core/agent/localLlmClient";
 
 export default function App() {
   const [domain, setDomain] = useState<DomainMode>("enterprise");
-  const [llmConfig, setLlmConfig] = useState<LocalLlmConfig>(DEFAULT_LLM_CONFIG);
+  const [userRole, setUserRole] = useState<UserRole>("reviewer");
+  const [llmConfig, setLlmConfig] = useState<LocalLlmConfig>({
+    ...DEFAULT_LLM_CONFIG,
+    model: "qwen3-vl:4b", // Sử dụng model 4b mặc định
+  });
   const [isPolicyOpen, setIsPolicyOpen] = useState(false);
   const [isStandardFormOpen, setIsStandardFormOpen] = useState(false);
 
@@ -19,6 +23,8 @@ export default function App() {
       <Header
         currentDomain={domain}
         onDomainChange={setDomain}
+        userRole={userRole}
+        onRoleChange={setUserRole}
         onOpenPolicy={() => setIsPolicyOpen(true)}
         onOpenStandardForm={() => setIsStandardFormOpen(true)}
       />
@@ -28,10 +34,14 @@ export default function App() {
 
       {/* Main App Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
-        {domain === "enterprise" ? (
-          <EnterpriseApp llmConfig={llmConfig} />
+        {userRole === "applicant" ? (
+          <ApplicantPortal key={domain} domain={domain} />
         ) : (
-          <AcademicApp llmConfig={llmConfig} />
+          <ReviewerPortal
+            key={domain}
+            domain={domain}
+            llmConfig={llmConfig}
+          />
         )}
       </main>
 
