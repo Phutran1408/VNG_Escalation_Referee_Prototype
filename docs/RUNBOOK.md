@@ -114,6 +114,32 @@ quyết định là **ngắt khỏi giao diện** thay vì sửa vội:
 > rồi mới áp cùng cách vá B1/B1b (thẩm quyền đọc từ trường có cấu trúc, không suy từ số
 > ngày và không quét văn xuôi), rồi mới mở lại bộ chuyển ngữ cảnh.
 
+### 5.2 Bẫy free-text — giới hạn còn nguyên, chưa vá
+
+Agent nhận diện tình trạng minh chứng theo **hai** đường:
+
+1. Trường có cấu trúc `docStatus` (`VALID` / `UNCLEAR_DATE` / `MISSING`) — **đáng tin**.
+2. Quét danh sách từ khoá cố định trong `reasonText` + `notesText`
+   (`EscalationRefereeAgent.ts:153-164`: `"mờ"`, `"không rõ ngày"`, `"mất góc"`,
+   `"thiếu mộc"`, `"chưa nộp giấy"`…) — **không đáng tin**.
+
+Đường 2 chỉ khớp đúng những từ đã liệt kê. Gõ **"nhoè"**, **"mất chữ"**, **"illegible"**,
+hay diễn đạt vòng vo thì agent **không** nhận ra, và ca sẽ ra `AUTO_APPROVE`.
+
+**Vì sao chưa vá:** nới danh sách từ khoá chỉ đẩy ranh giới đi chỗ khác, không xoá được
+bản chất — muốn xử đúng phải hiểu ngữ nghĩa, và đó là thay đổi kiến trúc chứ không phải
+sửa vài dòng. Lỗi B1b vừa vá chính là cùng gốc bệnh này: quét chuỗi tự do không phân biệt
+được cả câu phủ định.
+
+**Đã giảm rủi ro bằng giao diện, không bằng cách sửa agent:**
+- Ô `docStatus` đánh số **①** và ghi thẳng *"chọn ở đây, đừng chỉ mô tả bằng lời"*.
+- Placeholder ô Ghi Chú trỏ ngược về ô ①.
+- Cảnh báo hiện ngay khi ô ① để `VALID` mà ghi chú lại tả "mờ / thiếu / mất / không rõ".
+
+> **Hướng xử đúng (chưa làm):** bỏ hẳn đường 2, bắt mọi tình trạng minh chứng phải khai
+> qua trường có cấu trúc. Cái giá là người nhập phải kỷ luật hơn — cần hỏi giáo vụ thật
+> trước khi quyết.
+
 **Những thay đổi để lộ lỗi ra thay vì giấu:**
 - Comparator so **3 vế** (`src/domains/academic/verifyComparator.ts`), không chỉ `outcome`.
 - Gỡ engine song song `runMockVerify` / `runMockEvaluate` — chỉ còn một đường tới agent thật.
@@ -178,8 +204,9 @@ config — ngưỡng 20% ở `:232`, ngưỡng thẩm quyền ở `:114-119`, da
 
 | Triệu chứng | Nguyên nhân | Xử lý |
 |---|---|---|
-| Bảng có dòng đỏ TC16 / TC07 | **Đúng như thiết kế** — lỗi B1 chưa vá | Xem §5; không phải lỗi harness |
-| Cột model ghi tên LLM nhưng máy không có Ollama | Lỗi B2 | Dùng chế độ **⚡ Agent (tất định)** |
-| Ca giám khảo hiện "— chưa chấm" | Đúng: ca tự nhập không có kỳ vọng | Không có gì phải sửa |
-| Nhập "giấy mờ" bằng chữ mà vẫn AUTO_APPROVE | Agent quét keyword cố định | Dùng ô ①; harness đã cảnh báo inline |
+| Bảng có dòng đỏ | B1/B1b đã vá nên bộ chuẩn phải **5/5** — còn đỏ là hồi quy thật | Đọc cột lý do: `OUTCOME` / `CATEGORY` / `QUESTION` |
+| Cột model ghi "Deterministic Rules Engine" | **Đúng**: LLM không chạy, và B2 đã vá nên nó báo trung thực | Không có gì phải sửa |
+| Ca giám khảo hiện "— chưa chấm" | Đúng: ca tự nhập không kèm kỳ vọng nên không chấm được | Không có gì phải sửa |
+| Nhập "nhoè / mất chữ" bằng lời mà vẫn AUTO_APPROVE | Bẫy free-text — agent quét danh sách từ khoá cố định | Dùng ô **①**; xem §5.2 |
+| Bấm nút 🔧 mà kết quả không lật | Chưa bấm **Phân Xử** lại sau khi vặn | Nút chỉ đổi form; phải chạy lại agent |
 | `npm install` lỗi | Node < 20 | Nâng Node lên >= 20 |

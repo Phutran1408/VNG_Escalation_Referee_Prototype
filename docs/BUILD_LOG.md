@@ -1,143 +1,104 @@
-# BUILD LOG: NHẬT KÝ PHÁT TRIỂN & KIỂM THỬ ĐỊNH LƯỢNG
-**Hackathon MLAI 2026 · Bảng 1: OrganizationAI · Spec A: "The Escalation Referee"**  
-**Quy trình thẩm định:** DUYỆT ĐƠN XIN NGHỈ (Academic Leave Approval & Enterprise HR Dual-Domain)  
-**Nhật ký kỹ thuật và báo cáo nghiệm thu của SV4**
+# BUILD LOG — AI Escalation Referee (Spec A · Bảng 1 OrganizationAI)
+
+Quy trình: **DUYỆT ĐƠN XIN NGHỈ** · Repo: 30 commit, không squash/force-push · 08/09/2026
 
 ---
 
-## 1. PHÂN CÔNG VAI TRÒ & TIẾN ĐỘ THỰC HIỆN
+## 1. Dùng AI thế nào
 
-| Vai Trò | Phụ Trách Cốt Lõi | Sản Phẩm Bàn Giao | Trạng Thái |
-| :--- | :--- | :--- | :---: |
-| **SV1** | Khảo sát Quy chế, Luật hóa chính sách & Bộ 15 Ca thử nghiệm | `src/domains/academic/mockTestCases.ts`<br>`docs/QUY_TRINH_PHAP_LY_VA_HO_SO_ESCALATE.md` | **HOÀN THÀNH** |
-| **SV2** | Thiết kế Lõi Agent Hybrid & Single-turn Actionable Question | `src/core/agent/EscalationRefereeAgent.ts`<br>`src/core/agent/localLlmClient.ts` | **HOÀN THÀNH** |
-| **SV3** | Xây dựng Giao diện Web, Thư mục Hồ sơ Cấp trên & VLM | `src/components/ReviewerPortal.tsx`<br>`src/components/ApplicantPortal.tsx`<br>`src/core/agent/vlmClient.ts` | **HOÀN THÀNH** |
-| **SV4** | **Verify Harness, Giám Khảo Thử Nghiệm, Runbook, Slide, Demo, Build Log** | `src/domains/academic/VerifyHarness.tsx`<br>`src/App.tsx` & `src/components/Header.tsx`<br>`docs/RUNBOOK.md`<br>`docs/SLIDES.md`<br>`docs/DEMO_SCRIPT.md`<br>`docs/BUILD_LOG.md` | **HOÀN THÀNH** |
+Claude Code làm **trợ lý lập trình**, tôi làm người duyệt. Quy trình chia thành các **cổng**,
+mỗi cổng AI dừng lại, báo cáo, tôi đọc và duyệt rồi mới cho đi tiếp:
 
----
+| Cổng | AI làm | Tôi quyết |
+|---|---|---|
+| A — Audit | Đọc code, chạy agent thật trên 15 ca + 6 ca tự nghĩ, báo cáo bằng chứng `file:dòng` | Xác nhận phát hiện, chốt việc phải sửa |
+| B — Thiết kế harness | Đề xuất 5 ca, quy tắc so sánh, cách lộ lỗi | Chọn TC16 thay TC05; yêu cầu lỗi phải hiện đỏ |
+| C — Code | Viết comparator, dọn 12 file chết | Duyệt phạm vi xoá; giữ `enterprise/types.ts` |
+| D — Vá agent | Vá B1/B1b/B2 | Quyết **ẩn** nhánh enterprise thay vì vá |
 
-## 2. QUÁ TRÌNH KIỂM ĐỊNH HAI CỔNG (2-GATE AUDIT & IMPLEMENTATION)
-
-### CỔNG A: COMPREHENSION & AUDIT (Thẩm tra mã nguồn & Phát hiện lỗi ngắt kết nối)
-Trong quá trình kiểm tra mã nguồn tại Cổng A, SV4 đã phát hiện một khiếm khuyết lớn do commit `d53ebe0`:
-- **Hiện tượng**: `App.tsx` bị cấu hình cứng chỉ hiển thị `ApplicantPortal` và `ReviewerPortal` (với 7 case folders cố định), làm ngắt kết nối hoàn toàn `AcademicApp.tsx` và `VerifyHarness.tsx` khỏi luồng giao diện chính.
-- **Rủi ro**: Nếu Giám khảo mở Live URL mà không thấy Verify Harness và không có nơi tự gõ ca mới, đồ án sẽ bị đánh trượt theo đúng cảnh báo của ban tổ chức.
-- **Biện pháp khắc phục (Cổng B)**:
-  1. Tích hợp trực tiếp `VerifyHarness` lên thanh điều hướng chính của `Header.tsx` với chế độ `harness` làm mặc định khi tải trang.
-  2. Nâng cấp `VerifyHarness.tsx` thành trung tâm kiểm định toàn diện: vừa có **Khu vực Giám khảo tự gõ ca mới** (chạy agent thật 100% dynamic, không hardcode), vừa có **Bộ kiểm chứng hàng loạt** (5 ca chuẩn và 15 ca toàn diện).
+Nguyên tắc tôi áp: **không nhận thay đổi nào mà tôi không giải thích lại được.** Mỗi sửa đổi
+đều kèm 1–2 câu lý do trong commit message và trong `RUNBOOK.md`.
 
 ---
 
-## 3. KẾT QUẢ KIỂM THỬ ĐỊNH LƯỢNG CHI TIẾT (QUANTITATIVE AUDIT REPORT)
+## 2. Chỗ AI có lợi rõ nhất — harness bắt lỗi cho chính agent
 
-### A. Kiểm Thử Bộ 15 Ca Tiêu Chuẩn (Standard 15 Test Cases):
-Toàn bộ 15 ca được kiểm thử độc lập thông qua script tự động hóa với kết quả tuyệt đối:
+Đây là kết quả tôi hài lòng nhất, và nó **có bằng chứng trong lịch sử commit**:
 
 ```
-[TC01] Expected: AUTO_APPROVE | Actual: AUTO_APPROVE | Pass: true (0 past, 1 req, 15 total, VALID)
-[TC02] Expected: AUTO_APPROVE | Actual: AUTO_APPROVE | Pass: true (1 past, 1 req, 15 total, VALID)
-[TC03] Expected: AUTO_APPROVE | Actual: AUTO_APPROVE | Pass: true (2 past, 1 req, 30 total, VALID)
-[TC04] Expected: ESCALATE (Không chắc dữ kiện) | Actual: ESCALATE (Không chắc dữ kiện) | Pass: true
-       Câu hỏi: "Giấy khám bệnh không đọc được ngày: Sinh viên Phạm Đức Anh xin nghỉ từ ngày nào?"
-[TC05] Expected: ESCALATE (Ngoài chính sách) | Actual: ESCALATE (Ngoài chính sách) | Pass: true
-       Câu hỏi: "Sinh viên Hoàng Minh Tuấn đã nghỉ 4/15 buổi (26.7%), vượt mức cho phép: Có xét đặc biệt để không bị cấm thi không?"
-[TC06] Expected: ESCALATE (Vượt thẩm quyền) | Actual: ESCALATE (Vượt thẩm quyền) | Pass: true
-       Câu hỏi: "Đơn xin bảo lưu cả học kỳ của sinh viên Đặng Thu Hà thuộc thẩm quyền Trưởng khoa. Chuyển hồ sơ lên Trưởng khoa phê duyệt?"
-[TC07] Expected: ESCALATE (Vượt thẩm quyền) | Actual: ESCALATE (Vượt thẩm quyền) | Pass: true
-[TC08] Expected: ESCALATE (Không chắc dữ kiện) | Actual: ESCALATE (Không chắc dữ kiện) | Pass: true
-[TC09] Expected: ESCALATE (Không chắc dữ kiện) | Actual: ESCALATE (Không chắc dữ kiện) | Pass: true
-[TC10] Expected: ESCALATE (Ngoài chính sách) | Actual: ESCALATE (Ngoài chính sách) | Pass: true
-[TC11] Expected: ESCALATE (Ngoài chính sách) | Actual: ESCALATE (Ngoài chính sách) | Pass: true
-[TC12] Expected: AUTO_APPROVE | Actual: AUTO_APPROVE | Pass: true
-[TC13] Expected: AUTO_APPROVE | Actual: AUTO_APPROVE | Pass: true
-[TC14] Expected: AUTO_APPROVE | Actual: AUTO_APPROVE | Pass: true
-[TC15] Expected: AUTO_APPROVE | Actual: AUTO_APPROVE | Pass: true
-
-==> TỔNG KẾT BỘ 15 CA: 15/15 PASS (100.0%)
-==> TỶ LỆ OVER-ESCALATION TRÊN CA THƯỜNG QUY: 0/7 ca (0.0%)
-==> PHÂN PHỐI 3 NHÓM DỪNG BẤT ĐỊNH:
-    - Không chắc dữ kiện: 3 ca (TC04, TC08, TC09)
-    - Ngoài chính sách: 3 ca (TC05, TC10, TC11)
-    - Vượt thẩm quyền: 2 ca (TC06, TC07)
+a25c0d2  test(SV4): comparator 3 vế …        → bộ 5 = 4/5, bộ 16 = 14/16  (ĐỎ)
+d9a8f36  fix(agent): B1/B1b/B2 …             → bộ 5 = 5/5, bộ 16 = 16/16  (XANH)
 ```
 
----
+Harness cũ chỉ so `outcome`. Một ca gắn **sai loại dừng** vẫn ra `ESCALATE` nên vẫn hiện
+PASS — đúng cái bẫy đề bài cảnh báo. Comparator mới so **3 vế**: `outcome` + `uncertaintyCategory`
++ regex câu hỏi escalate. Chạy lại thì lòi ra ngay:
 
-### B. Kiểm Thử Phân Định Ranh Giới (Boundary Condition Tests):
-Kiểm tra tính sắc bén giữa **Ngoài chính sách** (Dừng Loại 2) và **Vượt thẩm quyền** (Dừng Loại 3):
+> **B1** — agent coi "nghỉ ≥ 10 buổi" là "xin bảo lưu học kỳ", nên sinh viên nghỉ ốm 12 buổi
+> bị hỏi *"Đơn xin bảo lưu cả học kỳ … có chuyển Trưởng khoa không?"* trong khi họ chưa hề xin
+> bảo lưu. Thẩm quyền phải theo **loại đơn**, không theo **độ dài đơn**.
 
-1. **Ca Biên 1: Vắng quá 20% học phần (4/15 buổi = 26.7%)**:
-   - *Input*: `sessionsRequested = 1`, `pastAbsencesCount = 3`, `totalLimitOrCapacity = 15`.
-   - *Quyết định*: `ESCALATE`.
-   - *Nhóm dừng*: `Ngoài chính sách`.
-   - *Căn cứ pháp lý*: Điều 1.2 & 1.3 Quy chế Đào tạo.
-   - *Câu hỏi*: *"Sinh viên đã nghỉ 4/15 buổi (26.7%), vượt mức cho phép: Có xét đặc biệt để không bị cấm thi không?"*
-   - $\rightarrow$ **ĐẠT**: Không bị nhầm lẫn sang Vượt thẩm quyền.
+Dựng ca sentinel còn lòi thêm **B1b**: agent quét chuỗi `includes("bảo lưu học kỳ")` nên ghi chú
+*"sinh viên KHÔNG xin bảo lưu học kỳ"* vẫn kích hoạt đúng nhánh nó phủ định.
 
-2. **Ca Biên 2: Xin bảo lưu cả học kỳ (60 buổi)**:
-   - *Input*: `leaveType = "Xin bảo lưu học kỳ"`, `isSpecialRequest = true`.
-   - *Quyết định*: `ESCALATE`.
-   - *Nhóm dừng*: `Vượt thẩm quyền`.
-   - *Căn cứ pháp lý*: Điều 3.2 Quy chế Đào tạo.
-   - *Câu hỏi*: *"Đơn xin bảo lưu cả học kỳ của sinh viên thuộc thẩm quyền Trưởng khoa. Chuyển hồ sơ lên Trưởng khoa phê duyệt?"*
-   - $\rightarrow$ **ĐẠT**: Không bị nhầm lẫn sang Ngoài chính sách.
+Điểm mấu chốt: **commit vá agent không đụng một dòng harness nào** (`git show d9a8f36 --stat`
+chỉ có 1 file). Bảng chuyển từ đỏ sang xanh vì logic được sửa, không vì thước đo bị nới.
 
 ---
 
-### C. Kiểm Thử Khả Năng Tổng Quát Hóa (Generalization on Unseen Cases):
-Kiểm tra khả năng phân tích ca mới hoàn toàn mà không hề có trong tập huấn luyện hoặc testbed:
+## 3. Chỗ mất công
 
-1. **Ca mới A (Thường quy chưa từng gặp)**:
-   - Sinh viên `SV-NEW-99`, xin nghỉ sốt virus 2 buổi kèm giấy khám BV Chợ Rẫy rõ ngày, vắng trước 0, tổng số buổi 30 ($2/30 = 6.7\% < 20\%$).
-   - *Kết quả*: `AUTO_APPROVE` (Thời gian: 6ms, Độ tin cậy: 100%).
+**Python cắt mất file tiếng Việt.** Tôi dùng script Python sửa hàng loạt `RUNBOOK.md`. Script
+mở file ở chế độ ghi rồi mới lỗi encode emoji — file bị cắt về **0 byte**. Khôi phục được từ
+commit trước, không mất gì, nhưng từ đó **bỏ hẳn Python cho file tiếng Việt**, chuyển sang công
+cụ sửa file trực tiếp. Trước đó cũng đã một lần Python biến toàn bộ dấu tiếng Việt thành `?`.
 
-2. **Ca mới B (Chứng từ mờ ngày chưa từng gặp)**:
-   - Sinh viên `SV-NEW-88`, nộp giấy khám bệnh bị scan mất góc ngày khám (`docStatus = "UNCLEAR_DATE"`).
-   - *Kết quả*: `ESCALATE` (Nhóm dừng: `Không chắc dữ kiện`).
-   - *Câu hỏi sinh ra*: *"Giấy khám bệnh không đọc được ngày: Sinh viên xin nghỉ từ ngày nào?"*.
+**Không kiểm được UI bằng trình duyệt.** Extension Chrome không kết nối, nên AI chỉ xác minh
+được gián tiếp: `tsc` sạch, build PASS, bundle chứa đủ chuỗi UI mới, logic agent đúng qua `tsx`.
+**Phần bấm tay trên giao diện là việc tôi tự làm** trước khi quay video.
 
----
+**Suýt để lẫn thành phần của dự án khác.** Khi soạn slide kiến trúc, tôi định ghi "gazetteer OSM"
+vào cột công nghệ THẬT. Dự án này **không có** dữ liệu địa lý nào — nó lẫn từ việc khác. Bắt được
+nhờ đối chiếu lại với code thay vì tin trí nhớ. Đã rà toàn repo: không còn dấu vết.
 
-### D. Kiểm Thử Nguyên Tắc Bất Định (Invariance Principle):
-- Chạy 100 lần lặp độc lập trên cùng một bộ tham số đầu vào.
-- **Kết quả**: 100/100 lần đều trả về cùng một `outcome`, cùng một `uncertaintyCategory`, cùng một `policyBasis`.
-- **Kết luận**: Hệ thống triệt tiêu hoàn toàn tính ngẫu nhiên (non-deterministic hallucination) của LLM thuần túy nhờ cơ chế Deterministic Rule Guardrails làm mỏ neo.
-
----
-
-## 4. BÁO CÁO BUILD & ĐÓNG GÓI ỨNG DỤNG (PRODUCTION BUILD VERIFICATION)
-
-### Lệnh thực thi:
-```bash
-npm install
-npm run build
-```
-
-### Kết quả đóng gói:
-```
-vite v8.2.2 building client environment for production...
-transforming...
-✓ 28 modules transformed.
-rendering chunks...
-computing gzip size...
-dist/index.html                   0.58 kB │ gzip:  0.40 kB
-dist/assets/index-D7ahvVWO.css   52.47 kB │ gzip:  9.62 kB
-dist/assets/index-0vOctG6X.js   312.74 kB │ gzip: 88.07 kB
-
-✓ built in 235ms with 0 errors
-```
-
-- **Tốc độ build**: 235ms (siêu nhanh nhờ Vite + TypeScript).
-- **Kích thước bundle JavaScript**: 312.74 kB (gzip: 88.07 kB).
-- **Lỗ hổng bảo mật (Audit)**: `0 vulnerabilities`.
-- **Khả năng tương thích trình duyệt**: Hỗ trợ 100% các trình duyệt hiện đại (Chrome, Edge, Safari, Firefox).
+**Nhãn nút tự mình nói dối.** Tôi thêm 3 nút "vặn thử" cho giám khảo. Nút thứ ba hứa *"quay lại
+Tự động duyệt"*, nhưng bấm nối tiếp sau nút hai thì minh chứng vẫn "mờ ngày" nên ca vẫn escalate.
+Đúng loại bệnh vừa đi vá ở B1. Phải chạy thử chuỗi nối tiếp mới phát hiện.
 
 ---
 
-## 5. NGHIỆM THU DANH MỤC HỒ SƠ SV4 BÀN GIAO
-- [x] **Verify Harness nâng cấp**: Hỗ trợ Giám khảo tự gõ ca mới (Sơ loại 1 ca, Chung kết 5 ca) gọi agent thật, ghim ca kiểm chứng động, chạy batch 5 & 15 ca, xuất JSON (`src/domains/academic/VerifyHarness.tsx`).
-- [x] **Điều hướng tích hợp**: Mặc định hiển thị Verify Harness khi mở trang, chuyển đổi linh hoạt sang Reviewer Portal và Applicant Portal (`src/App.tsx`, `src/components/Header.tsx`).
-- [x] **Hướng dẫn chấm thi nhanh**: `docs/RUNBOOK.md` (Quy trình 90s cho giám khảo).
-- [x] **5 Slide thuyết trình chuẩn**: `docs/SLIDES.md` (Bảo vệ đồ án trước hội đồng).
-- [x] **Kịch bản quay video demo**: `docs/DEMO_SCRIPT.md` (Phiên bản 90s và 3 phút).
-- [x] **Nhật ký phát triển & báo cáo kiểm định**: `docs/BUILD_LOG.md` (Định lượng 100% Pass, 0% Over-escalation).
+## 4. Tính năng lớn nhất đã CẮT — nhánh Doanh Nghiệp
+
+Sản phẩm ban đầu có **hai ngữ cảnh**: Trường học và Doanh nghiệp, đổi qua lại bằng nút trên
+thanh điều hướng. Tôi đã **ngắt nhánh Doanh nghiệp khỏi giao diện**.
+
+**Lý do:** sau khi vá B1/B1b cho nhánh trường học, tôi soi sang nhánh doanh nghiệp
+(`EscalationRefereeAgent.ts:98-103`) và thấy **đúng hai lỗi đó còn nguyên** — thẩm quyền suy từ
+số ngày (`>= 20`), và quét chuỗi tự do (`includes("vượt thẩm quyền")`). Nhưng **không có ca kiểm
+thử nào phủ nhánh này**: cả 16 ca đều là trường học.
+
+Vá logic mà không có test là **vá mù** — tôi không có cách nào biết bản vá đúng hay tạo lỗi mới,
+và rủi ro đó lớn hơn giá trị của việc khoe thêm một ngữ cảnh. Nên:
+
+- Bộ chuyển ngữ cảnh → nhãn tĩnh "🎓 Trường Học"; `App.tsx` chốt `DEMO_DOMAIN = "academic"`.
+- **Không xoá code enterprise** — giữ nguyên trong repo để bảo toàn lịch sử.
+- Khai báo thẳng trong `RUNBOOK.md §5.1`, kèm câu: *đây là việc đầu tiên nếu mở rộng — viết
+  test trước, vá sau, rồi mới mở lại nút.*
+
+Cùng lý do, tôi **không** nới danh sách từ khoá để chữa bẫy free-text (`RUNBOOK §5.2`): nới chỉ
+đẩy ranh giới đi chỗ khác. Thay vào đó tôi sửa **giao diện** để hướng người dùng vào trường có
+cấu trúc, và ghi rõ giới hạn còn đó.
+
+---
+
+## 5. Số liệu chốt
+
+| Hạng mục | Giá trị |
+|---|---|
+| Bộ 5 ca chuẩn | **5/5 PASS** |
+| Bộ toàn diện | **16/16 PASS** |
+| Độ trễ / ca | < 5 ms (rule engine tất định) |
+| `tsc --noEmit` | sạch (trước khi dọn: 3 lỗi) |
+| Build | PASS · 29 modules · ~300 ms |
+| File nguồn | 18 sống · **0 mồ côi** (xoá 12 file chết, trong đó 3 file hardcode `pass: true`) |
+| Commit | 30 · lịch sử nguyên vẹn |
