@@ -1,92 +1,34 @@
-# 🎯 TÀI LIỆU ĐẶC TẢ GIỚI THIỆU SẢN PHẨM: THE ESCALATION REFEREE
-### *Spec A — OrganizationAI · AI Phân Xử & Điểm Dừng Thông Minh Trong Thẩm Định Đơn*
-*Thiết kế chuẩn hóa trải nghiệm Web App trên Laptop / Desktop Workspace*
+# BẢNG KỊCH BẢN NÓI (SPEECH SCRIPT) & ĐỐI SOÁT PHÂN CẢNH SHOWCASE FILM
+
+> **Tổng thời lượng phim**: 90,000ms (~90 giây)  
+> **Nhịp độ thuyết trình**: Trầm ấm, dõng dạc, nhả chữ theo từng chuyển động thị giác trên màn hình Laptop.  
+> **Định vị dự án**: VNG Enterprise AI & Higher Education Leave Referee.
 
 ---
 
-## ⚡ 1. KEYWORDS CỐT LÕI (CORE KEYWORDS)
-- **Hệ thống**: `The Escalation Referee` · `Spec A` · `Bảng 1 OrganizationAI`.
-- **Bài toán**: `Leave Approval` · `Human-in-the-Loop` · `Smart Escalation` · `Zero Over-escalation`.
-- **Kiến trúc**: `Hybrid 2-Tier Engine` · `Local Deterministic Guardrails (<= 6ms)` · `Local VLM & LLM (Qwen3-VL 4B)`.
-- **Quy chuẩn hồ sơ**: `Case Folder Per Applicant` · `1 PDF Form` + `Medical Evidences (.jpg / .pdf)`.
-- **3 Điểm dừng chuẩn**: `Fact Uncertainty` (Dữ liệu mờ/thiếu) · `Policy Edge` (Vượt 20% học phần/chính sách) · `Authority Cap` (Bảo lưu/Vượt thẩm quyền).
-- **Hành động & Phân xử**: `Auto-Approve` · `Single-Turn Actionable Escalation` · `Human Override Audit Trail`.
-- **Nền tảng vận hành**: `Laptop Web Workspace` · `Trackpad & Mouse Precision` · `Multi-column Side-by-Side Inspection`.
-- **Thị giác AI & Đối soát**: `Qwen3-VL 4B Laser Beam Scan` · `Dynamic Bounding Boxes` · `Animated Link-Lines Cross-Check` · `Wait! Something is wrong... Interruption Alert`.
+## Bảng Đối Soát Chi Tiết: Phân Cảnh — Hình Ảnh — Lời Thoại (Speech)
 
----
-
-## 💻 2. ĐẶC TẢ THAO TÁC TRÊN LAPTOP / DESKTOP (LAPTOP WORKSPACE INTERACTION)
-
-### 👤 Role 1: Cấp Dưới / Người Làm Đơn (Applicant Portal — Sinh Viên / Nhân Viên)
-> **Nguyên tắc**: *Laptop Web Portal · Upload-only · Privacy Isolation (Không thấy hồ sơ người khác).*
-
-- **Thao tác trên Laptop (Keyboard + Mouse/Trackpad Workflow)**:
-  1. **Nhập liệu biểu mẫu (Form Inputs)**:
-     - Nhập họ tên (`Lê Thị Phương` / `Nguyễn Văn An`), Mã số (`NV-1981-0592` / `SV-2024-1001`), Khoa/Phòng ban.
-     - Chọn loại đơn (`Nghỉ ốm BHXH` / `Nghỉ phép năm` / `Bảo lưu học kỳ`) & mốc ngày bằng bộ chọn lịch trên Desktop.
-  2. **Kéo thả chuột (Drag & Drop Zone 1) — Tệp Đơn PDF Bắt Buộc**:
-     - Kéo thả file PDF đơn chuẩn (`BM-HR-01` / `BM-DT-02`) từ File Explorer / Finder vào vùng thả chuột có viền nét đứt $\rightarrow$ Hiện chip tệp đính kèm.
-  3. **Kéo thả chuột (Drag & Drop Zone 2) — Multi-file Evidence Attachments**:
-     - Kéo thả ảnh chứng từ y tế (`.jpg`, `.png`), giấy ra viện, giấy chứng nhận BHXH (Mẫu CT07).
-  4. **Tự động đóng gói thư mục (Automatic Folder Packaging)**:
-     - Trình duyệt tự động tạo cây thư mục: `case_<id>_<tên>/` chứa đúng 1 PDF đơn + n file ảnh minh chứng.
-  5. **Bấm nộp (1-Click Submit)**:
-     - Click nút **`Nộp Hồ Sơ Lên Hệ Thống`** $\rightarrow$ Nhận mã tiếp nhận, thông báo phân quyền bảo mật riêng tư, hồ sơ tự động chuyển vào hàng đợi cấp trên.
-
----
-
-### 🛡️ Role 2: Cấp Trên / Người Phê Duyệt (Reviewer Portal — Trưởng Khoa / HR / Ban Đào Tạo)
-> **Nguyên tắc**: *Full Dossier Transparency · Side-by-Side Dual Column · One-Click AI Inspection.*
-
-- **Thao tác trên Laptop (High-productivity Reviewer Cockpit)**:
-  1. **Hàng đợi hồ sơ (Pending Queue - Cột Trái)**:
-     - Danh sách thư mục chờ duyệt, hiển thị huy hiệu: `Chưa Check` | `✓ Hợp lệ` | `⚠️ Cần Escalate`.
-     - Click chọn từng ca để xem chi tiết hoặc bấm nút **`⚡⚡ Agent Check All`** trên thanh công cụ để quét toàn bộ hàng đợi.
-  2. **Hiệu ứng Quét VLM Laser (Qwen3-VL 4B Deep Vision Scan)**:
-     - Chùm laser xanh quét dọc ảnh chứng từ y tế từ trên xuống dưới.
-     - Tự động đóng các khung Bounding Box:
-       - 🔴 Bounding Box đỏ: `[DETECTED: RED STAMP - Trạm Y Tế Hòa Cường Nam]`
-       - ✍️ Bounding Box xanh: `[DETECTED: SIGNATURE - BS. Khương Linh Nhi]`
-       - 📅 Bounding Box cam: `[OCR: 10 NGÀY NGHỈ - SARS-CoV-2]`
-  3. **Hiệu ứng Đường Nối Đối Soát Logic (Interactive Link-Lines Cross-Check)**:
-     - Các tia sáng liên kết (SVG glowing connector lines) bắn từ các ô Bounding Box của ảnh bằng chứng sang thẳng các trường tương ứng trên Đơn PDF gốc để đối soát (Họ tên $\rightarrow$ Họ tên, 10 ngày $\rightarrow$ 10 ngày).
-     - Đối soát hoàn tất $\rightarrow$ Hiện huy hiệu xanh phát sáng: `✓ VERIFIED MATCH (100% VALID)`.
-  4. **Điểm Dừng Đột Xuất: "Wait! Something's wrong..." (Human Escalation Trigger)**:
-     - Khi gặp hồ sơ bất thường (Vắng quá 20% hoặc Đơn bảo lưu cả kỳ):
-     - Màn hình chuyển hiệu ứng cảnh báo giật nhịp hổ phách/đỏ: `"Wait! Something's wrong..."`
-     - Cảnh báo vi phạm: *"Hồ sơ bảo lưu cả học kỳ vượt thẩm quyền Giảng viên (Điều 3.2 Quy chế Đào tạo)!"*
-     - Hệ thống kích hoạt điểm dừng thông minh (`Smart Stop: Authority Cap`), sinh câu hỏi phân xử 1 lượt chuyển cấp trên: *"Chuyển hồ sơ lên Trưởng khoa / Phòng Đào tạo phê chuẩn?"*.
-  5. **Quyền quyết định tối cao (Human Override / Approval)**:
-     - Click nút **`✍️ Ký Duyệt Phê Chuẩn`** hoặc **`Chuyển Trưởng Khoa Phê Duyệt ↗`**.
-     - Ghi nhận Audit Trail bất biến lưu vết kiểm toán (Thời gian, ID người duyệt, Căn cứ pháp lý).
-
----
-
-### 🧪 Role 3: Giám Khảo Kiểm Chứng (Verify Harness Dashboard)
-- **Kiểm chứng hàng loạt**: Bấm **`▶ Chạy Kiểm Chứng Hàng Loạt`** (5 ca chuẩn / 16 ca toàn diện) $\rightarrow$ `100% Pass Rate`, `0% Over-escalation`.
-- **Khu vực Giám khảo tự nhập (Interactive Judge Playground)**: Tự do nhập mọi tình huống để thử thách AI phân xử thời gian thực.
-- **Phép "vặn nút" tự kiểm chứng**: 3 nút chuyển nhanh dữ liệu để kiểm chứng tính phi-cài-đặt (không hardcode).
-- **Xuất minh chứng JSON**: 1-click tải toàn bộ log phán quyết phục vụ hội đồng chấm thi.
-
----
-
-## 🎬 3. SƯỜN PHÂN CẢNH PRODUCT SHOWCASE FILM (CINEMATIC LAPTOP EDITION)
-*Tổng thời lượng: 80,000ms (~80 giây), bố cục nhịp nhàng, trực quan hóa chi tiết từng bước thẩm định:*
-
-| Scene | Tên Phân Cảnh | Thời lượng (ms) | Visual & Laptop Motion Concept | Key Text / Words Hiển Thị |
+| Scene | Phân Cảnh | Thời lượng | Visual & Laptop Action Trên Màn Hình | Lời Thoại Thuyết Trình (Speech Script) |
 | :---: | :--- | :---: | :--- | :--- |
-| **S0A** | **The Hook** | 3,200ms | Chữ typographic khổng lồ lướt chậm, trang trọng trên nền tối sâu | `Absences.` `Leaves.` `Approvals.` |
-| **S0B** | **The Pain** | 3,600ms | Đường ngang trắng phát sáng mở rộng trước khi bùng nổ cảnh báo đỏ rủi ro duyệt mù | `High volume.` `Manual triage.` `(White Line)` `Blind risks.` |
-| **S1** | **The Reveal** | 4,500ms | Logo 4 vạch ánh sáng + Khối typographic hổ phách nhận diện thương hiệu | `THE ESCALATION REFEREE` · *Smart stops. Zero over-escalation.* |
-| **S2** | **The Problem** | 4,200ms | Con trỏ soạn thảo gõ chậm từng chữ, gạch chân quy chế thẩm định | `Every leave request carries uncertainty.` |
-| **S3** | **Applicant Upload** | 6,500ms | **Laptop Cổng Nộp Đơn**: Chuột kéo 1 PDF Form + ảnh chứng từ vào Dropzone, đóng gói cây thư mục | `Folder Package.` `1 PDF Form + Evidences.` `Drag & Drop Upload.` |
-| **S3B** | **Folder Ingestion**| 5,500ms | Laser quét bóc tách từng tầng dữ liệu trong thư mục nộp | `Packaging.` `OCR Ingestion.` `Local VLM Staging.` |
-| **S4** | **VLM Laser Scan** | 7,000ms | **Tia laser quét ảnh y tế**: Bounding Boxes phát hiện mộc đỏ + chữ ký bác sĩ Khương Linh Nhi | `Qwen3-VL 4B Vision.` `Red Stamp Verified.` `Doctor Signature Detected.` |
-| **S5** | **Logic Link-Lines**| 6,500ms | **Tia sáng kết nối SVG**: Bắn từ bằng chứng y tế sang các ô tương ứng trên Đơn PDF đối soát | `Side-by-Side Cross-Check.` `Interactive Logic Links.` `✓ Verified Match.` |
-| **S6** | **Stop Alert: Wait!**| 6,500ms | **Cảnh báo kịch tính**: "Wait! Something is wrong...", phát hiện đơn bảo lưu cả kỳ vượt thẩm quyền | `Wait! Something's wrong...` `Authority Cap Exceeded.` `Escalate to Dean.` |
-| **S7** | **The 3 Smart Stops** | 6,500ms | 3 thẻ nổi ba chiều tượng trưng cho 3 loại dừng bắt buộc | `1. Fact Uncertainty` `2. Policy Edge` `3. Authority Cap` |
-| **S8** | **Single-Turn Action**| 6,000ms | Hộp câu hỏi hành động 1 lượt, chuột click chuyển Trưởng khoa phê duyệt, lưu Audit Log | `One-Turn Actionable.` `Human Override.` `Audit Trail Logged.` |
-| **S9B** | **Multi-Domain** | 4,500ms | 3 dòng chữ lướt lên: thích ứng linh hoạt giữa Nhà trường & Doanh nghiệp | `Enterprise HR Leaves,` `University Absences,` `Medical BHXH Claims.` |
-| **S9C** | **Batch Verify 16 Cases** | 8,500ms | **Giao diện chính Verify Harness**: Chạy trực tiếp quét 16 đơn nghỉ, thanh tiến trình & bảng kết quả live | `Batch Verify 16/16.` `5.2ms Latency.` `100% Pass Rate.` |
-| **S10** | **End Card** | 5,000ms | Khung Laptop mở rộng toàn màn hình, logo & nút Replay tinh tế | `The Escalation Referee.` `Spec A · OrganizationAI.` |
+| **S0A** | **The Hook** | 3,500ms | Chữ lớn lướt nhẹ trên nền tối sâu: `Absences.` $\rightarrow$ `Leaves.` $\rightarrow$ `Approvals.` | *"Trong mọi tổ chức, từ trường đại học đến tập đoàn, hàng ngàn đơn xin nghỉ và vắng mặt phát sinh mỗi tuần..."* |
+| **S0B** | **The Pain** | 4,000ms | `High volume.` $\rightarrow$ `Manual triage.` $\rightarrow$ Vạch sáng trắng mở rộng $\rightarrow$ `Blind risks.` bùng nổ đỏ rực. | *"Số lượng quá lớn dẫn đến tắc nghẽn xét duyệt thủ công. Và nguy hiểm nhất: là rủi ro phê duyệt mù — ký duyệt mà không thể đối soát chứng từ."* |
+| **S1** | **The Reveal** | 4,500ms | Logo **VNG** màu cam nổi bật vươn lên $\rightarrow$ Tên thương hiệu `THE ESCALATION REFEREE`. | *"Xin giới thiệu The Escalation Referee — Hệ thống trọng tài AI thế hệ mới: Điểm dừng thông minh, triệt tiêu duyệt mù và loại bỏ hoàn toàn việc leo thang quá tải."* |
+| **S2** | **The Problem** | 4,500ms | Con trỏ gõ chậm từng từ quy chế đào tạo & nhân sự: tính mơ hồ của chính sách, chứng từ thiếu mộc. | *"Bởi mỗi lá đơn đều tiềm ẩn sự mơ hồ: dấu mộc bệnh viện có hợp lệ không? ngày khám có bị mờ? và liệu thời gian nghỉ có vượt trần cho phép?"* |
+| **S3** | **Applicant Upload** | 7,500ms | **Thư mục bên phải màn hình**: Chuột gắp `don_xin_nghi.pdf` thả vào Dropzone 1 $\rightarrow$ gắp tiếp ảnh `bang_chung_ct07.jpg` thả vào Dropzone 2. | *"Bắt đầu từ người nộp. Ngay tại giao diện Portal, sinh viên hoặc nhân viên chỉ cần kéo thả đơn chuẩn PDF và ảnh chụp bệnh án từ thư mục vào hệ thống..."* |
+| **S3B** | **Folder Ingestion**| 6,000ms | Hộp pipeline bóc tách 5 bước chạy tuần tự: cấu trúc thư mục, OCR text, staging VLM nội bộ. | *"Hồ sơ lập tức được đóng gói tự động. Pipeline bóc tách OCR tại chỗ bắt đầu trích xuất từng trường dữ liệu mà không cần tải lên bất kỳ máy chủ đám mây công cộng nào."* |
+| **S4** | **VLM Laser Scan** | 8,000ms | **Ảnh bệnh án phóng to**: Tia laser xanh lướt chậm từ trên xuống $\rightarrow$ Bounding boxes phát hiện mộc đỏ (99.4%), chữ ký BS. Khương Linh Nhi (98.8%), chẩn đoán 10 ngày. | *"Đây là bước đột phá: Mô hình thị giác cục bộ Qwen3-VL 4B quét trực tiếp ảnh chụp. Tia laser nhận diện chính xác con dấu đỏ tròn của trạm y tế, chữ ký bác sĩ phụ trách và chẩn đoán điều trị."* |
+| **S5** | **Logic Link-Lines**| 7,500ms | **Tia sáng xanh bắn nối** giữa Đơn PDF bên trái và Bằng chứng VLM bên phải $\rightarrow$ Kích hoạt phát sáng và hiện thẻ `✓ Khớp` / `✓ Hợp lệ`. | *"Hệ thống tự động phóng các tia kết nối logic, đối soát chéo: thời gian 10 ngày nghỉ trên đơn có khớp với giấy viện không? Lý do sốt Covid có khớp với hồ sơ bệnh án không? Mọi khớp nối đều minh bạch 100%."* |
+| **S6** | **Stop Alert: Wait!**| 6,500ms | Ánh hổ phách nhấp nháy báo động $\rightarrow$ Xuất hiện thẻ: `Wait! Something's wrong...` $\rightarrow$ Chặn đơn bảo lưu 16 tuần vượt thẩm quyền. | *"Wait! Something is wrong... Nếu gặp một ca xin bảo lưu cả học kỳ vượt trần 20% thì sao? Hệ thống lập tức kích hoạt điểm dừng thẩm quyền, không cho phép tự động duyệt mù, bảo vệ nghiêm ngặt quy chế đào tạo!"* |
+| **S7** | **The 3 Smart Stops** | 7,000ms | 3 thẻ nổi 3D bay lên: `1. Fact Uncertainty`, `2. Policy Edge`, `3. Authority Cap`. | *"Đây chính là cơ chế 3 Điểm Dừng Thông Minh: dừng khi thiếu chứng cứ thực tế, dừng khi chạm ranh giới chính sách, và dừng khi vượt thẩm quyền quy định."* |
+| **S8** | **Single-Turn Action**| 6,500ms | Màn hình cấp trên: Câu hỏi định tuyến rõ ràng $\rightarrow$ Chuột click `Chuyển Trưởng Khoa Phê Duyệt ↗` $\rightarrow$ Ghi log bất biến. | *"Và khi phải dừng, hệ thống đưa ra đúng một câu hỏi hành động duy nhất cho cấp có thẩm quyền. Chỉ một cú click chuột: hồ sơ được chuyển tiếp đúng cấp, lưu vết kiểm toán vĩnh viễn."* |
+| **S9B** | **Multi-Domain** | 5,000ms | 3 dòng chữ bay lên: `Enterprise HR Leaves`, `University Absences`, `Medical BHXH Claims`. | *"Kiến trúc linh hoạt này vận hành hoàn hảo cho cả xin nghỉ việc doanh nghiệp, điểm danh đại học, và thanh toán chế độ bảo hiểm y tế."* |
+| **S9C** | **Batch Verify 16 Cases** | 9,500ms | `One case is not hard. What if we have more cases?` $\rightarrow$ **Giao diện Verify Harness chạy trực tiếp quét 16 đơn** với thanh tiến trình và bảng trạng thái từng ca. | *"Giải quyết 1 ca không khó, nhưng điều gì sẽ xảy ra khi ta có hàng loạt ca phức tạp? Hãy nhìn Verify Harness vận hành trực tiếp trên 16 ca thực tế: 7 ca tự duyệt tức thì, 9 ca phân loại điểm dừng chuẩn xác — tốc độ 5.2 mili-giây, độ chính xác 100%!"* |
+| **S10** | **End Card** | 5,500ms | Khung Laptop mở rộng, Logo **VNG** $\rightarrow$ `THE ESCALATION REFEREE` · Nút Replay sẵn sàng. | *"The Escalation Referee. Chấm dứt duyệt mù, tối ưu nguồn lực con người, tự tin bước vào kỷ nguyên vận hành thông minh cùng VNG."* |
+
+---
+
+### Gợi ý khi quay / thuyết minh voice-over:
+- **Tốc độ đọc**: ~130 - 140 từ/phút, chừa khoảng lặng 0.5s ở các điểm chuyển cảnh (đặc biệt là khúc `Wait!` và khúc chuyển sang `Batch Verify 16 ca`).
+- **Khúc S0B**: Nhấn mạnh giọng ở chữ `"Blind risks"` ngay sau khi vạch trắng sáng lên.
+- **Khúc S6**: Giọng hơi ngừng lại một nhịp ở từ `"Wait!"` để tạo sự kịch tính của việc chặn duyệt mù.
+- **Khúc S9C**: Đọc đúng câu nhấn: `"One case is not hard, so what if we have more cases?"` trước khi giới thiệu bảng 16 đơn.
