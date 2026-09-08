@@ -8,8 +8,16 @@ import ReviewerPortal from "./components/ReviewerPortal";
 import VerifyHarness from "./domains/academic/VerifyHarness";
 import { DEFAULT_LLM_CONFIG, type LocalLlmConfig } from "./core/agent/localLlmClient";
 
+/**
+ * Ngữ cảnh trình diễn được CHỐT CỨNG ở "academic".
+ * Không phải state nữa: nhánh enterprise của agent còn lỗi B1/B1b chưa có test phủ
+ * (xem Header.tsx và docs/RUNBOOK.md §5), nên không để tồn tại đường nào — kể cả
+ * một setState sót lại — dẫn giao diện sang đó.
+ */
+const DEMO_DOMAIN: DomainMode = "academic";
+
 export default function App() {
-  const [domain, setDomain] = useState<DomainMode>("academic");
+  const domain = DEMO_DOMAIN;
   const [userRole, setUserRole] = useState<UserRole>("harness");
   const [llmConfig, setLlmConfig] = useState<LocalLlmConfig>({
     ...DEFAULT_LLM_CONFIG,
@@ -23,7 +31,6 @@ export default function App() {
       {/* Clean Modern Navbar */}
       <Header
         currentDomain={domain}
-        onDomainChange={setDomain}
         userRole={userRole}
         onRoleChange={setUserRole}
         onOpenPolicy={() => setIsPolicyOpen(true)}

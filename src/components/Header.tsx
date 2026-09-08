@@ -3,7 +3,6 @@ export type UserRole = "harness" | "reviewer" | "applicant";
 
 interface HeaderProps {
   currentDomain: DomainMode;
-  onDomainChange: (domain: DomainMode) => void;
   userRole: UserRole;
   onRoleChange: (role: UserRole) => void;
   onOpenPolicy: () => void;
@@ -12,15 +11,14 @@ interface HeaderProps {
 
 export default function Header({
   currentDomain,
-  onDomainChange,
   userRole,
   onRoleChange,
   onOpenPolicy,
   onOpenStandardForm,
 }: HeaderProps) {
-  const isEnterprise = currentDomain === "enterprise";
-  const applicantLabel = isEnterprise ? "Nhân Viên" : "Sinh Viên";
-  const reviewerLabel = isEnterprise ? "Cấp Trên (HR/QL)" : "Trưởng Khoa / GV";
+  // Ngữ cảnh trình diễn chốt ở Trường học, nên nhãn vai cố định theo trường học.
+  const applicantLabel = "Sinh Viên";
+  const reviewerLabel = "Trưởng Khoa / GV";
 
   return (
     <header className="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40">
@@ -29,9 +27,7 @@ export default function Header({
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo & Product Name */}
           <div className="flex items-center gap-3">
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-md ${
-              isEnterprise ? "bg-blue-600" : "bg-indigo-600"
-            }`}>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-md bg-indigo-600">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
@@ -46,9 +42,7 @@ export default function Header({
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 hidden sm:block">
-                {isEnterprise
-                  ? "Hệ thống thẩm định & duyệt đơn nghỉ phép nhân sự"
-                  : "Hệ thống thẩm định & duyệt đơn xin nghỉ học sinh viên"}
+                Hệ thống thẩm định &amp; duyệt đơn xin nghỉ học sinh viên
               </p>
             </div>
           </div>
@@ -99,32 +93,21 @@ export default function Header({
               </button>
             </div>
 
-            {/* Domain Switcher */}
-            <div className="inline-flex bg-slate-800 p-1 rounded-xl border border-slate-700">
-              <button
-                type="button"
-                onClick={() => onDomainChange("enterprise")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-                  isEnterprise
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "text-slate-300 hover:text-white"
-                }`}
-              >
-                <span>🏢</span>
-                <span className="hidden sm:inline">Doanh Nghiệp</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => onDomainChange("academic")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-                  !isEnterprise
-                    ? "bg-indigo-600 text-white shadow-sm"
-                    : "text-slate-300 hover:text-white"
-                }`}
-              >
-                <span>🎓</span>
-                <span className="hidden sm:inline">Trường Học</span>
-              </button>
+            {/*
+              Ngữ cảnh trình diễn: CHỈ Trường học.
+              Nhánh doanh nghiệp (EscalationRefereeAgent.ts:98-103) còn đúng loại lỗi
+              B1/B1b đã vá cho nhánh trường học — thẩm quyền suy từ số ngày, và quét
+              chuỗi tự do — nhưng chưa có bộ ca kiểm thử nào phủ. Vá logic không có test
+              là vá mù, nên chủ động NGẮT khỏi UI thay vì sửa vội.
+              Code enterprise vẫn giữ trong repo để bảo toàn lịch sử; chỉ không có
+              đường nào từ giao diện chạm tới. Xem docs/RUNBOOK.md §5.
+            */}
+            <div
+              className="inline-flex items-center gap-1.5 bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700 text-xs font-semibold text-indigo-200"
+              title="Bản trình diễn giới hạn ở ngữ cảnh Trường học — xem RUNBOOK mục 'Đã biết & đang xử'"
+            >
+              <span>🎓</span>
+              <span className="hidden sm:inline">Trường Học</span>
             </div>
 
             {/* Mẫu Đơn Chuẩn Button */}

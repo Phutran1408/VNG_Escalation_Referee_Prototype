@@ -33,7 +33,7 @@ Không cần biến môi trường. Không cần API key. Không cần cài Olla
 | Bước | Thao tác | Thấy gì |
 |---|---|---|
 | 1 | Mở URL | Mặc định vai **Harness**, ngữ cảnh **Trường học** |
-| 2 | Bấm **▶ Chạy Kiểm Chứng** (bộ 5 ca) | Bảng 5 dòng: 3 PASS thường quy, TC04 escalate, TC16 **FAIL đỏ** (xem §5) |
+| 2 | Bấm **▶ Chạy Kiểm Chứng** (bộ 5 ca) | Bảng 5 dòng, **5/5 PASS**: 3 ca tự duyệt + 2 ca chuyển tiếp khác loại dừng |
 | 3 | Đọc cột **Thực Tế + Phán Quyết 3 Vế** | Mỗi ca có outcome, loại dừng, câu hỏi escalate, độ trễ ms, timestamp |
 | 4 | Bấm **Tất Cả 16 Ca** | Bộ toàn diện, phủ cả 3 loại dừng |
 | 5 | Khung **Ca Giám Khảo** → nhập ca của bạn → **Phân Xử** | Agent chạy thật trên input mới |
@@ -80,20 +80,41 @@ xem `EscalationRefereeAgent.ts:43-69`, nhánh LLM chỉ gán đúng một trư�
 
 ---
 
-## 5. Đã biết & đang xử (bàn giao SV2)
+## 5. Đã biết & đang xử
 
-Harness cố tình **không** che các lỗi này. Dòng đỏ trên bảng là bằng chứng, không phải sự cố.
+Harness cố tình **không** che lỗi. Ba lỗi dưới đây do chính comparator 3 vế phát hiện ở
+commit `a25c0d2`, và đã được vá ở commit `d9a8f36` ngay sau đó.
 
-| Mã | Lỗi | Vị trí | Trạng thái | Ảnh hưởng bảng |
-|---|---|---|---|---|
-| **B1** | `durationDaysOrSessions >= 10` bị coi là "xin bảo lưu học kỳ" ⇒ ca vắng nhiều bị gán sai `Vượt thẩm quyền` thay vì `Ngoài chính sách` | `EscalationRefereeAgent.ts:119` | ⏳ **Chờ SV2** | TC16 (bộ 5) + TC07 (bộ 16) FAIL — CATEGORY |
-| **B1b** | Khớp chuỗi mù phủ định: ghi chú `"KHÔNG xin bảo lưu học kỳ"` vẫn kích hoạt nhánh thẩm quyền | `EscalationRefereeAgent.ts:117-118` | ⏳ **Chờ SV2** | Không hiện trên bảng; là bẫy khi soạn ca mới |
-| **B2** | `modelUsed` gán tên model **trước** khi gọi LLM và không revert khi thất bại ⇒ UI khoe tên model dù LLM chưa chạy | `EscalationRefereeAgent.ts:40` | ⏳ **Chờ SV2** | Cột model có thể sai ở chế độ Live LLM |
+| Mã | Lỗi | Vị trí | Trạng thái |
+|---|---|---|---|
+| **B1** | `durationDaysOrSessions >= 10` bị coi là "xin bảo lưu học kỳ" ⇒ ca vắng nhiều bị gán sai `Vượt thẩm quyền` thay vì `Ngoài chính sách` | `EscalationRefereeAgent.ts:119` | ✅ **Đã vá** |
+| **B1b** | Khớp chuỗi mù phủ định: ghi chú `"KHÔNG xin bảo lưu học kỳ"` vẫn kích hoạt nhánh thẩm quyền | `EscalationRefereeAgent.ts:117-118` | ✅ **Đã vá** |
+| **B2** | `modelUsed` gán tên model **trước** khi gọi LLM và không revert khi thất bại ⇒ UI khoe tên model dù LLM chưa chạy | `EscalationRefereeAgent.ts:40` | ✅ **Đã vá** |
 
-**Sau khi SV2 vá B1, cả hai ca tự chuyển PASS — không cần sửa harness.**
-Đã kiểm chứng bằng bản vá mô phỏng: bộ 5 → 5/5, bộ 16 → 16/16.
+Sau khi vá: bộ 5 → **5/5**, bộ 16 → **16/16**, và harness **không** bị sửa để lấy pass —
+diff `src/domains/academic/` rỗng ở commit vá, kiểm được bằng `git show d9a8f36 --stat`.
 
-**Việc SV4 đã làm để lộ lỗi ra thay vì giấu:**
+### 5.1 Nhánh Doanh Nghiệp — chủ động KHÔNG đưa vào demo
+
+`EscalationRefereeAgent.ts:98-103` (nhánh `domain === "enterprise"`) còn **đúng loại lỗi**
+vừa vá cho nhánh trường học:
+
+- `durationDaysOrSessions >= 20` ⇒ suy thẩm quyền từ **độ dài đơn** (giống B1)
+- `fullText.includes("vượt thẩm quyền")` ⇒ quét **chuỗi tự do** (giống B1b)
+
+**Chưa có bộ ca kiểm thử nào phủ nhánh này.** Vá logic mà không có test là vá mù, nên
+quyết định là **ngắt khỏi giao diện** thay vì sửa vội:
+
+- Bộ chuyển ngữ cảnh trong `Header.tsx` thay bằng nhãn tĩnh "🎓 Trường Học".
+- `App.tsx` chốt cứng `const DEMO_DOMAIN = "academic"` — không còn `setDomain` nào trong
+  toàn bộ `src/`, nên không tồn tại đường nào từ UI đặt `domain = "enterprise"`.
+- **Code enterprise vẫn giữ nguyên trong repo** để bảo toàn lịch sử, chỉ là không ai gọi tới.
+
+> **Đây là việc đầu tiên nếu mở rộng**: viết bộ ca kiểm thử cho nhánh doanh nghiệp trước,
+> rồi mới áp cùng cách vá B1/B1b (thẩm quyền đọc từ trường có cấu trúc, không suy từ số
+> ngày và không quét văn xuôi), rồi mới mở lại bộ chuyển ngữ cảnh.
+
+**Những thay đổi để lộ lỗi ra thay vì giấu:**
 - Comparator so **3 vế** (`src/domains/academic/verifyComparator.ts`), không chỉ `outcome`.
 - Gỡ engine song song `runMockVerify` / `runMockEvaluate` — chỉ còn một đường tới agent thật.
 - Xoá 12 file chết, trong đó 3 file hardcode `actual = expected, pass = true`.
@@ -104,27 +125,26 @@ Harness cố tình **không** che các lỗi này. Dòng đỏ trên bảng là 
 
 ## 6. Tự chứng minh KHÔNG hardcode — 3 phép "vặn nút"
 
-Làm ngay trên khung **Ca Giám Khảo**. Mỗi phép chỉ đổi **một** trường.
+Khung **Ca Giám Khảo** có sẵn khối **"🔧 Tự kiểm chứng"** với 3 nút bấm ứng với 3 phép
+dưới đây. Bấm nút → bấm **Phân Xử** → xem kết quả lật. Đã kiểm chứng cả khi bấm nối tiếp.
 
-### Phép 1 — lật quyết định bằng số buổi vắng
-1. Bấm mẫu **Ca 1: Thường quy hợp lệ** → Phân Xử → `AUTO_APPROVE`, không gắn cờ.
-2. Đổi **Số buổi đã nghỉ trước đó**: `0` → `4` (tổng 5/15 = 33%).
-3. Phân Xử lại → lật sang `ESCALATE` / **Ngoài chính sách**, và câu hỏi in đúng
-   `5/15 buổi (33.3%)`.
-→ Con số trong câu hỏi được **tính**, không phải chuỗi cài sẵn.
+Xuất phát: form mặc định (1/15 buổi, minh chứng VALID) → `AUTO_APPROVE`.
 
-### Phép 2 — lật loại dừng bằng ô ① minh chứng
-1. Vẫn ca đó, trả **Số buổi đã nghỉ** về `0`.
-2. Đổi ô **① Tình trạng minh chứng**: `VALID` → `UNCLEAR_DATE`.
-3. Phân Xử → `ESCALATE` / **Không chắc dữ kiện**, câu hỏi đổi thành
-   *"…xin nghỉ từ ngày nào?"*.
-→ Cùng một đơn, đổi một trường, ra **loại dừng khác** và **câu hỏi khác**.
+### Phép 1 — nút ① "Đã nghỉ → 9 buổi"
+Chỉ đổi **số buổi đã nghỉ trước đó**: `0` → `9` (tổng 10/15).
+→ Lật sang `ESCALATE` / **Ngoài chính sách**, câu hỏi in đúng **`10/15 buổi (66.7%)`**.
+Con số phần trăm được **tính từ dữ liệu nhập**, không phải chuỗi cài sẵn.
 
-### Phép 3 — đổi mẫu số, tỉ lệ đổi theo
-1. Ca vắng 4 buổi, **Tổng số buổi môn học** = `15` → escalate (26.7% > 20%).
-2. Đổi tổng số buổi thành `40` (4/40 = 10%).
-3. Phân Xử → quay lại `AUTO_APPROVE`.
-→ Ngưỡng 20% được tính trên dữ liệu nhập, không tra bảng.
+### Phép 2 — nút ② "Minh chứng → mờ ngày"
+Chỉ đổi ô **① Tình trạng minh chứng**: `VALID` → `UNCLEAR_DATE`.
+→ Lật sang `ESCALATE` / **Không chắc dữ kiện**, câu hỏi đổi thành
+*"…xin nghỉ từ ngày nào?"*.
+Cùng một đơn, đổi một trường, ra **loại dừng khác** và **câu hỏi khác**.
+
+### Phép 3 — nút ③ "Về ca sạch, tổng buổi → 60"
+Trả về hồ sơ sạch với mẫu số lớn: tổng 60 buổi, chưa nghỉ buổi nào, minh chứng hợp lệ.
+→ Quay lại `AUTO_APPROVE`.
+Ngưỡng 20% tính trên dữ liệu nhập, không tra bảng — và hệ **không** escalate ca hợp lệ.
 
 > Muốn chắc hơn nữa: đổi **tên sinh viên** thành tên bất kỳ — tên đó xuất hiện nguyên văn
 > trong câu hỏi escalate, chứng tỏ câu hỏi được sinh tại chỗ.

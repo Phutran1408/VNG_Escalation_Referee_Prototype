@@ -427,12 +427,14 @@ export default function VerifyHarness({ domain = "academic", onResults, llmConfi
               Hệ Thống Kiểm Chứng Tự Động &amp; Thẩm Định Ca Mới
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-3xl leading-relaxed">
-              <strong className="text-white">Thử ngay trong 30 giây:</strong> bấm{" "}
-              <strong className="text-white">▶ Chạy Kiểm Chứng</strong> để xem hệ tự duyệt 3 đơn hợp lệ
-              và dừng 2 đơn có vấn đề — hoặc nhập ca của bạn ở khung{" "}
-              <strong className="text-white">Ca Giám Khảo</strong> bên dưới (nhớ chọn ô{" "}
-              <strong className="text-white">① Tình trạng minh chứng</strong>). Mọi kết quả do agent
-              tính trực tiếp trên máy bạn — <strong className="text-white">không có đáp án cài sẵn</strong>.
+              <strong className="text-white">Bắt đầu ở đây:</strong> bấm{" "}
+              <strong className="text-white">▶ Chạy Kiểm Chứng</strong> để xem hệ phân loại{" "}
+              <strong className="text-white">3 ca tự duyệt + 2 ca chuyển tiếp</strong>; rồi tự nhập
+              ca của bạn ở khung <strong className="text-white">Ca Giám Khảo</strong> bên dưới (nhớ
+              chọn ô <strong className="text-white">① Tình trạng minh chứng</strong>). Mọi kết quả do
+              agent tính trực tiếp trên máy bạn —{" "}
+              <strong className="text-white">không có đáp án cài sẵn</strong>; khu{" "}
+              <strong className="text-white">🔧 Tự kiểm chứng</strong> có nút để bạn tự thử.
             </p>
           </div>
 
@@ -792,6 +794,60 @@ export default function VerifyHarness({ domain = "academic", onResults, llmConfi
             </button>
           </div>
 
+          {/*
+            PHÉP "VẶN NÚT" — để giám khảo tự chứng minh kết quả không cài sẵn.
+            Mỗi nút đổi ĐÚNG MỘT trường của ca đang có trên form, rồi giám khảo bấm
+            Phân Xử lại và thấy kết quả lật. Nếu kết quả là bảng tra cứu thì đổi một
+            trường không thể vừa lật quyết định vừa in ra đúng tỉ lệ phần trăm mới.
+          */}
+          <div className="mt-4 rounded-xl border border-slate-300 bg-slate-50 p-3">
+            <p className="text-[11px] font-bold text-slate-700 uppercase mb-2">
+              🔧 Tự kiểm chứng: vặn một nút, xem kết quả có lật không
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setJudgeForm({ ...judgeForm, pastAbsences: 9, totalSessions: 15 })}
+                className="text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border border-rose-300 bg-rose-50 text-rose-900 hover:bg-rose-100 cursor-pointer transition-colors"
+                title="Chỉ đổi 'đã nghỉ trước đó' thành 9/15 buổi"
+              >
+                ① Đã nghỉ → 9 buổi <span className="font-normal">(chờ: lật sang Ngoài chính sách)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setJudgeForm({ ...judgeForm, docEvidenceStatus: "UNCLEAR_DATE" })}
+                className="text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100 cursor-pointer transition-colors"
+                title="Chỉ đổi ô ① tình trạng minh chứng"
+              >
+                ② Minh chứng → mờ ngày{" "}
+                <span className="font-normal">(chờ: lật sang Không chắc dữ kiện)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  // Trả minh chứng về VALID cùng lúc: nếu chỉ đổi mẫu số mà ô ① vẫn "mờ
+                  // ngày" thì ca đứng lại ở loại dừng dữ kiện, và nhãn nút sẽ nói dối.
+                  setJudgeForm({
+                    ...judgeForm,
+                    totalSessions: 60,
+                    pastAbsences: 0,
+                    docEvidenceStatus: "VALID",
+                  })
+                }
+                className="text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-900 hover:bg-emerald-100 cursor-pointer transition-colors"
+                title="Trả ca về hồ sơ sạch với mẫu số lớn: tổng 60 buổi, chưa nghỉ buổi nào, minh chứng hợp lệ"
+              >
+                ③ Về ca sạch, tổng buổi → 60{" "}
+                <span className="font-normal">(chờ: quay lại Tự động duyệt)</span>
+              </button>
+            </div>
+            <p className="text-[10px] text-slate-500 mt-2 leading-snug">
+              Bấm một nút, rồi bấm <strong>Phân Xử</strong> lại. Con số phần trăm trong câu hỏi
+              escalate được <strong>tính từ dữ liệu bạn nhập</strong> — đổi tên sinh viên cũng thấy
+              tên đó xuất hiện nguyên văn trong câu hỏi.
+            </p>
+          </div>
+
           {/* Live Result Display Box */}
           {judgeOutput && (
             <div className={`mt-4 rounded-xl border p-4 sm:p-5 transition-all ${
@@ -1085,6 +1141,19 @@ export default function VerifyHarness({ domain = "academic", onResults, llmConfi
                         {r.latencyMs !== undefined && (
                           <span className="text-[10px] font-mono-data text-slate-500">
                             ⚡ {r.latencyMs}ms · {r.modelUsed}
+                          </span>
+                        )}
+                        {/* Timestamp do CHÍNH agent đóng dấu lúc phân xử (output.timestamp),
+                            không phải giờ vẽ bảng — nên nó là bằng chứng ca đã chạy thật. */}
+                        {r.timestamp && (
+                          <span
+                            className="text-[10px] font-mono-data text-slate-400"
+                            title={`Agent đóng dấu lúc: ${r.timestamp}`}
+                          >
+                            🕐 {new Date(r.timestamp).toLocaleTimeString("vi-VN", { hour12: false })}
+                            <span className="text-slate-300">
+                              .{String(new Date(r.timestamp).getMilliseconds()).padStart(3, "0")}
+                            </span>
                           </span>
                         )}
                       </div>
