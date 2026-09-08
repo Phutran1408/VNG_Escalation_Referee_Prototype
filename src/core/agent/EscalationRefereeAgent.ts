@@ -37,7 +37,12 @@ export class EscalationRefereeAgent {
 
     // 1. Chạy qua Rules Guardrails trước để xác định độ bất định định lượng
     const baseOutput = this.evaluate(input);
-    baseOutput.modelUsed = cfg.enabled ? cfg.model : "Deterministic Rules Engine";
+
+    // B2 — modelUsed phải phản ánh cái ĐÃ THỰC SỰ CHẠY, không phải cái được cấu hình.
+    // Trước đây gán tên model NGAY TẠI ĐÂY, trước khi gọi LLM, và không hoàn lại khi
+    // gọi thất bại — nên UI khoe "qwen3-vl:4b" cả khi máy không có Ollama.
+    // Mặc định là rule engine; chỉ nâng lên tên model sau khi LLM trả kết quả dùng được.
+    baseOutput.modelUsed = "Deterministic Rules Engine";
 
     // 2. Nếu ca là ESCALATE và Local LLM được bật, gọi mô hình local để làm giàu câu hỏi
     if (baseOutput.outcome === "ESCALATE" && baseOutput.uncertaintyCategory && cfg.enabled) {
@@ -54,6 +59,7 @@ export class EscalationRefereeAgent {
         });
 
         if (llmQuestion && llmQuestion.length > 10) {
+          // Chỉ tới đây mới có bằng chứng LLM đã chạy và trả về câu dùng được.
           baseOutput.escalationQuestion = llmQuestion;
           baseOutput.modelUsed = cfg.model;
           baseOutput.reasoningTrace.push({
@@ -110,13 +116,23 @@ export class EscalationRefereeAgent {
         authorityQuestion = `Đơn nghỉ ${input.durationDaysOrSessions} ngày vượt thẩm quyền Quản lý trực tiếp (tối đa 5 ngày). Chuyển cấp trên (Trưởng phòng / HRD) phê duyệt theo Quy chế?`;
       }
     } else {
-      // Trường học: Xin bảo lưu cả học kỳ hoặc nghỉ dài hạn toàn khóa
+      // Trường học: CHỈ đơn xin bảo lưu học kỳ mới vượt thẩm quyền Giảng viên.
+      //
+      // B1 — đã bỏ `input.durationDaysOrSessions >= 10`:
+      //   Thẩm quyền phụ thuộc LOẠI ĐƠN, không phụ thuộc ĐỘ DÀI. Nghỉ ốm 12 buổi vẫn là
+      //   đơn xin nghỉ (Trưởng khoa không phải người ký), chỉ khác là vắng quá 20% nên
+      //   thành vấn đề chuyên cần — thuộc Bước 3. Trộn hai thứ vào đây khiến ca vắng
+      //   nhiều bị nuốt trước khi kịp tính tỉ lệ, và sinh ra câu hỏi "xin bảo lưu cả học
+      //   kỳ" cho sinh viên chưa hề xin bảo lưu.
+      //
+      // B1b — đã bỏ `fullText.includes("bảo lưu ...")`:
+      //   Quét chuỗi tự do không phân biệt được câu khẳng định với câu phủ định:
+      //   ghi chú "sinh viên KHÔNG xin bảo lưu học kỳ" vẫn kích hoạt đúng nhánh nó phủ
+      //   định. Ý định của người nộp đơn phải đọc từ TRƯỜNG CÓ CẤU TRÚC, nơi nó được
+      //   khai báo dứt khoát, chứ không suy đoán từ văn xuôi.
       const isDeferral =
-        input.isSpecialRequest ||
-        input.leaveType === "Xin bảo lưu học kỳ" ||
-        fullText.includes("bảo lưu cả học kỳ") ||
-        fullText.includes("bảo lưu học kỳ") ||
-        input.durationDaysOrSessions >= 10;
+        input.isSpecialRequest === true ||
+        input.leaveType === "Xin bảo lưu học kỳ";
 
       if (isDeferral) {
         isAuthorityExceeded = true;
