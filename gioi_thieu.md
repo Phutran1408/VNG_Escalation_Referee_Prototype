@@ -77,7 +77,7 @@
 | Scene | Tên Phân Cảnh | Thời lượng (ms) | Visual & Laptop Motion Concept | Key Text / Words Hiển Thị |
 | :---: | :--- | :---: | :--- | :--- |
 | **S0A** | **The Hook** | 3,200ms | Chữ typographic khổng lồ lướt chậm, trang trọng trên nền tối sâu | `Absences.` `Leaves.` `Approvals.` |
-| **S0B** | **The Pain** | 3,200ms | Hiệu ứng cảnh báo đỏ, nguy cơ tắc nghẽn và rủi ro duyệt mù | `High volume.` `Manual triage.` `Blind risks.` |
+| **S0B** | **The Pain** | 3,600ms | Đường ngang trắng phát sáng mở rộng trước khi bùng nổ cảnh báo đỏ rủi ro duyệt mù | `High volume.` `Manual triage.` `(White Line)` `Blind risks.` |
 | **S1** | **The Reveal** | 4,500ms | Logo 4 vạch ánh sáng + Khối typographic hổ phách nhận diện thương hiệu | `THE ESCALATION REFEREE` · *Smart stops. Zero over-escalation.* |
 | **S2** | **The Problem** | 4,200ms | Con trỏ soạn thảo gõ chậm từng chữ, gạch chân quy chế thẩm định | `Every leave request carries uncertainty.` |
 | **S3** | **Applicant Upload** | 6,500ms | **Laptop Cổng Nộp Đơn**: Chuột kéo 1 PDF Form + ảnh chứng từ vào Dropzone, đóng gói cây thư mục | `Folder Package.` `1 PDF Form + Evidences.` `Drag & Drop Upload.` |
@@ -88,5 +88,5 @@
 | **S7** | **The 3 Smart Stops** | 6,500ms | 3 thẻ nổi ba chiều tượng trưng cho 3 loại dừng bắt buộc | `1. Fact Uncertainty` `2. Policy Edge` `3. Authority Cap` |
 | **S8** | **Single-Turn Action**| 6,000ms | Hộp câu hỏi hành động 1 lượt, chuột click chuyển Trưởng khoa phê duyệt, lưu Audit Log | `One-Turn Actionable.` `Human Override.` `Audit Trail Logged.` |
 | **S9B** | **Multi-Domain** | 4,500ms | 3 dòng chữ lướt lên: thích ứng linh hoạt giữa Nhà trường & Doanh nghiệp | `Enterprise HR Leaves,` `University Absences,` `Medical BHXH Claims.` |
-| **S9C** | **Climax & Call** | 5,500ms | Khẳng định loại bỏ 100% rủi ro duyệt mù, nút Run Verify Harness | `Zero Blind Risk.` `Zero Over-escalation.` `16/16 Pass Rate.` |
+| **S9C** | **Batch Verify 16 Cases** | 8,500ms | **Giao diện chính Verify Harness**: Chạy trực tiếp quét 16 đơn nghỉ, thanh tiến trình & bảng kết quả live | `Batch Verify 16/16.` `5.2ms Latency.` `100% Pass Rate.` |
 | **S10** | **End Card** | 5,000ms | Khung Laptop mở rộng toàn màn hình, logo & nút Replay tinh tế | `The Escalation Referee.` `Spec A · OrganizationAI.` |
