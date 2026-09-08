@@ -1,5 +1,5 @@
 export type DomainMode = "enterprise" | "academic";
-export type UserRole = "applicant" | "reviewer";
+export type UserRole = "harness" | "reviewer" | "applicant";
 
 interface HeaderProps {
   currentDomain: DomainMode;
@@ -55,20 +55,21 @@ export default function Header({
 
           {/* Right Actions: Role Selector, Domain Switcher, Standard Form, Policy */}
           <div className="flex items-center gap-2">
-            {/* Role Switcher (Nhân viên/Sinh viên vs Cấp Trên) */}
+            {/* View / Role Switcher */}
             <div className="inline-flex bg-slate-800 p-1 rounded-xl border border-amber-400/40">
               <button
                 type="button"
-                onClick={() => onRoleChange("applicant")}
+                onClick={() => onRoleChange("harness")}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-                  userRole === "applicant"
+                  userRole === "harness"
                     ? "bg-amber-400 text-slate-950 font-bold shadow-sm"
                     : "text-slate-300 hover:text-white"
                 }`}
-                title="Giao diện dành cho người làm đơn (Nộp thư mục hồ sơ)"
+                title="Giao diện Verify Harness dành cho Giám khảo (Tự nhập ca & Kiểm chứng tự động)"
               >
-                <span>👤</span>
-                <span>{applicantLabel}</span>
+                <span>🧪</span>
+                <span className="hidden sm:inline">Verify Harness</span>
+                <span className="text-[10px] bg-amber-500/30 text-amber-200 px-1 py-0.2 rounded font-bold sm:hidden">Harness</span>
               </button>
               <button
                 type="button"
@@ -82,6 +83,19 @@ export default function Header({
               >
                 <span>🛡️</span>
                 <span>{reviewerLabel}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onRoleChange("applicant")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  userRole === "applicant"
+                    ? "bg-amber-400 text-slate-950 font-bold shadow-sm"
+                    : "text-slate-300 hover:text-white"
+                }`}
+                title="Giao diện dành cho người làm đơn (Nộp thư mục hồ sơ)"
+              >
+                <span>👤</span>
+                <span>{applicantLabel}</span>
               </button>
             </div>
 

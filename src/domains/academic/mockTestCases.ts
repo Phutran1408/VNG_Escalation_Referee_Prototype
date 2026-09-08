@@ -1,10 +1,10 @@
-import type { TestCase, VerifyResult, EvaluateResponse, EvaluateRequest } from "../types";
+import type { TestCase } from "./types";
 
 /**
  * 5 Ca Kiểm thử Chuẩn (Canonical 5 Test Cases) cho Verify Harness (SV4)
  * 3 ca thường quy (Auto-Approve) + 2 ca Escalate
  */
-export const CANONICAL_5_TEST_CASES: TestCase[] = [
+const TC01_TO_TC04: TestCase[] = [
   {
     id: "TC01",
     studentId: "SV-2024-1001",
@@ -74,32 +74,88 @@ export const CANONICAL_5_TEST_CASES: TestCase[] = [
     expected: "ESCALATE",
     expectedTrigger: "Không chắc dữ kiện",
   },
-  {
-    id: "TC05",
-    studentId: "SV-2023-5012",
-    studentName: "Hoàng Minh Tuấn",
-    faculty: "Khoa Điện tử - Viễn thông",
-    courseName: "Kiến trúc Máy tính",
-    totalSessions: 15,
-    pastAbsences: 3, // Đã nghỉ 3 buổi (20%)
-    sessionsRequested: 1, // Tổng 4/15 buổi = 26.7% > 20%
-    fromDate: "2025-11-20",
-    toDate: "2025-11-20",
-    leaveType: "Nghỉ ốm điều trị",
-    reason: "Tái khám định kỳ sau phẫu thuật chấn thương.",
-    notes: "Sinh viên đã vắng 3 buổi trước đó. Nếu duyệt thêm buổi này sẽ thành 4/15 buổi, vượt quá 20% số buổi học phần.",
-    docEvidenceStatus: "VALID",
-    expected: "ESCALATE",
-    expectedTrigger: "Ngoài chính sách",
-  },
 ];
 
 /**
- * BỘ 15 CA KIỂM THỬ TOÀN DIỆN (Đạt yêu cầu SV1 & SV2)
- * Cài sẵn ca thường quy, ca nhập nhằng dữ kiện, ca ngoài chính sách, ca vượt thẩm quyền
+ * TC05 — Ngoài chính sách "êm" (4/15 buổi = 26.7%).
+ * Agent hiện tại đã xử ĐÚNG ca này, nên nó không ép sửa được lỗi nào.
+ * SV4 chuyển TC05 ra khỏi bộ 5 chuẩn, nhường chỗ cho TC16 (ca ranh giới).
+ * TC05 vẫn nằm trong bộ toàn diện.
  */
-export const FULL_15_TEST_CASES: TestCase[] = [
-  ...CANONICAL_5_TEST_CASES,
+const TC05_OVER_20_PERCENT: TestCase = {
+  id: "TC05",
+  studentId: "SV-2023-5012",
+  studentName: "Hoàng Minh Tuấn",
+  faculty: "Khoa Điện tử - Viễn thông",
+  courseName: "Kiến trúc Máy tính",
+  totalSessions: 15,
+  pastAbsences: 3, // Đã nghỉ 3 buổi (20%)
+  sessionsRequested: 1, // Tổng 4/15 buổi = 26.7% > 20%
+  fromDate: "2025-11-20",
+  toDate: "2025-11-20",
+  leaveType: "Nghỉ ốm điều trị",
+  reason: "Tái khám định kỳ sau phẫu thuật chấn thương.",
+  notes: "Sinh viên đã vắng 3 buổi trước đó. Nếu duyệt thêm buổi này sẽ thành 4/15 buổi, vượt quá 20% số buổi học phần.",
+  docEvidenceStatus: "VALID",
+  expected: "ESCALATE",
+  expectedTrigger: "Ngoài chính sách",
+};
+
+/**
+ * TC16 — CA SENTINEL RANH GIỚI (SV4)
+ *
+ * 12/40 buổi = 30% > 20% ⇒ loại dừng ĐÚNG phải là "Ngoài chính sách".
+ * Sinh viên có giấy ra viện hợp lệ, vẫn theo học, không xin nghỉ dài hạn toàn khoá.
+ *
+ * ⚠️ Trường `notes` TUYỆT ĐỐI không được chứa cụm "bảo lưu" — lỗi B1b khiến agent
+ * khớp chuỗi mù phủ định (`EscalationRefereeAgent.ts:117-118`): viết cả câu
+ * "KHÔNG xin bảo lưu" vẫn kích hoạt nhánh Vượt thẩm quyền, làm ca này fail vì lý do sai.
+ *
+ * Với agent CHƯA vá B1 (`EscalationRefereeAgent.ts:119` — `duration >= 10`), ca này bị
+ * gán sai "Vượt thẩm quyền" ⇒ harness hiện 🔴 FAIL — CATEGORY. ĐÓ LÀ CHỦ Ý:
+ * dòng đỏ này là bằng chứng bàn giao cho SV2, không phải lỗi của harness.
+ * Sau khi SV2 vá B1, ca này tự chuyển 🟢 PASS mà không cần sửa harness.
+ */
+const TC16_BOUNDARY_SENTINEL: TestCase = {
+  id: "TC16",
+  studentId: "SV-2022-6120",
+  studentName: "Trần Nhật Minh",
+  faculty: "Khoa Xây dựng",
+  courseName: "Sức bền Vật liệu",
+  totalSessions: 40,
+  pastAbsences: 0,
+  sessionsRequested: 12,
+  fromDate: "2025-10-06",
+  toDate: "2025-11-14",
+  leaveType: "Nghỉ ốm điều trị",
+  reason: "Điều trị nội trú dài ngày sau tai nạn giao thông.",
+  notes:
+    "Giấy ra viện Bệnh viện Chợ Rẫy ghi rõ ngày vào 06/10 và ngày ra 14/11, có mộc đỏ. Sinh viên vẫn đăng ký học bình thường và đề nghị bố trí học bù.",
+  docEvidenceStatus: "VALID",
+  isSemesterDeferral: false,
+  expected: "ESCALATE",
+  expectedTrigger: "Ngoài chính sách",
+};
+
+/**
+ * BỘ 5 CA CHUẨN — VERIFY 90 GIÂY (SV4)
+ * 3 ca thường quy (TC01-TC03) + 2 ca escalate khác loại dừng:
+ *   · TC04 → "Không chắc dữ kiện"
+ *   · TC16 → "Ngoài chính sách" (kiêm sentinel lỗi B1)
+ * Loại dừng "Vượt thẩm quyền" phủ ở bộ toàn diện (TC06).
+ */
+export const CANONICAL_5_TEST_CASES: TestCase[] = [
+  ...TC01_TO_TC04,
+  TC16_BOUNDARY_SENTINEL,
+];
+
+/**
+ * BỘ KIỂM THỬ TOÀN DIỆN (16 ca) — SV1 15 ca + TC16 của SV4
+ * Phủ ca thường quy, nhập nhằng dữ kiện, ngoài chính sách, vượt thẩm quyền.
+ */
+export const FULL_TEST_CASES: TestCase[] = [
+  ...TC01_TO_TC04,
+  TC05_OVER_20_PERCENT,
   // ── Thêm ca Dừng Loại 3: Vượt thẩm quyền ──────────────────────────────────
   {
     id: "TC06",
@@ -136,7 +192,10 @@ export const FULL_15_TEST_CASES: TestCase[] = [
     notes: "Thời gian nghỉ dài vượt quá thẩm quyền của Giảng viên phụ trách, cần Trưởng khoa xét duyệt kế hoạch học bù.",
     docEvidenceStatus: "VALID",
     expected: "ESCALATE",
-    expectedTrigger: "Vượt thẩm quyền",
+    // SV4/B1c: 10/15 buổi = 66.7% vắng, sinh viên KHÔNG xin bảo lưu học kỳ.
+    // Đây là vi phạm khung chuyên cần (Điều 1.2), không phải vấn đề thẩm quyền.
+    // Thẩm quyền chỉ nên kích hoạt bởi isSemesterDeferral / leaveType bảo lưu.
+    expectedTrigger: "Ngoài chính sách",
   },
   // ── Thêm ca Dừng Loại 1: Không chắc dữ kiện ──────────────────────────────
   {
@@ -281,6 +340,7 @@ export const FULL_15_TEST_CASES: TestCase[] = [
     docEvidenceStatus: "VALID",
     expected: "AUTO_APPROVE",
   },
+  TC16_BOUNDARY_SENTINEL,
 ];
 
 export const TEST_CASES = CANONICAL_5_TEST_CASES;
@@ -306,169 +366,7 @@ export function getCaseLabel(caseId: string): string {
   return map[caseId] ?? "Ca kiểm thử chuyên cần";
 }
 
-export function runMockVerify(testSet: TestCase[] = CANONICAL_5_TEST_CASES): VerifyResult[] {
-  const now = new Date().toISOString();
-  return testSet.map((tc) => {
-    // Chạy qua chính lõi Evaluate để đảm bảo tính nhất quán tuyệt đối giữa test và thực thi
-    const evalRes = runMockEvaluate({
-      studentId: tc.studentId,
-      studentName: tc.studentName,
-      faculty: tc.faculty,
-      courseName: tc.courseName,
-      totalSessions: tc.totalSessions,
-      pastAbsences: tc.pastAbsences,
-      sessionsRequested: tc.sessionsRequested,
-      fromDate: tc.fromDate,
-      toDate: tc.toDate,
-      leaveType: tc.leaveType,
-      docEvidenceStatus: tc.docEvidenceStatus,
-      isSemesterDeferral: tc.isSemesterDeferral,
-      reason: tc.reason,
-      notes: tc.notes,
-    });
-
-    const pass = evalRes.decision === tc.expected;
-
-    return {
-      caseId: tc.id,
-      summary: `${tc.studentId} · ${tc.studentName} · ${tc.faculty} · Môn: ${tc.courseName} · Xin nghỉ ${tc.sessionsRequested} buổi (Tổng ${tc.pastAbsences + tc.sessionsRequested}/${tc.totalSessions})`,
-      expected: tc.expected,
-      actual: evalRes.decision,
-      pass,
-      triggerCategory: evalRes.triggerCategory,
-      escalationQuestion: evalRes.escalationQuestion,
-      policyBasis: evalRes.policyBasis,
-      timestamp: now,
-    };
-  });
-}
-
-/**
- * SV2 — Lõi Agent Quyết định Phân xử (Escalation Referee Engine)
- * Quy tắc bất biến:
- * 1. Tự động xử lý ca thường quy -> AUTO_APPROVE.
- * 2. Phân loại độ bất định thành 3 loại dừng:
- *    - "Không chắc dữ kiện": Giấy khám bệnh không đọc được ngày -> "nghỉ từ ngày nào?"
- *    - "Ngoài chính sách": Đã nghỉ quá 20% số buổi -> "vượt mức cho phép, có xét đặc biệt không?"
- *    - "Vượt thẩm quyền": Xin bảo lưu cả học kỳ -> "thuộc thẩm quyền trưởng khoa."
- * 3. Câu hỏi escalate phải cụ thể, trả lời được trong một lượt (single-turn actionable question).
- * 4. Không bao giờ xuất kết quả chắc chắn trên ca đã gắn cờ (luôn là ESCALATE).
- */
-export function runMockEvaluate(req: EvaluateRequest): EvaluateResponse {
-  const requestId = `STU-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-  const timestamp = new Date().toISOString();
-  const textContent = `${req.reason} ${req.notes}`.toLowerCase();
-
-  const totalAbsences = (Number(req.pastAbsences) || 0) + (Number(req.sessionsRequested) || 1);
-  const totalSessions = Math.max(1, Number(req.totalSessions) || 15);
-  const absenceRatio = totalAbsences / totalSessions;
-  const isExceeded20Percent = absenceRatio > 0.20;
-
-  // ── DỪNG LOẠI 3: Vượt thẩm quyền ─────────────────────────────────────────
-  // Xin bảo lưu cả học kỳ / nghỉ dài hạn toàn khóa -> "thuộc thẩm quyền trưởng khoa."
-  const isDeferral =
-    req.isSemesterDeferral ||
-    req.leaveType === "Xin bảo lưu học kỳ" ||
-    textContent.includes("bảo lưu cả học kỳ") ||
-    textContent.includes("bảo lưu học kỳ") ||
-    req.sessionsRequested >= 10;
-
-  if (isDeferral) {
-    return {
-      requestId,
-      decision: "ESCALATE",
-      policyBasis: "Điều 3.2 Quy chế Đào tạo — Thẩm quyền phê duyệt bảo lưu học kỳ thuộc Trưởng khoa / Phòng Đào tạo",
-      escalationQuestion: `Đơn xin bảo lưu cả học kỳ của sinh viên ${req.studentName} (${req.studentId}) thuộc thẩm quyền Trưởng khoa. Chuyển hồ sơ lên Trưởng khoa phê duyệt?`,
-      triggerCategory: "Vượt thẩm quyền",
-      timestamp,
-      details: {
-        absenceRatio,
-        maxAllowedRatio: 0.20,
-        isExceeded20Percent,
-      },
-    };
-  }
-
-  // ── DỪNG LOẠI 1: Không chắc dữ kiện ──────────────────────────────────────
-  // Giấy khám bệnh không đọc được ngày -> "nghỉ từ ngày nào?"
-  const isUnclearDateDoc =
-    req.docEvidenceStatus === "UNCLEAR_DATE" ||
-    textContent.includes("mờ") ||
-    textContent.includes("không đọc được ngày") ||
-    textContent.includes("không rõ ngày") ||
-    textContent.includes("mất góc") ||
-    textContent.includes("mất ngày");
-
-  if (isUnclearDateDoc) {
-    return {
-      requestId,
-      decision: "ESCALATE",
-      policyBasis: "Điều 2.2 Quy chế Đào tạo — Yêu cầu chứng từ y tế rõ ràng mốc thời gian nghỉ",
-      escalationQuestion: `Giấy khám bệnh không đọc được ngày: Sinh viên ${req.studentName} xin nghỉ từ ngày nào?`,
-      triggerCategory: "Không chắc dữ kiện",
-      timestamp,
-      details: {
-        absenceRatio,
-        maxAllowedRatio: 0.20,
-        isExceeded20Percent,
-      },
-    };
-  }
-
-  // ── DỪNG LOẠI 2: Ngoài chính sách ────────────────────────────────────────
-  // Đã nghỉ quá 20% số buổi -> "vượt mức cho phép, có xét đặc biệt không?"
-  if (isExceeded20Percent) {
-    const pct = (absenceRatio * 100).toFixed(1);
-    return {
-      requestId,
-      decision: "ESCALATE",
-      policyBasis: "Điều 1.2 & 1.3 Quy chế Đào tạo — Tổng số buổi nghỉ vượt quá 20% học phần (nguy cơ cấm thi)",
-      escalationQuestion: `Sinh viên ${req.studentName} đã nghỉ ${totalAbsences}/${totalSessions} buổi (${pct}%), vượt mức cho phép (quá 20% số buổi). Giảng viên/Khoa có xét đặc biệt không?`,
-      triggerCategory: "Ngoài chính sách",
-      timestamp,
-      details: {
-        absenceRatio,
-        maxAllowedRatio: 0.20,
-        isExceeded20Percent: true,
-      },
-    };
-  }
-
-  // DỪNG LOẠI 2 (phụ): Nghỉ việc riêng nhưng không có bất kỳ giấy tờ minh chứng nào
-  if (req.leaveType === "Nghỉ việc riêng gia đình" && req.docEvidenceStatus === "MISSING") {
-    return {
-      requestId,
-      decision: "ESCALATE",
-      policyBasis: "Điều 1.1 Quy chế Đào tạo — Nghỉ việc riêng gia đình phải có đơn/minh chứng hợp lệ",
-      escalationQuestion: `Đơn nghỉ việc riêng của sinh viên ${req.studentName} chưa có giấy tờ xác nhận, vượt quy định thông thường. Có xét duyệt ngoại lệ không?`,
-      triggerCategory: "Ngoài chính sách",
-      timestamp,
-      details: {
-        absenceRatio,
-        maxAllowedRatio: 0.20,
-        isExceeded20Percent: false,
-      },
-    };
-  }
-
-  // ── CA THƯỜNG QUY: Tự động phê duyệt (AUTO_APPROVE) ─────────────────────
-  const policyMap: Record<string, string> = {
-    "Nghỉ ốm điều trị": "Điều 2.1 Quy chế Đào tạo — Nghỉ ốm có chứng từ y tế hợp lệ, trong hạn mức chuyên cần (<= 20%)",
-    "Nghỉ việc riêng gia đình": "Điều 1.1 Quy chế Đào tạo — Nghỉ việc riêng có minh chứng hợp lệ, trong hạn mức chuyên cần",
-    "Nghỉ tham gia hoạt động trường": "Điều 3.1 Quy chế Đào tạo — Đại diện trường tham gia hoạt động có công văn xác nhận",
-  };
-
-  return {
-    requestId,
-    decision: "AUTO_APPROVE",
-    policyBasis:
-      policyMap[req.leaveType] ??
-      "Điều 1 Quy chế Đào tạo — Đơn xin nghỉ hợp lệ, minh chứng đầy đủ, đủ điều kiện tự động phê duyệt",
-    timestamp,
-    details: {
-      absenceRatio,
-      maxAllowedRatio: 0.20,
-      isExceeded20Percent: false,
-    },
-  };
-}
+// SV4: Đã gỡ runMockVerify() và runMockEvaluate() khỏi file này.
+// Lý do: chúng là ENGINE THỨ HAI song song với EscalationRefereeAgent —
+// hai engine lệch nhau lúc nào thì bảng verify sai lúc đó. Harness giờ chỉ có
+// MỘT đường: refereeAgent.evaluateAsync(). File này thuần DỮ LIỆU CA.

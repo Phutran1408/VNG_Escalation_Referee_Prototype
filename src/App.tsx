@@ -5,11 +5,12 @@ import PolicyModal from "./components/PolicyModal";
 import StandardFormModal from "./components/StandardFormModal";
 import ApplicantPortal from "./components/ApplicantPortal";
 import ReviewerPortal from "./components/ReviewerPortal";
+import VerifyHarness from "./domains/academic/VerifyHarness";
 import { DEFAULT_LLM_CONFIG, type LocalLlmConfig } from "./core/agent/localLlmClient";
 
 export default function App() {
-  const [domain, setDomain] = useState<DomainMode>("enterprise");
-  const [userRole, setUserRole] = useState<UserRole>("reviewer");
+  const [domain, setDomain] = useState<DomainMode>("academic");
+  const [userRole, setUserRole] = useState<UserRole>("harness");
   const [llmConfig, setLlmConfig] = useState<LocalLlmConfig>({
     ...DEFAULT_LLM_CONFIG,
     model: "qwen3-vl:4b", // Sử dụng model 4b mặc định
@@ -34,7 +35,9 @@ export default function App() {
 
       {/* Main App Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
-        {userRole === "applicant" ? (
+        {userRole === "harness" ? (
+          <VerifyHarness key={domain} domain={domain} llmConfig={llmConfig} />
+        ) : userRole === "applicant" ? (
           <ApplicantPortal key={domain} domain={domain} />
         ) : (
           <ReviewerPortal
