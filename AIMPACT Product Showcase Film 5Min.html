@@ -1148,19 +1148,42 @@ var stage = $('stage'), cur = -1, t0 = 0, raf = null, fadingId = null;
 
 /* 5-MINUTE TIMELINE DEFINITION (Total: 300,000ms = 300s = 5m00s) */
 var SCENES = [
-  { id: 'c1_1', dur: 25000 }, // Màn 1.1: 25s (Xu hướng số hóa)
-  { id: 'c1_2', dur: 35000 }, // Màn 1.2: 35s (Điểm gãy: Agent không được tự quyết)
-  { id: 'c2_1', dur: 25000 }, // Màn 2.1: 25s (Cổng nộp đơn cá nhân)
-  { id: 'c2_2', dur: 20000 }, // Màn 2.2: 20s (Biểu mẫu chuẩn BM-HR-01 & BM-DT-02)
-  { id: 'c2_3', dur: 30000 }, // Màn 2.3: 30s (Minh chứng y tế 2K: Mộc đỏ & Chữ ký BS)
-  { id: 'c3_1', dur: 25000 }, // Màn 3.1: 25s (Màn hình xét duyệt của Cấp Trên)
-  { id: 'c3_2', dur: 30000 }, // Màn 3.2: 30s (Laser VLM quét sâu & Khoanh vùng chính xác)
-  { id: 'c3_3', dur: 25000 }, // Màn 3.3: 25s (Bật các dấu Tick xanh & Bóc tách OCR)
-  { id: 'c4_1', dur: 22000 }, // Màn 4.1: 22s (DUYỆT HÀNG LOẠT 16 CA TRƯỚC)
-  { id: 'c4_2', dur: 23000 }, // Màn 4.2: 23s (KHOAN ĐÃ! CÓ CA BẤT THƯỜNG -> 3 ĐIỂM DỪNG)
-  { id: 'c5_1', dur: 20000 }, // Màn 5.1: 20s (Con người là trọng tài tối cao & Từ chối)
-  { id: 'c5_2', dur: 20000 }  // Màn 5.2: 20s (Outro VNG)
+  { id: 'c1_1', dur: 25000, audio: 'voice_5m/voice_5m_1.mp3' },
+  { id: 'c1_2', dur: 35000, audio: 'voice_5m/voice_5m_2.mp3' },
+  { id: 'c2_1', dur: 25000, audio: 'voice_5m/voice_5m_3.mp3' },
+  { id: 'c2_2', dur: 20000, audio: 'voice_5m/voice_5m_4.mp3' },
+  { id: 'c2_3', dur: 30000, audio: 'voice_5m/voice_5m_5.mp3' },
+  { id: 'c3_1', dur: 25000, audio: 'voice_5m/voice_5m_6.mp3' },
+  { id: 'c3_2', dur: 30000, audio: 'voice_5m/voice_5m_7.mp3' },
+  { id: 'c3_3', dur: 25000, audio: 'voice_5m/voice_5m_8.mp3' },
+  { id: 'c4_1', dur: 22000, audio: 'voice_5m/voice_5m_9.mp3' },
+  { id: 'c4_2', dur: 23000, audio: 'voice_5m/voice_5m_10.mp3' },
+  { id: 'c5_1', dur: 20000, audio: 'voice_5m/voice_5m_11.mp3' },
+  { id: 'c5_2', dur: 20000, audio: 'voice_5m/voice_5m_12.mp3' }
 ];
+
+/* Voice Controller */
+var currentAudio = null;
+function playSceneAudio(audioSrc, offsetSec){
+  stopAudio();
+  if(!audioSrc) return;
+  try {
+    currentAudio = new Audio(audioSrc);
+    currentAudio.currentTime = Math.max(0, offsetSec || 0);
+    currentAudio.play().catch(function(e){ console.warn('Audio play blocked:', e); });
+  } catch(e){
+    console.warn('Audio error:', e);
+  }
+}
+function stopAudio(){
+  if(currentAudio){
+    try {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+    } catch(e){}
+    currentAudio = null;
+  }
+}
 
 var BOUNDS = [], TOTAL = 0;
 SCENES.forEach(function(s){ BOUNDS.push(TOTAL); s.start = TOTAL; TOTAL += s.dur; });
@@ -1330,7 +1353,7 @@ R.c5_1 = function(t){
 /* C5.2: 20s */
 R.c5_2 = function(t){};
 
-function show(i){
+function show(i, offsetMs){
   if(i === cur) return;
   if(fadingId !== null){ var f = $(fadingId); f.classList.remove('on'); f.style.opacity = ''; fadingId = null; }
   var ne = $(SCENES[i].id); ne.classList.add('on'); ne.style.opacity = '1';
@@ -1339,6 +1362,11 @@ function show(i){
     pe.style.opacity = '0'; fadingId = SCENES[cur].id;
   }
   cur = i;
+  if(SCENES[i].audio){
+    playSceneAudio(SCENES[i].audio, (offsetMs || 0) / 1000);
+  } else {
+    stopAudio();
+  }
 }
 
 function formatTime(ms){
@@ -1357,7 +1385,7 @@ function tick(now){
     return;
   }
   var i = SCENES.length - 1; while(i > 0 && t < SCENES[i].start) i--;
-  show(i);
+  var lt_calc = t - SCENES[i].start; show(i, lt_calc);
   var lt = t - SCENES[i].start;
   R[SCENES[i].id](lt);
 
@@ -1392,6 +1420,9 @@ function tick(now){
 
 window.seekTo = function(targetMs){
   if(raf) cancelAnimationFrame(raf);
+  stopAudio();
+  cur = -1;
+  SCENES.forEach(function(s){ var el = $(s.id); el.classList.remove('on'); el.style.opacity = ''; });
   $('cover').style.display = 'none';
   t0 = performance.now() - targetMs;
   raf = requestAnimationFrame(function(n){ tick(n); });
@@ -1409,6 +1440,7 @@ $('replayBtn5m').addEventListener('click', play);
 
 function play(){
   if(raf) cancelAnimationFrame(raf);
+  stopAudio();
   cur = -1;
   SCENES.forEach(function(s){ var el = $(s.id); el.classList.remove('on'); el.style.opacity = ''; });
   fadingId = null;
