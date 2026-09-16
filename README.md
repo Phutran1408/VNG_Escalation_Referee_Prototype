@@ -37,4 +37,4 @@ Hệ thống **AI Escalation Referee** (Phân xử thẩm định tự động v
 
 Hệ thống đang chạy trên cổng `8443`:
 - **Preview**: [http://localhost:8443](http://localhost:8443)
-- Bấm nút chọn **🏢 Doanh Nghiệp** hoặc **🎓 Trường Học** trên Header để đổi ngữ cảnh ngay lập tức!
+- Hiện tại ngữ cảnh được chọn cố định là **🏢 Doanh Nghiệp**!
