@@ -1,5 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 480" width="100%" height="100%" style="background: #ffffff; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 500" width="100%" height="100%" style="background: #ffffff; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <defs>
+    <style>
+      path.connector { fill: none !important; }
+      line { fill: none !important; }
+    </style>
+
     <!-- Gradients -->
     <linearGradient id="canvasGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#f8fafc"/>
@@ -7,38 +12,38 @@
     </linearGradient>
 
     <linearGradient id="inputGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f8fafc"/>
-      <stop offset="100%" stop-color="#f1f5f9"/>
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
     </linearGradient>
 
     <linearGradient id="vlmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#eff6ff"/>
-      <stop offset="100%" stop-color="#dbeafe"/>
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#eff6ff"/>
     </linearGradient>
 
     <linearGradient id="rulesGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fefce8"/>
-      <stop offset="100%" stop-color="#fef08a"/>
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#fefce8"/>
     </linearGradient>
 
     <linearGradient id="autoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ecfdf5"/>
-      <stop offset="100%" stop-color="#d1fae5"/>
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#ecfdf5"/>
     </linearGradient>
 
     <linearGradient id="llmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#faf5ff"/>
-      <stop offset="100%" stop-color="#ede9fe"/>
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#faf5ff"/>
     </linearGradient>
 
     <linearGradient id="mgrGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fff1f2"/>
-      <stop offset="100%" stop-color="#ffe4e6"/>
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#fff1f2"/>
     </linearGradient>
 
     <linearGradient id="ledgerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f0fdf4"/>
-      <stop offset="100%" stop-color="#dcfce7"/>
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f0fdf4"/>
     </linearGradient>
 
     <!-- Arrow markers -->
@@ -65,121 +70,121 @@
   </defs>
 
   <!-- Outer Canvas Container -->
-  <rect x="12" y="12" width="836" height="456" rx="12" fill="url(#canvasGrad)" stroke="#cbd5e1" stroke-width="1.5"/>
+  <rect x="12" y="12" width="856" height="476" rx="12" fill="url(#canvasGrad)" stroke="#cbd5e1" stroke-width="1.5"/>
 
   <!-- Diagram Title / Header -->
-  <g transform="translate(32, 38)">
+  <g transform="translate(32, 36)">
     <rect x="0" y="0" width="8" height="20" rx="2" fill="#2563eb"/>
     <text x="16" y="15" font-size="14" font-weight="700" fill="#0f172a" letter-spacing="0.02em">HÌNH 1: KIẾN TRÚC VẬN HÀNH &amp; ĐƯỜNG ỐNG QUYẾT ĐỊNH AER</text>
     <text x="16" y="32" font-size="11" fill="#64748b">Quy trình biên xử lý hồ sơ nghỉ phép từ tiếp nhận đến tự động duyệt nhanh hoặc phân xử 1 lượt</text>
   </g>
 
-  <!-- PIPELINE STAGES -->
+  <!-- PIPELINE STAGES (TOP ROW) -->
 
   <!-- STAGE 1: Intake Gateway -->
-  <g transform="translate(32, 90)" filter="url(#boxShadow)">
-    <rect x="0" y="0" width="160" height="90" rx="8" fill="url(#inputGrad)" stroke="#94a3b8" stroke-width="1.5"/>
-    <rect x="10" y="10" width="58" height="18" rx="4" fill="#e2e8f0"/>
-    <text x="16" y="23" font-size="9" font-weight="700" fill="#475569">GIAO DIỆN</text>
-    <text x="10" y="44" font-size="12" font-weight="700" fill="#0f172a">Tiếp Nhận Hồ Sơ</text>
-    <text x="10" y="60" font-size="10" fill="#475569">JSON Mẫu BM-HR-01</text>
-    <text x="10" y="74" font-size="9.5" fill="#64748b">+ File Giấy viện / BHXH</text>
+  <g transform="translate(32, 85)" filter="url(#boxShadow)">
+    <rect x="0" y="0" width="220" height="85" rx="8" fill="url(#inputGrad)" stroke="#94a3b8" stroke-width="1.5"/>
+    <rect x="12" y="10" width="85" height="16" rx="3" fill="#e2e8f0"/>
+    <text x="17" y="22" font-size="9" font-weight="700" fill="#475569">TIẾP NHẬN HỒ SƠ</text>
+    <text x="12" y="44" font-size="13" font-weight="700" fill="#0f172a">Intake Gateway</text>
+    <text x="12" y="60" font-size="9.5" fill="#475569">• File JSON Mẫu BM-HR-01</text>
+    <text x="12" y="74" font-size="9" fill="#64748b">• File scan chứng từ y tế / BHXH</text>
   </g>
 
   <!-- Arrow: Stage 1 -> Stage 2 -->
-  <path d="M 192 135 L 222 135" stroke="#2563eb" stroke-width="2" marker-end="url(#arrBlue)"/>
+  <path class="connector" d="M 252 127 L 302 127" stroke="#2563eb" stroke-width="2" fill="none" marker-end="url(#arrBlue)"/>
 
   <!-- STAGE 2: Local VLM Laser Scan -->
-  <g transform="translate(230, 90)" filter="url(#boxShadow)">
-    <rect x="0" y="0" width="170" height="90" rx="8" fill="url(#vlmGrad)" stroke="#3b82f6" stroke-width="1.5"/>
-    <rect x="10" y="10" width="80" height="18" rx="4" fill="#bfdbfe"/>
-    <text x="16" y="23" font-size="9" font-weight="700" fill="#1d4ed8">LOCAL VLM 4B</text>
-    <text x="10" y="44" font-size="12" font-weight="700" fill="#1e3a8a">Soi Chiếu Thị Giác</text>
-    <text x="10" y="60" font-size="10" fill="#1e40af">• Mộc tròn cơ sở y tế</text>
-    <text x="10" y="74" font-size="9.5" fill="#2563eb">• Chữ ký Bác sĩ &amp; Số ngày</text>
+  <g transform="translate(310, 85)" filter="url(#boxShadow)">
+    <rect x="0" y="0" width="240" height="85" rx="8" fill="url(#vlmGrad)" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="12" y="10" width="95" height="16" rx="3" fill="#bfdbfe"/>
+    <text x="17" y="22" font-size="9" font-weight="700" fill="#1d4ed8">LOCAL VLM (4B)</text>
+    <text x="12" y="44" font-size="13" font-weight="700" fill="#1e3a8a">Soi Chiếu Thị Giác</text>
+    <text x="12" y="60" font-size="9.5" fill="#1e40af">• Phát hiện dấu mộc tròn đỏ</text>
+    <text x="12" y="74" font-size="9" fill="#2563eb">• Chữ ký Bác sĩ &amp; Độ nét ngày cấp</text>
   </g>
 
   <!-- Arrow: Stage 2 -> Stage 3 -->
-  <path d="M 400 135 L 430 135" stroke="#2563eb" stroke-width="2" marker-end="url(#arrBlue)"/>
+  <path class="connector" d="M 550 127 L 602 127" stroke="#2563eb" stroke-width="2" fill="none" marker-end="url(#arrBlue)"/>
 
   <!-- STAGE 3: Deterministic Rules Guardrails -->
-  <g transform="translate(438, 90)" filter="url(#boxShadow)">
-    <rect x="0" y="0" width="180" height="90" rx="8" fill="url(#rulesGrad)" stroke="#eab308" stroke-width="1.5"/>
-    <rect x="10" y="10" width="80" height="18" rx="4" fill="#fef08a"/>
-    <text x="16" y="23" font-size="9" font-weight="700" fill="#854d0e">&lt; 5ms ENGINE</text>
-    <text x="10" y="44" font-size="12" font-weight="700" fill="#713f12">Hàng Rào Quy Chế</text>
-    <text x="10" y="60" font-size="10" fill="#854d0e">• Quỹ phép tồn &amp; Trạng thái</text>
-    <text x="10" y="74" font-size="9.5" fill="#a16207">• Thẩm quyền phê duyệt</text>
+  <g transform="translate(610, 85)" filter="url(#boxShadow)">
+    <rect x="0" y="0" width="235" height="85" rx="8" fill="url(#rulesGrad)" stroke="#eab308" stroke-width="1.5"/>
+    <rect x="12" y="10" width="105" height="16" rx="3" fill="#fef08a"/>
+    <text x="17" y="22" font-size="9" font-weight="700" fill="#854d0e">&lt; 5ms DETERMINISTIC</text>
+    <text x="12" y="44" font-size="13" font-weight="700" fill="#713f12">Hàng Rào Quy Chế</text>
+    <text x="12" y="60" font-size="9.5" fill="#854d0e">• Quỹ phép tồn &amp; Trạng thái</text>
+    <text x="12" y="74" font-size="9" fill="#a16207">• Thẩm quyền &amp; Luật LĐ 2019</text>
   </g>
 
-  <!-- Arrow: Stage 3 -> Stage 4 Split -->
-  <path d="M 618 135 L 658 135" stroke="#475569" stroke-width="2"/>
-  <path d="M 658 135 L 658 200" stroke="#475569" stroke-width="2"/>
 
-  <!-- BRANCH FORK CHANNELS -->
-  <path d="M 658 200 L 220 200 L 220 230" stroke="#059669" stroke-width="2" marker-end="url(#arrGreen)"/>
-  <path d="M 658 200 L 658 230" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrPurple)"/>
+  <!-- ==================== RẼ NHÁNH QUYẾT ĐỊNH (FORK) ==================== -->
 
-  <!-- Path Label: Routine Auto-Path -->
-  <rect x="235" y="190" width="170" height="20" rx="4" fill="#ecfdf5" stroke="#10b981" stroke-width="1"/>
+  <!-- Branch Left: Auto-Approve -->
+  <path class="connector" d="M 680 170 L 680 200 L 220 200 L 220 232" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#arrGreen)"/>
+  <rect x="235" y="190" width="200" height="20" rx="4" fill="#ecfdf5" stroke="#10b981" stroke-width="1"/>
   <text x="242" y="204" font-size="9.5" font-weight="700" fill="#065f46">HỢP LỆ: Tự động duyệt nhanh (92%)</text>
 
-  <!-- Path Label: Escalation Path -->
-  <rect x="535" y="190" width="175" height="20" rx="4" fill="#faf5ff" stroke="#a855f7" stroke-width="1"/>
-  <text x="542" y="204" font-size="9.5" font-weight="700" fill="#6b21a8">PHÁT HIỆN BẤT ĐỊNH: U_1, U_2, U_3 (8%)</text>
+  <!-- Branch Right: Escalation -->
+  <path class="connector" d="M 770 170 L 770 232" stroke="#7c3aed" stroke-width="2" fill="none" marker-end="url(#arrPurple)"/>
+  <rect x="635" y="190" width="210" height="20" rx="4" fill="#faf5ff" stroke="#a855f7" stroke-width="1"/>
+  <text x="642" y="204" font-size="9.5" font-weight="700" fill="#6b21a8">PHÁT HIỆN BẤT ĐỊNH: U_1, U_2, U_3 (8%)</text>
 
-  <!-- LOWER LEFT: AUTO APPROVAL & AUDIT LEDGER -->
-  <g transform="translate(110, 240)" filter="url(#boxShadow)">
-    <rect x="0" y="0" width="220" height="85" rx="8" fill="url(#autoGrad)" stroke="#10b981" stroke-width="1.5"/>
-    <rect x="10" y="10" width="115" height="18" rx="4" fill="#a7f3d0"/>
-    <text x="16" y="23" font-size="9" font-weight="700" fill="#065f46">TỰ ĐỘNG HÓA BIÊN</text>
-    <text x="10" y="44" font-size="12" font-weight="700" fill="#064e3b">AUTO_APPROVE (&lt; 10ms)</text>
-    <text x="10" y="60" font-size="10" fill="#047857">• Không cần can thiệp thủ công</text>
-    <text x="10" y="74" font-size="9.5" fill="#059669">• Trừ quỹ phép tức thì</text>
+
+  <!-- ==================== LOWER ROW: RESOLUTION CHANNELS ==================== -->
+
+  <!-- LOWER LEFT: AUTO APPROVAL -->
+  <g transform="translate(100, 240)" filter="url(#boxShadow)">
+    <rect x="0" y="0" width="240" height="85" rx="8" fill="url(#autoGrad)" stroke="#10b981" stroke-width="1.8"/>
+    <rect x="12" y="10" width="125" height="16" rx="3" fill="#a7f3d0"/>
+    <text x="17" y="22" font-size="9" font-weight="700" fill="#065f46">TỰ ĐỘNG HÓA BIÊN</text>
+    <text x="12" y="44" font-size="13" font-weight="700" fill="#064e3b">AUTO_APPROVE (&lt; 10ms)</text>
+    <text x="12" y="60" font-size="9.5" fill="#047857">• Phê duyệt tức thì, không chờ đợi</text>
+    <text x="12" y="74" font-size="9" fill="#059669">• Trừ quỹ ngày phép tự động</text>
   </g>
 
   <!-- Arrow: Auto Approve -> Audit Ledger -->
-  <path d="M 220 325 L 220 365" stroke="#059669" stroke-width="2" marker-end="url(#arrGreen)"/>
+  <path class="connector" d="M 220 325 L 220 362" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#arrGreen)"/>
 
   <!-- AUDIT LEDGER BOX -->
-  <g transform="translate(110, 370)" filter="url(#boxShadow)">
-    <rect x="0" y="0" width="410" height="85" rx="8" fill="url(#ledgerGrad)" stroke="#16a34a" stroke-width="1.5"/>
-    <rect x="10" y="10" width="135" height="18" rx="4" fill="#bbf7d0"/>
-    <text x="16" y="23" font-size="9" font-weight="700" fill="#14532d">SỔ CÁI MẬT MÃ BẤT BIẾN</text>
-    <text x="10" y="44" font-size="12" font-weight="700" fill="#14532d">Audit Ledger SHA-256 &amp; Động Cơ Hoàn Tác [Undo]</text>
-    <text x="10" y="60" font-size="10" fill="#15803d">• Chuỗi khối băm: H_n = SHA-256(H_{n-1} || Action || Timestamp)</text>
-    <text x="10" y="74" font-size="9.5" fill="#166534">• Hoàn tác lạc quan dưới 1 giây qua cơ chế Delta Snapshot</text>
+  <g transform="translate(100, 370)" filter="url(#boxShadow)">
+    <rect x="0" y="0" width="430" height="90" rx="8" fill="url(#ledgerGrad)" stroke="#16a34a" stroke-width="1.5"/>
+    <rect x="12" y="10" width="145" height="16" rx="3" fill="#bbf7d0"/>
+    <text x="17" y="22" font-size="9" font-weight="700" fill="#14532d">SỔ CÁI MẬT MÃ BẤT BIẾN</text>
+    <text x="12" y="44" font-size="13" font-weight="700" fill="#14532d">Audit Ledger SHA-256 &amp; Rollback [Undo]</text>
+    <text x="12" y="60" font-size="9.5" fill="#15803d">• Chuỗi khối băm: H_n = SHA-256(H_{n-1} || Action || Timestamp)</text>
+    <text x="12" y="76" font-size="9" fill="#166534">• Hoàn tác lạc quan dưới 1 giây qua cơ chế Delta Snapshot</text>
   </g>
 
   <!-- LOWER RIGHT: COGNITIVE LOCAL LLM & ESCALATION -->
-  <g transform="translate(540, 240)" filter="url(#boxShadow)">
-    <rect x="0" y="0" width="235" height="85" rx="8" fill="url(#llmGrad)" stroke="#a855f7" stroke-width="1.5"/>
-    <rect x="10" y="10" width="115" height="18" rx="4" fill="#e9d5ff"/>
-    <text x="16" y="23" font-size="9" font-weight="700" fill="#6b21a8">TRỌNG TÀI NHẬN THỨC</text>
-    <text x="10" y="44" font-size="12" font-weight="700" fill="#581c87">Prompt Đóng 1 Lượt</text>
-    <text x="10" y="60" font-size="10" fill="#6b21a8">• Trích dẫn điều khoản Quy chế</text>
-    <text x="10" y="74" font-size="9.5" fill="#7e22ce">• Cung cấp 2 lựa chọn có cấu trúc</text>
+  <g transform="translate(560, 240)" filter="url(#boxShadow)">
+    <rect x="0" y="0" width="285" height="85" rx="8" fill="url(#llmGrad)" stroke="#a855f7" stroke-width="1.8"/>
+    <rect x="12" y="10" width="135" height="16" rx="3" fill="#e9d5ff"/>
+    <text x="17" y="22" font-size="9" font-weight="700" fill="#6b21a8">TRỌNG TÀI NHẬN THỨC</text>
+    <text x="12" y="44" font-size="13" font-weight="700" fill="#581c87">Prompt Chuyển Tiếp Đóng 1 Lượt</text>
+    <text x="12" y="60" font-size="9.5" fill="#6b21a8">• Tự động trích dẫn điều khoản Quy chế</text>
+    <text x="12" y="74" font-size="9" fill="#7e22ce">• Cung cấp 2 lựa chọn có cấu trúc rõ ràng</text>
   </g>
 
   <!-- Arrow: Cognitive LLM -> Manager Action -->
-  <path d="M 658 325 L 658 365" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrPurple)"/>
+  <path class="connector" d="M 700 325 L 700 362" stroke="#7c3aed" stroke-width="2" fill="none" marker-end="url(#arrPurple)"/>
 
   <!-- MANAGER REVIEW & OVERRIDE BOX -->
-  <g transform="translate(540, 370)" filter="url(#boxShadow)">
-    <rect x="0" y="0" width="235" height="85" rx="8" fill="url(#mgrGrad)" stroke="#f43f5e" stroke-width="1.5"/>
-    <rect x="10" y="10" width="130" height="18" rx="4" fill="#fecdd3"/>
-    <text x="16" y="23" font-size="9" font-weight="700" fill="#9f1239">CAN THIỆP CON NGƯỜI</text>
-    <text x="10" y="44" font-size="12" font-weight="700" fill="#881337">Quyết Định Quản Lý / Undo</text>
-    <text x="10" y="60" font-size="10" fill="#9f1239">• Lựa chọn 0: Từ chối theo quy định</text>
-    <text x="10" y="74" font-size="9.5" fill="#be123c">• Lựa chọn 1: Duyệt ngoại lệ / Hoàn tác</text>
+  <g transform="translate(560, 370)" filter="url(#boxShadow)">
+    <rect x="0" y="0" width="285" height="90" rx="8" fill="url(#mgrGrad)" stroke="#f43f5e" stroke-width="1.5"/>
+    <rect x="12" y="10" width="140" height="16" rx="3" fill="#fecdd3"/>
+    <text x="17" y="22" font-size="9" font-weight="700" fill="#9f1239">CAN THIỆP CON NGƯỜI</text>
+    <text x="12" y="44" font-size="13" font-weight="700" fill="#881337">Quyết Định Quản Lý / Undo</text>
+    <text x="12" y="60" font-size="9.5" fill="#9f1239">• Lựa chọn 0: Từ chối theo quy chế</text>
+    <text x="12" y="76" font-size="9" fill="#be123c">• Lựa chọn 1: Duyệt ngoại lệ / Chuyển không lương</text>
   </g>
 
-  <!-- Arrow: Manager -> Ledger Commit -->
-  <path d="M 540 412 L 526 412" stroke="#475569" stroke-width="2" marker-end="url(#arrSlate)"/>
+  <!-- Arrow: Manager -> Ledger Commit (Horizontal) -->
+  <path class="connector" d="M 560 415 L 538 415" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arrSlate)"/>
 
-  <!-- Loopback Arrow: Manager Undo -> Reversion Rollback -->
-  <path d="M 658 455 C 658 475 315 475 315 460" stroke="#e11d48" stroke-width="1.5" stroke-dasharray="4,4" fill="none" marker-end="url(#arrRose)"/>
-  <rect x="420" y="462" width="140" height="16" rx="3" fill="#ffffff" stroke="#f43f5e" stroke-width="0.8"/>
-  <text x="426" y="474" font-size="8.5" font-weight="700" fill="#be123c">Quản lý [Undo] Hoàn tác</text>
+  <!-- Loopback Arrow: Manager Undo -> Rollback -->
+  <path class="connector" d="M 700 460 C 700 488 315 488 315 468" stroke="#e11d48" stroke-width="1.5" stroke-dasharray="4,4" fill="none" marker-end="url(#arrRose)"/>
+  <rect x="440" y="475" width="135" height="18" rx="3" fill="#ffffff" stroke="#f43f5e" stroke-width="0.8"/>
+  <text x="446" y="488" font-size="8.5" font-weight="700" fill="#be123c">Quản lý [Undo] Hoàn tác</text>
 
 </svg>

@@ -1,5 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 480" width="100%" height="100%" style="background: #ffffff; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 530" width="100%" height="100%" style="background: #ffffff; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <defs>
+    <!-- Style override to ensure NO unstyled paths get filled with black -->
+    <style>
+      path.connector { fill: none !important; }
+      line { fill: none !important; }
+    </style>
+
     <!-- Canvas Gradient -->
     <linearGradient id="canvasGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#f8fafc"/>
@@ -8,38 +14,38 @@
 
     <!-- State Card Gradients -->
     <linearGradient id="stateSubmitted" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f1f5f9"/>
-      <stop offset="100%" stop-color="#e2e8f0"/>
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
     </linearGradient>
 
     <linearGradient id="stateEvaluating" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#eff6ff"/>
-      <stop offset="100%" stop-color="#dbeafe"/>
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#eff6ff"/>
     </linearGradient>
 
     <linearGradient id="stateAutoApprove" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ecfdf5"/>
-      <stop offset="100%" stop-color="#d1fae5"/>
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#ecfdf5"/>
     </linearGradient>
 
     <linearGradient id="stateEscalated" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#faf5ff"/>
-      <stop offset="100%" stop-color="#ede9fe"/>
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#faf5ff"/>
     </linearGradient>
 
     <linearGradient id="stateApproved" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f0fdfa"/>
-      <stop offset="100%" stop-color="#ccfbf1"/>
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f0fdfa"/>
     </linearGradient>
 
     <linearGradient id="stateRejected" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fef2f2"/>
-      <stop offset="100%" stop-color="#fee2e2"/>
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#fef2f2"/>
     </linearGradient>
 
     <linearGradient id="stateReverted" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fffbeb"/>
-      <stop offset="100%" stop-color="#fef3c7"/>
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#fffbeb"/>
     </linearGradient>
 
     <!-- Arrow Markers -->
@@ -59,14 +65,14 @@
       <path d="M 0 1 L 10 5 L 0 9 z" fill="#d97706"/>
     </marker>
 
-    <!-- Shadow -->
+    <!-- Soft Card Shadow -->
     <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
-      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.07"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.06"/>
     </filter>
   </defs>
 
   <!-- Container Box -->
-  <rect x="12" y="12" width="836" height="456" rx="12" fill="url(#canvasGrad)" stroke="#cbd5e1" stroke-width="1.5"/>
+  <rect x="12" y="12" width="876" height="506" rx="12" fill="url(#canvasGrad)" stroke="#cbd5e1" stroke-width="1.5"/>
 
   <!-- Diagram Title / Header -->
   <g transform="translate(32, 38)">
@@ -75,100 +81,108 @@
     <text x="16" y="32" font-size="11" fill="#64748b">Cơ chế chuyển dịch trạng thái tất định, điều kiện bảo vệ và ghi nhận sổ cái mật mã</text>
   </g>
 
+  <!-- ==================== HÀNG 1 ==================== -->
+
   <!-- STATE 1: SUBMITTED -->
-  <g transform="translate(36, 95)" filter="url(#cardShadow)">
-    <rect x="0" y="0" width="160" height="74" rx="8" fill="url(#stateSubmitted)" stroke="#64748b" stroke-width="1.5"/>
-    <rect x="10" y="10" width="60" height="16" rx="3" fill="#cbd5e1"/>
-    <text x="15" y="22" font-size="9" font-weight="700" fill="#334155">KHỞI TẠO</text>
-    <text x="10" y="44" font-size="13" font-weight="700" fill="#0f172a">SUBMITTED</text>
-    <text x="10" y="60" font-size="9.5" fill="#475569">Nhận mẫu BM-HR-01</text>
+  <g transform="translate(36, 85)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="180" height="76" rx="8" fill="url(#stateSubmitted)" stroke="#94a3b8" stroke-width="1.5"/>
+    <rect x="12" y="10" width="62" height="16" rx="3" fill="#e2e8f0"/>
+    <text x="17" y="22" font-size="9" font-weight="700" fill="#475569">KHỞI TẠO</text>
+    <text x="12" y="44" font-size="13" font-weight="700" fill="#0f172a">SUBMITTED</text>
+    <text x="12" y="60" font-size="9.5" fill="#64748b">Tiếp nhận mẫu BM-HR-01</text>
   </g>
 
-  <!-- Transition: SUBMITTED -> EVALUATING -->
-  <path d="M 116 169 L 116 215" stroke="#2563eb" stroke-width="2" marker-end="url(#arrB)"/>
-  <rect x="124" y="180" width="100" height="18" rx="3" fill="#eff6ff" stroke="#93c5fd" stroke-width="0.8"/>
-  <text x="130" y="193" font-size="8.5" font-weight="600" fill="#1e40af">Kích hoạt đường ống</text>
+  <!-- Transition 1: SUBMITTED -> EVALUATING -->
+  <path class="connector" d="M 216 123 L 314 123" stroke="#2563eb" stroke-width="2" fill="none" marker-end="url(#arrB)"/>
+  <rect x="226" y="102" width="78" height="18" rx="3" fill="#eff6ff" stroke="#bfdbfe" stroke-width="0.8"/>
+  <text x="231" y="115" font-size="8.5" font-weight="600" fill="#1e40af">Khởi chạy</text>
 
   <!-- STATE 2: EVALUATING -->
-  <g transform="translate(36, 220)" filter="url(#cardShadow)">
-    <rect x="0" y="0" width="160" height="85" rx="8" fill="url(#stateEvaluating)" stroke="#3b82f6" stroke-width="1.5"/>
-    <rect x="10" y="10" width="80" height="16" rx="3" fill="#bfdbfe"/>
-    <text x="15" y="22" font-size="9" font-weight="700" fill="#1d4ed8">ĐANG XỬ LÝ</text>
-    <text x="10" y="44" font-size="13" font-weight="700" fill="#1e3a8a">EVALUATING</text>
-    <text x="10" y="60" font-size="9.5" fill="#1e40af">• Soi VLM (V_doc)</text>
-    <text x="10" y="74" font-size="9.5" fill="#2563eb">• Hàng rào 2 lớp</text>
+  <g transform="translate(320, 85)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="210" height="76" rx="8" fill="url(#stateEvaluating)" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="12" y="10" width="75" height="16" rx="3" fill="#dbeafe"/>
+    <text x="17" y="22" font-size="9" font-weight="700" fill="#1d4ed8">ĐANG XỬ LÝ</text>
+    <text x="12" y="44" font-size="13" font-weight="700" fill="#1e3a8a">EVALUATING</text>
+    <text x="12" y="60" font-size="9.5" fill="#2563eb">Soi VLM (V_doc) + Luật &lt; 5ms</text>
   </g>
 
-  <!-- Transition: EVALUATING -> AUTO_APPROVED -->
-  <path d="M 196 240 L 320 240 L 320 135 L 590 135" stroke="#059669" stroke-width="2" marker-end="url(#arrG)"/>
-  <rect x="235" y="125" width="280" height="20" rx="4" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1"/>
-  <text x="242" y="139" font-size="9" font-weight="700" fill="#065f46">Điều kiện: V_doc=1 ∧ Đủ phép ∧ Đúng thẩm quyền ∧ Hết thử việc</text>
+  <!-- Transition 2: EVALUATING -> AUTO_APPROVED -->
+  <path class="connector" d="M 530 123 L 644 123" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#arrG)"/>
+  <rect x="540" y="98" width="95" height="22" rx="3" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="0.8"/>
+  <text x="545" y="112" font-size="8.5" font-weight="700" fill="#065f46">V_doc=1 ∧ Đủ phép</text>
 
   <!-- STATE 3: AUTO_APPROVED -->
-  <g transform="translate(600, 95)" filter="url(#cardShadow)">
-    <rect x="0" y="0" width="220" height="80" rx="8" fill="url(#stateAutoApprove)" stroke="#10b981" stroke-width="2"/>
-    <rect x="10" y="10" width="95" height="16" rx="3" fill="#a7f3d0"/>
-    <text x="15" y="22" font-size="9" font-weight="700" fill="#065f46">KẾT THÚC (AN TOÀN)</text>
-    <text x="10" y="44" font-size="13" font-weight="700" fill="#064e3b">AUTO_APPROVED</text>
-    <text x="10" y="60" font-size="9.5" fill="#047857">• Phê duyệt tức thì (&lt; 10ms)</text>
-    <text x="10" y="72" font-size="9" fill="#059669">• Ghi nhận sổ cái SHA-256 bất biến</text>
+  <g transform="translate(650, 85)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="220" height="76" rx="8" fill="url(#stateAutoApprove)" stroke="#10b981" stroke-width="2"/>
+    <rect x="12" y="10" width="105" height="16" rx="3" fill="#a7f3d0"/>
+    <text x="17" y="22" font-size="9" font-weight="700" fill="#065f46">TỰ ĐỘNG DUYỆT</text>
+    <text x="12" y="44" font-size="13" font-weight="700" fill="#064e3b">AUTO_APPROVED</text>
+    <text x="12" y="60" font-size="9" fill="#059669">Duyệt &lt; 10ms · Ghi sổ cái SHA-256</text>
   </g>
 
-  <!-- Transition: EVALUATING -> ESCALATED -->
-  <path d="M 196 280 L 330 280" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrP)"/>
-  <rect x="208" y="290" width="112" height="20" rx="4" fill="#faf5ff" stroke="#c084fc" stroke-width="1"/>
-  <text x="214" y="304" font-size="9" font-weight="700" fill="#6b21a8">U_1 ∨ U_2 ∨ U_3 &gt; 0</text>
+
+  <!-- ==================== HÀNG 2 ==================== -->
+
+  <!-- Transition 3: EVALUATING -> ESCALATED (Downward) -->
+  <path class="connector" d="M 425 161 L 425 219" stroke="#7c3aed" stroke-width="2" fill="none" marker-end="url(#arrP)"/>
+  <rect x="368" y="180" width="114" height="20" rx="4" fill="#faf5ff" stroke="#d8b4fe" stroke-width="0.8"/>
+  <text x="375" y="194" font-size="9" font-weight="700" fill="#6b21a8">U_1 ∨ U_2 ∨ U_3 &gt; 0</text>
 
   <!-- STATE 4: ESCALATED -->
-  <g transform="translate(340, 240)" filter="url(#cardShadow)">
-    <rect x="0" y="0" width="200" height="85" rx="8" fill="url(#stateEscalated)" stroke="#8b5cf6" stroke-width="1.5"/>
-    <rect x="10" y="10" width="110" height="16" rx="3" fill="#ddd6fe"/>
-    <text x="15" y="22" font-size="9" font-weight="700" fill="#5b21b6">CHUYỂN TIẾP CẤP TRÊN</text>
-    <text x="10" y="44" font-size="13" font-weight="700" fill="#4c1d95">ESCALATED</text>
-    <text x="10" y="60" font-size="9.5" fill="#6b21a8">• Tổng hợp prompt 1 lượt</text>
-    <text x="10" y="74" font-size="9.5" fill="#7c3aed">• Giao diện thẩm định Quản lý</text>
+  <g transform="translate(320, 225)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="210" height="85" rx="8" fill="url(#stateEscalated)" stroke="#8b5cf6" stroke-width="1.8"/>
+    <rect x="12" y="10" width="118" height="16" rx="3" fill="#ede9fe"/>
+    <text x="17" y="22" font-size="9" font-weight="700" fill="#5b21b6">CHUYỂN TIẾP CẤP TRÊN</text>
+    <text x="12" y="44" font-size="13" font-weight="700" fill="#4c1d95">ESCALATED</text>
+    <text x="12" y="60" font-size="9.5" fill="#6b21a8">• Tổng hợp prompt 1 lượt</text>
+    <text x="12" y="74" font-size="9.5" fill="#7c3aed">• Giao diện thẩm định Quản lý</text>
   </g>
 
-  <!-- UNDO PATH: AUTO_APPROVED -> REVERTED -->
-  <path d="M 710 175 L 710 215" stroke="#d97706" stroke-width="1.8" stroke-dasharray="4,4" marker-end="url(#arrA)"/>
-  <rect x="670" y="185" width="80" height="18" rx="3" fill="#fffbeb" stroke="#fcd34d" stroke-width="0.8"/>
-  <text x="676" y="198" font-size="8.5" font-weight="700" fill="#92400e">Quản lý [Undo]</text>
+  <!-- Transition 4: AUTO_APPROVED -> REVERTED (Undo Downward) -->
+  <path class="connector" d="M 760 161 L 760 219" stroke="#d97706" stroke-width="1.8" stroke-dasharray="4,4" fill="none" marker-end="url(#arrA)"/>
+  <rect x="715" y="180" width="90" height="20" rx="3" fill="#fffbeb" stroke="#fde68a" stroke-width="0.8"/>
+  <text x="722" y="194" font-size="8.5" font-weight="700" fill="#92400e">Quản lý [Undo]</text>
 
   <!-- STATE 5: REVERTED -->
-  <g transform="translate(620, 220)" filter="url(#cardShadow)">
-    <rect x="0" y="0" width="180" height="74" rx="8" fill="url(#stateReverted)" stroke="#f59e0b" stroke-width="1.5"/>
-    <rect x="10" y="10" width="80" height="16" rx="3" fill="#fde68a"/>
-    <text x="15" y="22" font-size="9" font-weight="700" fill="#92400e">HOÀN TÁC</text>
-    <text x="10" y="44" font-size="13" font-weight="700" fill="#78350f">REVERTED</text>
-    <text x="10" y="60" font-size="9.5" fill="#92400e">Delta Snapshot Rollback</text>
+  <g transform="translate(650, 225)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="220" height="85" rx="8" fill="url(#stateReverted)" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="12" y="10" width="85" height="16" rx="3" fill="#fef3c7"/>
+    <text x="17" y="22" font-size="9" font-weight="700" fill="#92400e">HOÀN TÁC ĐƠN</text>
+    <text x="12" y="44" font-size="13" font-weight="700" fill="#78350f">REVERTED</text>
+    <text x="12" y="60" font-size="9.5" fill="#92400e">Khôi phục quỹ phép trong 0.1s</text>
+    <text x="12" y="74" font-size="9" fill="#b45309">Delta Snapshot Rollback</text>
   </g>
 
-  <!-- Transition: REVERTED -> ESCALATED -->
-  <path d="M 620 257 L 550 257" stroke="#7c3aed" stroke-width="1.8" stroke-dasharray="3,3" marker-end="url(#arrP)"/>
-  <text x="555" y="250" font-size="8.5" font-weight="600" fill="#6b21a8">Tái định tuyến xử lý</text>
+  <!-- Transition 5: REVERTED -> ESCALATED (Leftward dashed) -->
+  <path class="connector" d="M 650 267 L 536 267" stroke="#7c3aed" stroke-width="1.8" stroke-dasharray="3,3" fill="none" marker-end="url(#arrP)"/>
+  <rect x="548" y="256" width="90" height="18" rx="3" fill="#faf5ff" stroke="#e9d5ff" stroke-width="0.8"/>
+  <text x="554" y="269" font-size="8" font-weight="600" fill="#6b21a8">Tái định tuyến</text>
 
-  <!-- Transition: ESCALATED -> APPROVED (Action 1) -->
-  <path d="M 440 325 L 440 375 L 590 375" stroke="#059669" stroke-width="2" marker-end="url(#arrG)"/>
-  <rect x="450" y="362" width="130" height="18" rx="3" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="0.8"/>
-  <text x="456" y="375" font-size="8.5" font-weight="700" fill="#047857">Lựa chọn 1: Duyệt ngoại lệ</text>
+
+  <!-- ==================== HÀNG 3: QUYẾT ĐỊNH CỦA QUẢN LÝ ==================== -->
+
+  <!-- Transition 6: ESCALATED -> APPROVED (Action 1) -->
+  <path class="connector" d="M 455 310 L 455 385 L 644 385" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#arrG)"/>
+  <rect x="470" y="373" width="145" height="20" rx="3" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="0.8"/>
+  <text x="477" y="387" font-size="8.5" font-weight="700" fill="#047857">Lựa chọn 1: Duyệt ngoại lệ</text>
 
   <!-- STATE 6: APPROVED (Exception) -->
-  <g transform="translate(600, 345)" filter="url(#cardShadow)">
+  <g transform="translate(650, 355)" filter="url(#cardShadow)">
     <rect x="0" y="0" width="220" height="60" rx="8" fill="url(#stateApproved)" stroke="#14b8a6" stroke-width="1.5"/>
     <text x="12" y="25" font-size="12" font-weight="700" fill="#134e4a">APPROVED (Ngoại lệ)</text>
-    <text x="12" y="44" font-size="9.5" fill="#0f766e">Ghi nhận kèm lý do quản lý &amp; mã băm SHA-256</text>
+    <text x="12" y="44" font-size="9.5" fill="#0f766e">Ghi nhận lý do quản lý &amp; mã băm SHA-256</text>
   </g>
 
-  <!-- Transition: ESCALATED -> REJECTED (Action 0) -->
-  <path d="M 370 325 L 370 435 L 590 435" stroke="#dc2626" stroke-width="2" marker-end="url(#arrR)"/>
-  <rect x="380" y="422" width="135" height="18" rx="3" fill="#fef2f2" stroke="#fecaca" stroke-width="0.8"/>
-  <text x="386" y="435" font-size="8.5" font-weight="700" fill="#b91c1c">Lựa chọn 0: Từ chối theo quy chế</text>
+  <!-- Transition 7: ESCALATED -> REJECTED (Action 0) -->
+  <path class="connector" d="M 395 310 L 395 465 L 644 465" stroke="#dc2626" stroke-width="2" fill="none" marker-end="url(#arrR)"/>
+  <rect x="440" y="453" width="175" height="20" rx="3" fill="#fef2f2" stroke="#fecaca" stroke-width="0.8"/>
+  <text x="447" y="467" font-size="8.5" font-weight="700" fill="#b91c1c">Lựa chọn 0: Từ chối theo quy chế</text>
 
   <!-- STATE 7: REJECTED -->
-  <g transform="translate(600, 412)" filter="url(#cardShadow)">
-    <rect x="0" y="0" width="220" height="52" rx="8" fill="url(#stateRejected)" stroke="#ef4444" stroke-width="1.5"/>
-    <text x="12" y="22" font-size="12" font-weight="700" fill="#7f1d1d">REJECTED (Không hợp lệ)</text>
-    <text x="12" y="38" font-size="9.5" fill="#991b1b">Phát hành thông báo từ chối viện dẫn điều khoản</text>
+  <g transform="translate(650, 435)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="220" height="60" rx="8" fill="url(#stateRejected)" stroke="#ef4444" stroke-width="1.5"/>
+    <text x="12" y="24" font-size="12" font-weight="700" fill="#7f1d1d">REJECTED (Không hợp lệ)</text>
+    <text x="12" y="42" font-size="9.5" fill="#991b1b">Phát hành thông báo từ chối viện dẫn điều khoản</text>
   </g>
 
 </svg>
