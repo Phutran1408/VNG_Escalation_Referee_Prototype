@@ -18,3 +18,16 @@ logs/
 # beside it.
 /.plugins/
 /.opencode-skills/
+
+# Python & PDF build intermediates
+__pycache__/
+*.pyc
+*.tex
+*.aux
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+proposal_vi.html
+proposal_en.html
+technical_reference.html

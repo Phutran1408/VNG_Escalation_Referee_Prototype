@@ -5,16 +5,13 @@ import PolicyModal from "./components/PolicyModal";
 import StandardFormModal from "./components/StandardFormModal";
 import ApplicantPortal from "./components/ApplicantPortal";
 import ReviewerPortal from "./components/ReviewerPortal";
-import VerifyHarness from "./domains/academic/VerifyHarness";
+import EnterpriseVerifyHarness from "./domains/enterprise/EnterpriseVerifyHarness";
 import { DEFAULT_LLM_CONFIG, type LocalLlmConfig } from "./core/agent/localLlmClient";
 
 /**
- * Ngữ cảnh trình diễn được CHỐT CỨNG ở "academic".
- * Không phải state nữa: nhánh enterprise của agent còn lỗi B1/B1b chưa có test phủ
- * (xem Header.tsx và docs/RUNBOOK.md §5), nên không để tồn tại đường nào — kể cả
- * một setState sót lại — dẫn giao diện sang đó.
+ * Ngữ cảnh trình diễn được CHỐT CỨNG ở "enterprise" (Doanh nghiệp - HR Leave Management).
  */
-const DEMO_DOMAIN: DomainMode = "academic";
+const DEMO_DOMAIN: DomainMode = "enterprise";
 
 export default function App() {
   const domain = DEMO_DOMAIN;
@@ -43,7 +40,7 @@ export default function App() {
       {/* Main App Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
         {userRole === "harness" ? (
-          <VerifyHarness key={domain} domain={domain} llmConfig={llmConfig} />
+          <EnterpriseVerifyHarness key={domain} domain={domain} llmConfig={llmConfig} />
         ) : userRole === "applicant" ? (
           <ApplicantPortal key={domain} domain={domain} />
         ) : (
