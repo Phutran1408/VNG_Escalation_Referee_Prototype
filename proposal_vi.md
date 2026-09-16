@@ -156,6 +156,7 @@ AER tuân thủ 3 nguyên tắc thiết kế cốt lõi không thể thương l�
 2. **Nguyên tắc Không Suy Đoán Dữ Kiện (Zero Imputation on Ambiguity)**: Khi chứng từ y tế bị mờ ngày hoặc thiếu mộc đỏ, hệ thống bắt buộc phải dừng lại ở nhóm Bất định Dữ kiện ($U_1$), tuyệt đối không dùng LLM để "đoán" ngày tháng.
 3. **Nguyên tắc Tác vụ Đơn Lượt (Single-turn Human Actionability)**: Mọi thông báo chuyển tiếp gửi tới cấp trên đều phải ở dạng câu hỏi đóng, tích hợp đầy đủ thông tin tóm tắt và cung cấp đúng 2 nút bấm hành động để xử lý dứt điểm trong 1 lượt tương tác.
 
+
 ---
 
 # PHẦN II: KIẾN TRÚC HỆ THỐNG & ĐÓNG GÓP KHOA HỌC KỸ THUẬT
@@ -186,6 +187,8 @@ Luồng dữ liệu trong hệ thống diễn ra khép kín và tự trị:
 > - **Ca thường quy hợp lệ (*U* = ∅)** → Phê duyệt tự động tức thì (`AUTO_APPROVE`) trong < 10ms.
 > - **Ca gắn cờ rủi ro (*U* ≠ ∅)** → Đóng khung câu hỏi chuyển tiếp 1 lượt gửi Quản lý / HR xử lý.
 
+![Hình 1: Kiến trúc Vận hành & Đường ống Quyết định AER](assets/system_topology_vi.svg)
+
 ---
 
 ## 6. Các đóng góp khoa học và kỹ thuật (C1 – C6)
@@ -202,11 +205,13 @@ AER đóng góp mô hình phân rã không gian bất định thành bộ ba tr�
 - **Chiều U₂ — Xung đột Chính sách (U_policy)**: Dữ liệu hoàn toàn rõ ràng nhưng nội dung vi phạm các chuẩn mực quy chế (Nhân viên đang thử việc xin nghỉ phép năm hưởng lương theo Điều 8.2, hoặc nghỉ việc riêng không có giấy tờ minh chứng theo Điều 15). Hành động tương ứng: *Chuyển tiếp cho Quản lý trực tiếp xem xét cho phép nghỉ không lương hay từ chối đơn*.
 - **Chiều U₃ — Giới hạn Thẩm quyền (U_auth)**: Hồ sơ hợp lệ và chính đáng nhưng tính chất vụ việc vượt quá thẩm quyền của Quản lý trực tiếp (Đơn xin nghỉ không lương > 5 ngày theo Điều 18.1, hoặc nghỉ dài hạn ≥ 20 ngày theo Điều 18.3). Hành động tương ứng: *Khóa quyền duyệt của Quản lý trực tiếp, chuyển tiếp trực tiếp lên Giám đốc Nhân sự (HRD) hoặc Ban Tổng Giám Đốc*.
 
-![Hình 1: Không gian Bất định Nhân sự Doanh nghiệp 3 Chiều](assets/uncertainty_space_vi.svg)
+![Hình 2: Không gian Bất định Nhân sự Doanh nghiệp 3 Chiều](assets/uncertainty_space_vi.svg)
 
 ### 6.2 Đóng góp C2: Hàm quyết định kép kết hợp quy tắc và dự phòng
 
 Quy trình ra quyết định của AER không phụ thuộc vào sự ngẫu nhiên của mô hình ngôn ngữ lớn, mà được thực thi thông qua hàm quyết định kép có tính toán học chặt chẽ:
+
+![Hình 3: Mô hình Máy Trạng thái Hữu hạn & Vòng đời Hồ sơ](assets/state_machine_vi.svg)
 
 Hàm quyết định *D*(*R*, *S*) được xác định theo 4 nhánh rẽ:
 - ***D*(*R*, *S*) = Tự động Duyệt (`AUTO_APPROVE`)**: khi *V*<sub>doc</sub>(*R*) = 1 ∧ SốNgàyNghỉ(*R*) ≤ SốDưPhép(*S*) ∧ ThẩmQuyền(*R*) ≤ Quản lý trực tiếp ∧ ThửViệc(*S*) = False
@@ -253,6 +258,7 @@ Thay vì các con số khô khan ẩn sâu trong cơ sở dữ liệu nhân sự
 Nhằm phục vụ quá trình thẩm định khách quan, AER thiết kế giao thức kiểm thử tự động:
 - Bộ kiểm thử độc lập trạng thái nạp 5 ca tiêu biểu đại diện cho tất cả các nhánh rẽ quy chế (3 ca thường quy, 1 ca mờ chứng từ $U_1$, 1 ca thử việc $U_2$, 1 ca vượt thẩm quyền 20 ngày $U_3$).
 - Trình so khớp 3 vế (*Verify Comparator*) so sánh tự động: Kết quả chính (Outcome), Nhóm bất định (Category), và phát hiện lỗi Over-escalation / Under-escalation với độ chính xác đạt **100% PASS**.
+
 
 ---
 
@@ -374,6 +380,7 @@ Kết quả đo lường thực nghiệm trên tập kiểm chuẩn độc lập
 
 **Tổng kết**: Đạt tỷ lệ **100% PASS** (15/15 ca), 0 ca Over-escalation, 0 ca Under-escalation, độ trễ xử lý quy tắc đạt **~2.8 mili-giây**.
 
+
 ---
 
 # PHẦN IV: VẬN HÀNH, NGHIÊN CỨU NGƯỜI DÙNG & KẾ HOẠCH TRIỂN KHAI
@@ -433,6 +440,7 @@ Lộ trình triển khai nhanh trong 72 giờ được thiết kế để đưa 
 - **Hiệu quả Tiết kiệm Thời gian**: Giảm 85% thời gian xử lý sự vụ của bộ phận nhân sự và giảm 88% thời gian phê duyệt của cán bộ quản lý (từ ~180 giây xuống ~11.4 giây mỗi đơn).
 - **Loại bỏ Thất thoát Chế độ**: Giảm 100% các trường hợp chi trả sai chế độ ốm đau do thiếu chứng từ BHXH gốc (mẫu C65-HD).
 - **Chi phí Hạ tầng Tối thiểu**: Tác tử AI và mô hình VLM chạy hoàn toàn cục bộ (Local Edge / On-premise), không phát sinh chi phí token API đám mây hàng tháng và đảm bảo an toàn tuyệt đối dữ liệu nhân sự.
+
 
 ---
 

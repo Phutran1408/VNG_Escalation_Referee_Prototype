@@ -141,6 +141,7 @@ Employee Leave Governance achieved the top score (4.91/5.0) due to:
 2. **Zero Imputation on Ambiguity**: When visual evidence is degraded, AER deterministically flags $U_1$ rather than guessing.
 3. **Single-Turn Human Actionability**: Every escalated notification is synthesized into a closed question with exactly 2 decisive actions for sub-15-second resolution.
 
+
 ---
 
 # PART II: SYSTEM ARCHITECTURE & TECHNICAL CONTRIBUTIONS
@@ -169,6 +170,8 @@ AER is engineered with a strict 4-tier separation of concerns:
 > - **Routine Case (*U* = ∅)** → Deterministic Fast-Path Auto-Approval (`AUTO_APPROVE`) in < 10ms.
 > - **Flagged Risk (*U* ≠ ∅)** → Synthesizes Single-Turn Closed Prompt to Line Manager or HR Director.
 
+![Figure 1: AER Runtime Topology and Decision Pipeline](assets/system_topology_en.svg)
+
 ---
 
 ## 6. Scientific and Engineering Contributions (C1 – C6)
@@ -185,11 +188,13 @@ AER introduces an orthogonal 3-dimensional uncertainty decomposition:
 - **Dimension U₂ — Policy Conflict (U_policy)**: Clear data conflicting with regulations (e.g., probationary employee requesting paid leave per Article 8.2, or personal leave without proof per Article 15). Action: *Escalate to Line Manager for unpaid leave conversion or rejection*.
 - **Dimension U₃ — Authority Breach (U_auth)**: Request exceeds line manager jurisdiction (e.g., unpaid leave > 5 days per Article 18.1, or long-term leave ≥ 20 days per Article 18.3). Action: *Lock line manager approval and route to HR Director / Executive*.
 
-![Figure 1: 3-Dimensional Enterprise Uncertainty Space](assets/uncertainty_space_en.svg)
+![Figure 2: 3-Dimensional Enterprise Uncertainty Space](assets/uncertainty_space_en.svg)
 
 ### 6.2 Contribution C2: Dual Decision Function with Grounded Fallback
 
 AER formalizes decision evaluation as a deterministic dual function:
+
+![Figure 3: Deterministic Finite State Machine and Lifecycle Transitions](assets/state_machine_en.svg)
 
 The decision function *D*(*R*, *S*) evaluates across 4 deterministic branches:
 - ***D*(*R*, *S*) = AUTO_APPROVE**: when *V*<sub>doc</sub>(*R*) = 1 ∧ RequestedDays(*R*) ≤ RemainingQuota(*S*) ∧ Authority(*R*) ≤ LineManager ∧ IsProbation(*S*) = False
@@ -228,6 +233,7 @@ AER provides live interactive leave quota visualization:
 ### 6.6 Contribution C6: State-Independent Verification Protocol
 
 AER includes an independent verification harness evaluating canonical test suites with 100% test reproducibility and zero state bleed between runs.
+
 
 ---
 
@@ -336,6 +342,7 @@ AER formalizes enterprise data structures using strict JSON Schema standards:
 
 **Summary**: **100% PASS** rate (15/15 cases), 0 over-escalations, 0 under-escalations, average rule engine latency of **~2.8 ms**.
 
+
 ---
 
 # PART IV: OPERATIONS, USER STUDY & IMPLEMENTATION ROADMAP
@@ -382,6 +389,7 @@ AER enforces a clear RACI governance framework across organizational roles:
 - **Administrative Efficiency**: 85% reduction in routine HR administrative overhead and 88% reduction in manager decision latency (from ~180s to ~11.4s).
 - **Statutory Protection**: Zero corporate payroll leakage from missing social insurance claim documents.
 - **Minimal Infrastructure Cost**: 100% on-premise edge inference without ongoing third-party cloud API costs.
+
 
 ---
 

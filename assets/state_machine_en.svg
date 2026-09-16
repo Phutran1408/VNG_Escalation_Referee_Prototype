@@ -1,0 +1,174 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 480" width="100%" height="100%" style="background: #ffffff; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <defs>
+    <!-- Canvas Gradient -->
+    <linearGradient id="canvasGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+
+    <!-- State Card Gradients -->
+    <linearGradient id="stateSubmitted" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+
+    <linearGradient id="stateEvaluating" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#eff6ff"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
+    </linearGradient>
+
+    <linearGradient id="stateAutoApprove" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ecfdf5"/>
+      <stop offset="100%" stop-color="#d1fae5"/>
+    </linearGradient>
+
+    <linearGradient id="stateEscalated" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#faf5ff"/>
+      <stop offset="100%" stop-color="#ede9fe"/>
+    </linearGradient>
+
+    <linearGradient id="stateApproved" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0fdfa"/>
+      <stop offset="100%" stop-color="#ccfbf1"/>
+    </linearGradient>
+
+    <linearGradient id="stateRejected" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef2f2"/>
+      <stop offset="100%" stop-color="#fee2e2"/>
+    </linearGradient>
+
+    <linearGradient id="stateReverted" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fffbeb"/>
+      <stop offset="100%" stop-color="#fef3c7"/>
+    </linearGradient>
+
+    <!-- Arrow Markers -->
+    <marker id="arrB" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrG" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669"/>
+    </marker>
+    <marker id="arrP" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#7c3aed"/>
+    </marker>
+    <marker id="arrR" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#dc2626"/>
+    </marker>
+    <marker id="arrA" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#d97706"/>
+    </marker>
+
+    <!-- Shadow -->
+    <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.07"/>
+    </filter>
+  </defs>
+
+  <!-- Container Box -->
+  <rect x="12" y="12" width="836" height="456" rx="12" fill="url(#canvasGrad)" stroke="#cbd5e1" stroke-width="1.5"/>
+
+  <!-- Diagram Title / Header -->
+  <g transform="translate(32, 38)">
+    <rect x="0" y="0" width="8" height="20" rx="2" fill="#7c3aed"/>
+    <text x="16" y="15" font-size="14" font-weight="700" fill="#0f172a" letter-spacing="0.02em">FIGURE 2: DETERMINISTIC FINITE STATE MACHINE &amp; LIFECYCLE TRANSITIONS</text>
+    <text x="16" y="32" font-size="11" fill="#64748b">Formal state transition dynamics, guard conditions, and cryptographic audit ledger commits</text>
+  </g>
+
+  <!-- STATE 1: SUBMITTED -->
+  <g transform="translate(36, 95)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="160" height="74" rx="8" fill="url(#stateSubmitted)" stroke="#64748b" stroke-width="1.5"/>
+    <rect x="10" y="10" width="60" height="16" rx="3" fill="#cbd5e1"/>
+    <text x="15" y="22" font-size="9" font-weight="700" fill="#334155">INITIAL</text>
+    <text x="10" y="44" font-size="13" font-weight="700" fill="#0f172a">SUBMITTED</text>
+    <text x="10" y="60" font-size="9.5" fill="#475569">BM-HR-01 Ingested</text>
+  </g>
+
+  <!-- Transition: SUBMITTED -> EVALUATING -->
+  <path d="M 116 169 L 116 215" stroke="#2563eb" stroke-width="2" marker-end="url(#arrB)"/>
+  <rect x="124" y="180" width="100" height="18" rx="3" fill="#eff6ff" stroke="#93c5fd" stroke-width="0.8"/>
+  <text x="130" y="193" font-size="8.5" font-weight="600" fill="#1e40af">Trigger Pipeline</text>
+
+  <!-- STATE 2: EVALUATING -->
+  <g transform="translate(36, 220)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="160" height="85" rx="8" fill="url(#stateEvaluating)" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="10" y="10" width="80" height="16" rx="3" fill="#bfdbfe"/>
+    <text x="15" y="22" font-size="9" font-weight="700" fill="#1d4ed8">PROCESSING</text>
+    <text x="10" y="44" font-size="13" font-weight="700" fill="#1e3a8a">EVALUATING</text>
+    <text x="10" y="60" font-size="9.5" fill="#1e40af">• VLM Scan (V_doc)</text>
+    <text x="10" y="74" font-size="9.5" fill="#2563eb">• Dual-Layer Rules</text>
+  </g>
+
+  <!-- Transition: EVALUATING -> AUTO_APPROVED -->
+  <path d="M 196 240 L 320 240 L 320 135 L 590 135" stroke="#059669" stroke-width="2" marker-end="url(#arrG)"/>
+  <rect x="235" y="125" width="280" height="20" rx="4" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1"/>
+  <text x="242" y="139" font-size="9" font-weight="700" fill="#065f46">Guard: V_doc=1 ∧ Quota OK ∧ Auth OK ∧ Probation=False</text>
+
+  <!-- STATE 3: AUTO_APPROVED -->
+  <g transform="translate(600, 95)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="220" height="80" rx="8" fill="url(#stateAutoApprove)" stroke="#10b981" stroke-width="2"/>
+    <rect x="10" y="10" width="95" height="16" rx="3" fill="#a7f3d0"/>
+    <text x="15" y="22" font-size="9" font-weight="700" fill="#065f46">TERMINAL (SAFE)</text>
+    <text x="10" y="44" font-size="13" font-weight="700" fill="#064e3b">AUTO_APPROVED</text>
+    <text x="10" y="60" font-size="9.5" fill="#047857">• Instant approval (&lt; 10ms)</text>
+    <text x="10" y="72" font-size="9" fill="#059669">• SHA-256 Ledger Record Committed</text>
+  </g>
+
+  <!-- Transition: EVALUATING -> ESCALATED -->
+  <path d="M 196 280 L 330 280" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrP)"/>
+  <rect x="208" y="290" width="112" height="20" rx="4" fill="#faf5ff" stroke="#c084fc" stroke-width="1"/>
+  <text x="214" y="304" font-size="9" font-weight="700" fill="#6b21a8">U_1 ∨ U_2 ∨ U_3 &gt; 0</text>
+
+  <!-- STATE 4: ESCALATED -->
+  <g transform="translate(340, 240)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="200" height="85" rx="8" fill="url(#stateEscalated)" stroke="#8b5cf6" stroke-width="1.5"/>
+    <rect x="10" y="10" width="100" height="16" rx="3" fill="#ddd6fe"/>
+    <text x="15" y="22" font-size="9" font-weight="700" fill="#5b21b6">HUMAN ROUTING</text>
+    <text x="10" y="44" font-size="13" font-weight="700" fill="#4c1d95">ESCALATED</text>
+    <text x="10" y="60" font-size="9.5" fill="#6b21a8">• Grounded 1-turn prompt</text>
+    <text x="10" y="74" font-size="9.5" fill="#7c3aed">• Manager Review Portal</text>
+  </g>
+
+  <!-- UNDO PATH: AUTO_APPROVED -> REVERTED -->
+  <path d="M 710 175 L 710 215" stroke="#d97706" stroke-width="1.8" stroke-dasharray="4,4" marker-end="url(#arrA)"/>
+  <rect x="670" y="185" width="80" height="18" rx="3" fill="#fffbeb" stroke="#fcd34d" stroke-width="0.8"/>
+  <text x="676" y="198" font-size="8.5" font-weight="700" fill="#92400e">Manager [Undo]</text>
+
+  <!-- STATE 5: REVERTED -->
+  <g transform="translate(620, 220)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="180" height="74" rx="8" fill="url(#stateReverted)" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="10" y="10" width="80" height="16" rx="3" fill="#fde68a"/>
+    <text x="15" y="22" font-size="9" font-weight="700" fill="#92400e">REVERT STATE</text>
+    <text x="10" y="44" font-size="13" font-weight="700" fill="#78350f">REVERTED</text>
+    <text x="10" y="60" font-size="9.5" fill="#92400e">Optimistic Rollback Delta</text>
+  </g>
+
+  <!-- Transition: REVERTED -> ESCALATED -->
+  <path d="M 620 257 L 550 257" stroke="#7c3aed" stroke-width="1.8" stroke-dasharray="3,3" marker-end="url(#arrP)"/>
+  <text x="555" y="250" font-size="8.5" font-weight="600" fill="#6b21a8">Re-route to Review</text>
+
+  <!-- Transition: ESCALATED -> APPROVED (Action 1) -->
+  <path d="M 440 325 L 440 375 L 590 375" stroke="#059669" stroke-width="2" marker-end="url(#arrG)"/>
+  <rect x="450" y="362" width="130" height="18" rx="3" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="0.8"/>
+  <text x="456" y="375" font-size="8.5" font-weight="700" fill="#047857">Action 1: Grant Exception</text>
+
+  <!-- STATE 6: APPROVED (Exception) -->
+  <g transform="translate(600, 345)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="220" height="60" rx="8" fill="url(#stateApproved)" stroke="#14b8a6" stroke-width="1.5"/>
+    <text x="12" y="25" font-size="12" font-weight="700" fill="#134e4a">APPROVED (Exception)</text>
+    <text x="12" y="44" font-size="9.5" fill="#0f766e">Logged with managerial rationale &amp; SHA-256 hash</text>
+  </g>
+
+  <!-- Transition: ESCALATED -> REJECTED (Action 0) -->
+  <path d="M 370 325 L 370 435 L 590 435" stroke="#dc2626" stroke-width="2" marker-end="url(#arrR)"/>
+  <rect x="380" y="422" width="135" height="18" rx="3" fill="#fef2f2" stroke="#fecaca" stroke-width="0.8"/>
+  <text x="386" y="435" font-size="8.5" font-weight="700" fill="#b91c1c">Action 0: Reject per Policy</text>
+
+  <!-- STATE 7: REJECTED -->
+  <g transform="translate(600, 412)" filter="url(#cardShadow)">
+    <rect x="0" y="0" width="220" height="52" rx="8" fill="url(#stateRejected)" stroke="#ef4444" stroke-width="1.5"/>
+    <text x="12" y="22" font-size="12" font-weight="700" fill="#7f1d1d">REJECTED (Non-compliant)</text>
+    <text x="12" y="38" font-size="9.5" fill="#991b1b">Dispatches statutory rejection citing Article No.</text>
+  </g>
+
+</svg>

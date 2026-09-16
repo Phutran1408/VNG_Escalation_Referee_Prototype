@@ -43,21 +43,7 @@ The runtime topology comprises 4 interconnected components:
 - **Cognitive Local LLM Referee**: Formulates structured, single-turn human prompts when orthogonal uncertainty is detected.
 - **Cryptographic Audit Ledger**: Records immutable SHA-256 state transitions and executes sub-second optimistic state rollbacks.
 
-```text
-[ Employee Application ] ──► [ Local VLM Laser Scan ] ──► [ Deterministic Rule Guardrails ]
-                                                                       │
-                         ┌─────────────────────────────────────────────┴─────────────────────────────────────────────┐
-                         ▼                                                                                           ▼
-            [ Routine: All Verified ]                                                                   [ Flagged Uncertainty ]
-                         │                                                                                           │
-                         ▼                                                                                           ▼
-            [ AUTO_APPROVE (< 10ms) ]                                                                   [ Cognitive Local LLM ]
-                         │                                                                                           │
-                         ▼                                                                                           ▼
-            [ Immutable Audit Ledger ]                                                                  [ Single-Turn Action Prompt ]
-                         ▲                                                                                           │
-                         └───────────────────────── [ Manager Decision / Undo ] ◄────────────────────────────────────┘
-```
+![Figure 1: AER Runtime Topology and Decision Pipeline](assets/system_topology_en.svg)
 
 ---
 
@@ -65,29 +51,7 @@ The runtime topology comprises 4 interconnected components:
 
 A request moves deterministically through a finite set of states:
 
-```text
-  ┌──────────────┐
-  │   SUBMITTED  │
-  └──────┬───────┘
-         │
-         ▼
-  ┌──────────────┐      Valid Quota + Clear Proof
-  │  EVALUATING  ├────────────────────────────────────► ┌────────────────┐
-  └──────┬───────┘                                      │ AUTO_APPROVED  │
-         │                                              └───────┬────────┘
-         │ Flagged Uncertainty                                  │
-         ▼                                                      │ Manager [Undo]
-  ┌──────────────┐                                              ▼
-  │  ESCALATED   │◄───────────────────────────────────── ┌────────────────┐
-  └──────┬───────┘                                      │    REVERTED    │
-         │                                              └────────────────┘
-         ├──────────────────────────────┐
-         ▼                              ▼
-  ┌──────────────┐              ┌────────────────┐
-  │   APPROVED   │              │    REJECTED    │
-  │ (Exception)  │              │ (Non-compliant)│
-  └──────────────┘              └────────────────┘
-```
+![Figure 2: Deterministic Finite State Machine and Lifecycle Transitions](assets/state_machine_en.svg)
 
 ---
 
@@ -103,7 +67,7 @@ Traditional agentic systems model uncertainty as an undifferentiated scalar prob
 - **U₂ — Policy Conflict (U_policy)**: Valid data breaching regulatory rules (e.g., probationary employee requesting paid leave).
 - **U₃ — Authority Breach (U_auth)**: Request exceeds line manager jurisdiction (e.g., unpaid leave > 5 days or long-term leave ≥ 20 days).
 
-![Figure 1: 3-Dimensional Enterprise Uncertainty Space](assets/uncertainty_space_en.svg)
+![Figure 3: 3-Dimensional Enterprise Uncertainty Space](assets/uncertainty_space_en.svg)
 
 ## 3.2 Dual Deterministic Decision Function (C2)
 

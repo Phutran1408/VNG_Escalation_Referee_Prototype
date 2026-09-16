@@ -26,6 +26,8 @@ Luồng dữ liệu trong hệ thống diễn ra khép kín và tự trị:
 > - **Ca thường quy hợp lệ (*U* = ∅)** → Phê duyệt tự động tức thì (`AUTO_APPROVE`) trong < 10ms.
 > - **Ca gắn cờ rủi ro (*U* ≠ ∅)** → Đóng khung câu hỏi chuyển tiếp 1 lượt gửi Quản lý / HR xử lý.
 
+![Hình 1: Kiến trúc Vận hành & Đường ống Quyết định AER](assets/system_topology_vi.svg)
+
 ---
 
 ## 6. Các đóng góp khoa học và kỹ thuật (C1 – C6)
@@ -42,11 +44,13 @@ AER đóng góp mô hình phân rã không gian bất định thành bộ ba tr�
 - **Chiều U₂ — Xung đột Chính sách (U_policy)**: Dữ liệu hoàn toàn rõ ràng nhưng nội dung vi phạm các chuẩn mực quy chế (Nhân viên đang thử việc xin nghỉ phép năm hưởng lương theo Điều 8.2, hoặc nghỉ việc riêng không có giấy tờ minh chứng theo Điều 15). Hành động tương ứng: *Chuyển tiếp cho Quản lý trực tiếp xem xét cho phép nghỉ không lương hay từ chối đơn*.
 - **Chiều U₃ — Giới hạn Thẩm quyền (U_auth)**: Hồ sơ hợp lệ và chính đáng nhưng tính chất vụ việc vượt quá thẩm quyền của Quản lý trực tiếp (Đơn xin nghỉ không lương > 5 ngày theo Điều 18.1, hoặc nghỉ dài hạn ≥ 20 ngày theo Điều 18.3). Hành động tương ứng: *Khóa quyền duyệt của Quản lý trực tiếp, chuyển tiếp trực tiếp lên Giám đốc Nhân sự (HRD) hoặc Ban Tổng Giám Đốc*.
 
-![Hình 1: Không gian Bất định Nhân sự Doanh nghiệp 3 Chiều](assets/uncertainty_space_vi.svg)
+![Hình 2: Không gian Bất định Nhân sự Doanh nghiệp 3 Chiều](assets/uncertainty_space_vi.svg)
 
 ### 6.2 Đóng góp C2: Hàm quyết định kép kết hợp quy tắc và dự phòng
 
 Quy trình ra quyết định của AER không phụ thuộc vào sự ngẫu nhiên của mô hình ngôn ngữ lớn, mà được thực thi thông qua hàm quyết định kép có tính toán học chặt chẽ:
+
+![Hình 3: Mô hình Máy Trạng thái Hữu hạn & Vòng đời Hồ sơ](assets/state_machine_vi.svg)
 
 Hàm quyết định *D*(*R*, *S*) được xác định theo 4 nhánh rẽ:
 - ***D*(*R*, *S*) = Tự động Duyệt (`AUTO_APPROVE`)**: khi *V*<sub>doc</sub>(*R*) = 1 ∧ SốNgàyNghỉ(*R*) ≤ SốDưPhép(*S*) ∧ ThẩmQuyền(*R*) ≤ Quản lý trực tiếp ∧ ThửViệc(*S*) = False

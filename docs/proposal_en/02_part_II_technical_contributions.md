@@ -24,6 +24,8 @@ AER is engineered with a strict 4-tier separation of concerns:
 > - **Routine Case (*U* = ∅)** → Deterministic Fast-Path Auto-Approval (`AUTO_APPROVE`) in < 10ms.
 > - **Flagged Risk (*U* ≠ ∅)** → Synthesizes Single-Turn Closed Prompt to Line Manager or HR Director.
 
+![Figure 1: AER Runtime Topology and Decision Pipeline](assets/system_topology_en.svg)
+
 ---
 
 ## 6. Scientific and Engineering Contributions (C1 – C6)
@@ -40,11 +42,13 @@ AER introduces an orthogonal 3-dimensional uncertainty decomposition:
 - **Dimension U₂ — Policy Conflict (U_policy)**: Clear data conflicting with regulations (e.g., probationary employee requesting paid leave per Article 8.2, or personal leave without proof per Article 15). Action: *Escalate to Line Manager for unpaid leave conversion or rejection*.
 - **Dimension U₃ — Authority Breach (U_auth)**: Request exceeds line manager jurisdiction (e.g., unpaid leave > 5 days per Article 18.1, or long-term leave ≥ 20 days per Article 18.3). Action: *Lock line manager approval and route to HR Director / Executive*.
 
-![Figure 1: 3-Dimensional Enterprise Uncertainty Space](assets/uncertainty_space_en.svg)
+![Figure 2: 3-Dimensional Enterprise Uncertainty Space](assets/uncertainty_space_en.svg)
 
 ### 6.2 Contribution C2: Dual Decision Function with Grounded Fallback
 
 AER formalizes decision evaluation as a deterministic dual function:
+
+![Figure 3: Deterministic Finite State Machine and Lifecycle Transitions](assets/state_machine_en.svg)
 
 The decision function *D*(*R*, *S*) evaluates across 4 deterministic branches:
 - ***D*(*R*, *S*) = AUTO_APPROVE**: when *V*<sub>doc</sub>(*R*) = 1 ∧ RequestedDays(*R*) ≤ RemainingQuota(*S*) ∧ Authority(*R*) ≤ LineManager ∧ IsProbation(*S*) = False
